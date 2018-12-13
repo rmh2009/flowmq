@@ -12,26 +12,26 @@ int main(int argc, char* argv[]){
 
     try
     {
-        if (argc != 3)
+        if (argc != 4)
         {
-            std::cerr << "Usage: chat_client <host> <port>\n";
+            std::cerr << "Usage: chat_client <host> <port> <user_name>\n";
             return 1;
         }
 
         boost::asio::io_context io_context;
         tcp::resolver resolver(io_context);
         auto endpoints = resolver.resolve(argv[1], argv[2]);
+        std::string user_name(argv[3]);
         ChatClient client(io_context, endpoints);
 
         std::cout << "client started \n";
 
         std::thread t([&io_context](){ io_context.run(); });
 
-        char line[Message::DATA_LENGTH + 1];
-        while (std::cin.getline(line, sizeof(line)))
+        std::string line;
+        while (client.running() && std::getline(std::cin, line))
         {
-            Message msg;
-            std::memcpy(msg.data(), line, std::strlen(line));
+            Message msg(user_name + ": " + line);
             client.write_message(msg);
         }
         t.join();

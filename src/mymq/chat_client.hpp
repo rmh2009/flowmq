@@ -15,7 +15,8 @@ class ChatClient
         using SessionPtr = std::shared_ptr<Session>;
 
         ChatClient(boost::asio::io_context& io_context, 
-                const tcp::resolver::results_type& endpoints)
+                const tcp::resolver::results_type& endpoints):
+            running_(true)
         {
             connect(io_context, endpoints);
         }
@@ -25,6 +26,11 @@ class ChatClient
         ~ChatClient(){
             session_ -> close();
         }
+
+        bool running() const {
+            return running_;
+        }
+
     private:
         void connect(
                 boost::asio::io_context& io_context, 
@@ -37,11 +43,18 @@ class ChatClient
 
             session_ = std::make_shared<Session>(std::move(socket));
             session_ -> register_handler([](const Message& msg){
-                    std::cout << "Obtained message: " << msg.data() << '\n';
+                    std::cout << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
                     });
+
+            session_-> register_disconnect_handler([this](){
+                        std::cout << "Remote session closed, exiting ..." ;
+                        running_ = false;
+                    });
+            
             session_ -> start_read();
         }
 
+        bool running_;
         SessionPtr session_;
 
 };

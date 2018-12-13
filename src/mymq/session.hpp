@@ -17,7 +17,8 @@ class Session{
 
     public:
 
-        typedef std::function<void(const Message& msg)> Handler;
+        typedef std::function<void(const Message& msg)> ReadHandler;
+        typedef std::function<void()> DisconnectHandler;
 
         Session(tcp::socket&& socket):
             socket_(std::move(socket))
@@ -26,30 +27,26 @@ class Session{
 
         void read_msg(){
 
-            boost::asio::async_read(socket_, boost::asio::buffer(
-                        read_message_buffer_.data(), read_message_buffer_.length()), 
-                    [this](boost::system::error_code error, std::size_t /*length*/){
-
-                    if (!error){
-                    msg_handler_(read_message_buffer_);
-                    }
-                    else if (error){
-                    std::cout << "Error while reading message: " << error
-                    << " Maybe socket was closed \n";
-                    return;
-                    }
-                    read_msg();
-                    });
+            read_header();
 
         }
 
-        void register_handler(const Handler& handler){
+        //register read message handler
+        void register_handler(const ReadHandler& handler){
             msg_handler_ = handler;
+        }
+
+        //register disconnected handler
+        void register_disconnect_handler(const DisconnectHandler&  fun){
+            disconnected_handler_ = fun;
         }
 
         void write_message(const Message& msg){
             boost::system::error_code error;
-            boost::asio::write(socket_, boost::asio::buffer(msg.data(), msg.length()), error);
+            //the message will be copied and managed by a shared pointer
+            std::shared_ptr<Message> msg_copy = std::make_shared<Message>(msg);
+            boost::asio::async_write(socket_, boost::asio::buffer(msg.header(), msg.header_length() + msg.body_length()), 
+                    std::bind(&Session::on_write, this, msg_copy, std::placeholders::_1, std::placeholders::_2));
         }
 
         void start_read(){
@@ -60,14 +57,69 @@ class Session{
             boost::asio::post(socket_.get_io_context(), [this]() { socket_.close(); });
         }
 
-
     private:
+
+        void read_header(){
+
+            boost::asio::async_read(socket_, boost::asio::buffer(
+                        read_message_buffer_.header(), read_message_buffer_.header_length()), 
+                    [this](boost::system::error_code error, std::size_t /*length*/){
+
+                    if (!error){
+
+                        // this is inovked in the io_context thread, read_message_buffer is invoked
+                        // without any synchronization, if multiple threads are enable for 
+                        // the associated io_context, application must manage the synchronization properly.
+                        read_message_buffer_.decode_length();
+                        read_body();
+    
+                    }
+                    else if (error){
+                        std::cout << "Error while reading message: " << error
+                        << " Maybe socket was closed \n";
+                        disconneted();
+                        return;
+                    }
+                    });
+
+        }
+
+        void read_body(){
+
+            //std::cout << "reading message size " << read_message_buffer_.body_length() << '\n';
+            boost::asio::async_read(socket_, boost::asio::buffer(
+                        read_message_buffer_.body(), read_message_buffer_.body_length()), 
+                    [this](boost::system::error_code error, std::size_t /*length*/){
+
+                    if (!error){
+                        msg_handler_(read_message_buffer_);
+                    }
+                    else{
+                        std::cout << "Error while reading message: " << error
+                        << " Maybe socket was closed \n";
+                        disconneted();
+                        return;
+                    }
+
+                    read_msg();
+                    });
+        }
+
+        void on_write(std::shared_ptr<Message> msg_copy, boost::system::error_code error, std::size_t){
+            if(error){
+                std::cout << "ERROR write failed! " << std::string(msg_copy -> body(), msg_copy -> body_length()) << '\n';
+                disconneted();
+            }
+        }
+
+        void disconneted(){
+            disconnected_handler_();
+        }
 
         tcp::socket socket_;
         Message read_message_buffer_;
-        Message write_message_buffer_;
-        std::queue<Message> write_messages_;
-        Handler msg_handler_;
+        ReadHandler msg_handler_;
+        std::function<void()> disconnected_handler_;
 
 };
 
