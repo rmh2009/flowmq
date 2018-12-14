@@ -5,6 +5,7 @@
 #include <boost/array.hpp>
 
 #include <mymq/message.hpp>
+#include <mymq/raft_message.hpp>
 #include <mymq/cluster_manager.hpp>
 
 using boost::asio::ip::tcp;
@@ -43,6 +44,21 @@ int main(int argc, char* argv[]){
         ClusterManager cluster(io_context, this_endpoint, others);
 
         cluster.start();
+        boost::asio::deadline_timer timer(io_context);
+        timer.expires_from_now(boost::posix_time::seconds(2));
+
+        std::function<void(boost::system::error_code const&)> fun = 
+            [&cluster, choice, &timer, &fun](boost::system::error_code const&){
+
+                RaftMessage raft_message;
+                raft_message.loadVoteRequest(0, choice, 100, 200);
+                Message msg(raft_message.serialize());
+                cluster.broad_cast(msg);
+                timer.expires_from_now(boost::posix_time::seconds(2));
+                timer.async_wait(fun);
+        };
+
+        timer.async_wait(fun);
 
         io_context.run();
 

@@ -18,11 +18,18 @@ class Session : public std::enable_shared_from_this<Session>
 
     public:
 
+        enum Status {
+            CONNECTED = 0, 
+            DISCONNECTED = 1, // disconnected state
+            CLOSED = 2 
+        };
+
         typedef std::function<void(const Message& msg)> ReadHandler;
         typedef std::function<void()> DisconnectHandler;
 
         Session(tcp::socket&& socket):
-            socket_(std::move(socket))
+            socket_(std::move(socket)),
+            status_(CONNECTED)
     {
     }
 
@@ -49,7 +56,8 @@ class Session : public std::enable_shared_from_this<Session>
             std::shared_ptr<Message> msg_copy = std::make_shared<Message>(msg);
             boost::asio::async_write(socket_, boost::asio::buffer(msg.header(), msg.header_length() + msg.body_length()), 
                     [msg_copy, this, self](boost::system::error_code error, std::size_t){
-                    std::cout << "ERROR write failed! error code "<< error  
+                    if(!error) return;
+                    std::cout << "ERROR write failed! error code "<< error << ' '  
                     << std::string(msg_copy -> body(), msg_copy -> body_length()) << '\n';
                     disconneted();
                     });
@@ -60,7 +68,13 @@ class Session : public std::enable_shared_from_this<Session>
         }
 
         void close(){
-            boost::asio::post(socket_.get_io_context(), [this]() { socket_.close(); });
+            status_ = CLOSED;
+            auto self(shared_from_this());
+            boost::asio::post(socket_.get_io_context(), [this, self]() { socket_.close(); });
+        }
+
+        Status get_status() const{
+            return status_;
         }
 
     private:
@@ -114,6 +128,7 @@ class Session : public std::enable_shared_from_this<Session>
         }
 
         void disconneted(){
+            status_ = DISCONNECTED;
             disconnected_handler_();
         }
 
@@ -121,6 +136,7 @@ class Session : public std::enable_shared_from_this<Session>
         Message read_message_buffer_;
         ReadHandler msg_handler_;
         std::function<void()> disconnected_handler_;
+        Status status_;
 
 };
 
