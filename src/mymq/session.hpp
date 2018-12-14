@@ -13,7 +13,8 @@ using boost::asio::ip::tcp;
 // This takes an established socket and 
 // owns it by moving semantics. 
 // Exposes APIs for writing and reading messages, and registering message handler.
-class Session{
+class Session : public std::enable_shared_from_this<Session>
+{
 
     public:
 
@@ -42,11 +43,16 @@ class Session{
         }
 
         void write_message(const Message& msg){
+            auto self(shared_from_this());
             boost::system::error_code error;
             //the message will be copied and managed by a shared pointer
             std::shared_ptr<Message> msg_copy = std::make_shared<Message>(msg);
             boost::asio::async_write(socket_, boost::asio::buffer(msg.header(), msg.header_length() + msg.body_length()), 
-                    std::bind(&Session::on_write, this, msg_copy, std::placeholders::_1, std::placeholders::_2));
+                    [msg_copy, this, self](boost::system::error_code error, std::size_t){
+                    std::cout << "ERROR write failed! error code "<< error  
+                    << std::string(msg_copy -> body(), msg_copy -> body_length()) << '\n';
+                    disconneted();
+                    });
         }
 
         void start_read(){
@@ -61,9 +67,10 @@ class Session{
 
         void read_header(){
 
+            auto self(shared_from_this());
             boost::asio::async_read(socket_, boost::asio::buffer(
                         read_message_buffer_.header(), read_message_buffer_.header_length()), 
-                    [this](boost::system::error_code error, std::size_t /*length*/){
+                    [this, self](boost::system::error_code error, std::size_t /*length*/){
 
                     if (!error){
 
@@ -86,10 +93,11 @@ class Session{
 
         void read_body(){
 
+            auto self(shared_from_this());
             //std::cout << "reading message size " << read_message_buffer_.body_length() << '\n';
             boost::asio::async_read(socket_, boost::asio::buffer(
                         read_message_buffer_.body(), read_message_buffer_.body_length()), 
-                    [this](boost::system::error_code error, std::size_t /*length*/){
+                    [this, self](boost::system::error_code error, std::size_t /*length*/){
 
                     if (!error){
                         msg_handler_(read_message_buffer_);
@@ -103,13 +111,6 @@ class Session{
 
                     read_msg();
                     });
-        }
-
-        void on_write(std::shared_ptr<Message> msg_copy, boost::system::error_code error, std::size_t){
-            if(error){
-                std::cout << "ERROR write failed! " << std::string(msg_copy -> body(), msg_copy -> body_length()) << '\n';
-                disconneted();
-            }
         }
 
         void disconneted(){

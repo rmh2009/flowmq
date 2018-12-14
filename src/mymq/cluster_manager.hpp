@@ -21,6 +21,7 @@ using boost::asio::ip::tcp;
 class ClusterManager{
 
         public:
+            using ReadHandler = std::function<void(const Message&)>;
 
         ClusterManager(boost::asio::io_context& io_context, 
                 const tcp::endpoint& endpoint,  // this instance endpoint
@@ -28,7 +29,7 @@ class ClusterManager{
                 ):
             io_context_(io_context),
             acceptor_(io_context, endpoint),
-            sessions_count_(0),
+            incoming_sessions_count_(0),
             endpoints_(endpoints)
     {
     }
@@ -46,8 +47,11 @@ class ClusterManager{
 
         using SessionPtr = std::shared_ptr<Session>;
 
-        void register_handler(){
+        void register_handler(const ReadHandler& handler){
+            handler_ = handler;
         }
+
+    private:
 
         void connect(int endpoint_id){
             std::cout << "connecting to " << endpoint_id << "... \n";
@@ -92,10 +96,6 @@ class ClusterManager{
             });
         }
 
-        bool running_;
-        SessionPtr session_;
-
-    private:
 
         void accept_new_connection(){
             acceptor_.async_accept([this](boost::system::error_code error, tcp::socket socket){
@@ -111,7 +111,7 @@ class ClusterManager{
                             std::cout << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
                             });
 
-                    int id = sessions_count_++;
+                    int id = incoming_sessions_count_++;
 
                     new_session -> register_disconnect_handler([this, id](){
                             std::cout << "Removing session " << id << " from chat room!\n";
@@ -137,13 +137,16 @@ class ClusterManager{
                     });
         }
 
+        bool running_;
+
         boost::asio::io_context& io_context_;
         tcp::acceptor acceptor_;
         std::map<int, SessionPtr> incoming_sessions_;
-        int sessions_count_;
+        int incoming_sessions_count_;
         std::vector<std::pair<int, tcp::resolver::results_type>> endpoints_;
         std::map<int, tcp::resolver::results_type> endpoint_id_map_;
         std::map<int, SessionPtr> outgoing_sessions_;
+        ReadHandler handler_;
 
 };
 
