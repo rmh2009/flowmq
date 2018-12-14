@@ -165,3 +165,6 @@ class RaftMessage {
         int append_result_term_;
         int append_result_success_;
 };
+
+
+

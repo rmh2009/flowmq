@@ -60,11 +60,10 @@ class ClusterManager{
 
     private:
 
-        //TODO fix the over retrying bug, whenever a write fails this 
         // connect would be triggered, causing ever increasing number of retries scheduled.
         void connect(int endpoint_id){
             if(outgoing_sessions_.count(endpoint_id) 
-                    && outgoing_sessions_[endpoint_id] -> get_status() != Session::CONNECTED){
+                    && outgoing_sessions_[endpoint_id] -> get_status() == Session::CONNECTED){
                 return;
             }
 

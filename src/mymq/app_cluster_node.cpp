@@ -16,9 +16,11 @@ int main(int argc, char* argv[]){
     const char* ips[][2] = {
         {"localhost", "13"},
         {"localhost", "14"},
-        {"localhost", "15"}
+        {"localhost", "15"},
+        {"localhost", "16"},
+        {"localhost", "17"}
     };
-    size_t ips_lenghth  = 3;
+    size_t ips_lenghth  = 5;
 
     try
     {

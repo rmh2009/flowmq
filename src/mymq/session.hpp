@@ -10,9 +10,15 @@
 
 using boost::asio::ip::tcp;
 
-// This takes an established socket and 
-// owns it by moving semantics. 
+// This takes an established socket and owns it by moving semantics. 
 // Exposes APIs for writing and reading messages, and registering message handler.
+// All write and read operations are async.
+//
+// When session is disconnected, it would trigger the 
+// disconnected handler once. There is no API to 
+// reopen this session inplace. Whoever owns the disconnected session
+// should consider reopening another new session to replace it.
+//
 class Session : public std::enable_shared_from_this<Session>
 {
 
@@ -128,6 +134,8 @@ class Session : public std::enable_shared_from_this<Session>
         }
 
         void disconneted(){
+            // only trigger if it's not already disconnected
+            if(status_ == DISCONNECTED) return;
             status_ = DISCONNECTED;
             disconnected_handler_();
         }
