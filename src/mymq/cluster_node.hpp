@@ -38,8 +38,8 @@ class ClusterNode{
 
     public:
 
-        const int HEARTBEAT_EXPIRE_SECONDS = 3; // if no heart beat received in these seconds, will start new vote
-        const int HEARTBEAT_CHECK_INTERVAL = 5; // schedule interval to check heart beats
+        const int HEARTBEAT_EXPIRE_SECONDS = 3; // if no heartbeat received in these seconds, will start new vote
+        const int HEARTBEAT_CHECK_INTERVAL = 5; // schedule interval to check heartbeats
 
         enum State {
             LEADER = 0, 
@@ -91,7 +91,7 @@ class ClusterNode{
             heartbeat_timer_.async_wait([this](boost::system::error_code ){
 
                     if(state_ == LEADER){
-                    std::cout << " *************** node " << node_id_ << " : I'm the leader, checking heartbeat now! *************\n";
+                    std::cout << " *************** node " << node_id_ << " : I'm the leader, sending heartbeat now! *************\n";
                     RaftMessage msg;
                     int last_log_term = log_entries_.back().term;
                     int last_log_index = log_entries_.back().index;
