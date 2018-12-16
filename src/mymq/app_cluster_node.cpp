@@ -7,6 +7,7 @@
 #include <mymq/message.hpp>
 #include <mymq/raft_message.hpp>
 #include <mymq/cluster_manager.hpp>
+#include <mymq/cluster_node.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -20,7 +21,7 @@ int main(int argc, char* argv[]){
         {"localhost", "16"},
         {"localhost", "17"}
     };
-    size_t ips_lenghth  = 5;
+    size_t ips_length  = 5;
 
     try
     {
@@ -35,7 +36,7 @@ int main(int argc, char* argv[]){
         size_t choice = std::atoi(argv[1]);
         tcp::endpoint this_endpoint;
         std::vector<std::pair<int, tcp::resolver::results_type>> others;
-        for(size_t i = 0; i < ips_lenghth; ++i){
+        for(size_t i = 0; i < ips_length; ++i){
             if(i == choice){
                 this_endpoint = tcp::endpoint(tcp::v4(), std::atoi(ips[i][1]));
             }
@@ -43,25 +44,11 @@ int main(int argc, char* argv[]){
                 others.push_back({i, resolver.resolve(ips[i][0], ips[i][1])});
             }
         }
-        ClusterManager cluster(io_context, this_endpoint, others);
-
-        cluster.start();
-        boost::asio::deadline_timer timer(io_context);
-        timer.expires_from_now(boost::posix_time::seconds(2));
-
-        std::function<void(boost::system::error_code const&)> fun = 
-            [&cluster, choice, &timer, &fun](boost::system::error_code const&){
-
-                RaftMessage raft_message;
-                raft_message.loadVoteRequest(0, choice, 100, 200);
-                Message msg(raft_message.serialize());
-                cluster.broad_cast(msg);
-                timer.expires_from_now(boost::posix_time::seconds(2));
-                timer.async_wait(fun);
-        };
-
-        timer.async_wait(fun);
-
+        //ClusterManager cluster(io_context, this_endpoint, others);
+        //cluster.start();
+        
+        ClusterNode cluster(choice, ips_length, io_context, this_endpoint, others);
+        
         io_context.run();
 
     }

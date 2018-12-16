@@ -58,9 +58,17 @@ class ClusterManager{
             }
         }
 
+        void write_message(int endpoint_id, const Message& msg){
+
+            if(outgoing_sessions_.count(endpoint_id) != 0){
+                outgoing_sessions_[endpoint_id] -> write_message(msg);
+            }
+
+        }
+
     private:
 
-        // connect would be triggered, causing ever increasing number of retries scheduled.
+        //connect, with retry logic if disconnected
         void connect(int endpoint_id){
             if(outgoing_sessions_.count(endpoint_id) 
                     && outgoing_sessions_[endpoint_id] -> get_status() == Session::CONNECTED){
@@ -79,7 +87,8 @@ class ClusterManager{
 
                     auto session = std::make_shared<Session>(std::move(*socket));
                     session -> register_handler([](const Message& msg){
-                            std::cout << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
+                            std::cout << "Warning Not supposed to get incoming message from this session! messag:" 
+                            << std::string(msg.body(), msg.body_length()) << '\n';
                             });
 
                     session -> register_disconnect_handler([this, endpoint_id](){
@@ -120,8 +129,9 @@ class ClusterManager{
                     
                     auto new_session = std::make_shared<Session>(std::move(socket));
 
-                    new_session -> register_handler([](const Message& msg){
+                    new_session -> register_handler([this](const Message& msg){
                             std::cout << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
+                            handler_(msg);
                             });
 
                     int id = incoming_sessions_count_++;

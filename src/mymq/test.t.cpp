@@ -15,35 +15,34 @@ int main(){
 
     {
         RaftMessage msg; 
-        msg.loadAppendEntriesRequest(
-                0, 1, 100, 200, {}, 5);
+        AppendEntriesRequestType append_req({0, 1, 100, 200, std::vector<std::string>(), 5});
+        msg.loadAppendEntriesRequest(append_req);
+                
         fun(msg);
     }
     {
         RaftMessage msg; 
-        msg.loadAppendEntriesRequest(
-                0, 1, 100, 200, {"test1", "test2 abc", " sdfsdf!  sdfsdf"}, 5);
-        fun(msg);
-    }
-
-    {
-        RaftMessage msg; 
-        msg.loadAppendEntriesRequest(
-                0, 1, 100, 200, {"naughty\0 sdfd", "test2 abc", " sdfsdf!  sdfsdf"}, 5);
+        AppendEntriesRequestType append_req({0, 1, 100, 200, std::vector<std::string>({"test1", "test2 abc", " sdfsdf!  sdfsdf"}), 5});
+        msg.loadAppendEntriesRequest(append_req);
         fun(msg);
     }
 
+    {
+        RaftMessage msg; 
+        AppendEntriesRequestType append_req({0, 1, 100, 200, std::vector<std::string>({"naughty\0 sdfd", "test2 abc", " sdfsdf!  sdfsdf"}), 5});
+        msg.loadAppendEntriesRequest(append_req);
+        fun(msg);
+    }
+
 
     {
         RaftMessage msg; 
-        msg.loadVoteRequest(
-                0, 1, 100, 200);
+        msg.loadVoteRequest(RequestVoteRequestType{0, 1, 100, 200});
         fun(msg);
     }
     {
         RaftMessage msg; 
-        msg.loadVoteResult(
-               1, true);
+        msg.loadVoteResult(RequestVoteResponseType{1, true});
         fun(msg);
     }
     {
