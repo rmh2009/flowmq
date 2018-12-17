@@ -299,6 +299,7 @@ class ClusterNode{
                         int candidate_node_id = req.candidate_id;
                         int request_term = req.term;
 
+                        // TODO, must handle this case:  if req.last_log_index and req.last_log_term is older than current log entries, reject this vote
                         if(req.term < cur_term_ || 
                                 (voted_for_ != -1 && voted_for_ != req.candidate_id)){ //we voted for somebody else this term!
                             if(voted_for_ != -1){
