@@ -79,6 +79,9 @@ class ClusterNode{
 
             log_entries_.push_back(LogEntry{0, 0, ""});
 
+            std::cout << "init: " << log_entries_.size() << ", " << log_entries_[0].term << '\n';
+            check_if_previous_log_in_sync(0, 0);
+
             //scheduler to check hearbeat and initiate vote periodically
             start_vote_scheduler();
             start_send_hearbeat();
@@ -118,7 +121,7 @@ class ClusterNode{
                     int last_log_term = log_entries_.back().term;
                     int last_log_index = log_entries_.back().index;
                     msg.loadAppendEntriesRequest(AppendEntriesRequestType(
-                                {cur_term_, node_id_, last_log_term, last_log_index, std::vector<std::string>(), std::vector<int>(), last_log_index}));
+                                {cur_term_, node_id_, last_log_index, last_log_term, std::vector<std::string>(), std::vector<int>(), last_log_index}));
 
                     cluster_manager_.broad_cast(serialize_raft_message(msg));
                     }
@@ -218,6 +221,13 @@ class ClusterNode{
                             state_ = FOLLOWER;
                         }
 
+                        //update last_heart_beat_received_
+                        std::time(&last_heart_beat_received_);
+                        cur_term_ = req.term;
+
+                        //update leader commit
+                        commit_index_ = req.leader_commit;
+
                         //check if previous log in sync, if not return false
                         if(!check_if_previous_log_in_sync(req.prev_log_term, req.prev_log_index)){
                             std::cout << "ERROR: previous log not in sync! " << req.prev_log_term << ", " << req.prev_log_index << '\n';
@@ -226,14 +236,9 @@ class ClusterNode{
                             cluster_manager_.write_message(req.leader_id, serialize_raft_message(msg));
                             return;
                         }
-                        commit_index_ = req.leader_commit;
 
                         //append logs from leader
                         append_log_entries(req.prev_log_index, req.entries, req.entry_terms);
-
-                        //update last_heart_beat_received_
-                        std::time(&last_heart_beat_received_);
-                        cur_term_ = req.term;
 
                         //we've updated our logs, return success!
                         RaftMessage msg;
@@ -359,6 +364,11 @@ class ClusterNode{
             }
         }
 
+        // TODO there is an issue here ... this is triggered in many places, 
+        // including the heartbeat check response, and any response from appending a new log. 
+        // Each error append entry response will trigger this, so there could be 
+        // multiple series of req/resp to sync with a follower ... There should be only one, 
+        // otherwise the process takes unnecessarily long time. 
         void trigger_entry_update(int follower_id){
 
             int index_to_send = next_index_[follower_id];
@@ -376,6 +386,9 @@ class ClusterNode{
                         });
 
                 cluster_manager_.write_message(follower_id, serialize_raft_message(msg));
+
+                //to slow things down and help debug
+                //usleep(1000000);
 
             }
 
@@ -401,11 +414,11 @@ class ClusterNode{
 
             assert(new_entries.size() == new_entry_terms.size());
             for(size_t i = 0; i < new_entries.size(); ++i){
-                size_t index_in_log_entries = i + last_log_index;
+                size_t index_in_log_entries = i + last_log_index + 1;
 
                 if( index_in_log_entries > log_entries_.size() - 1){
                     //new entry
-                    log_entries_.push_back(LogEntry{(int)i, new_entry_terms[i], new_entries[i]});
+                    log_entries_.push_back(LogEntry{(int)index_in_log_entries, new_entry_terms[i], new_entries[i]});
                 }
                 else if(log_entries_[index_in_log_entries].term == new_entry_terms[i]){
                     //already exists and terms match
@@ -413,7 +426,7 @@ class ClusterNode{
                 else {
                     //does not match, need to cleanup
                     clean_log_entries_out_of_sync(index_in_log_entries);
-                    log_entries_.push_back(LogEntry{(int)i, new_entry_terms[i], new_entries[i]});
+                    log_entries_.push_back(LogEntry{(int)index_in_log_entries, new_entry_terms[i], new_entries[i]});
                 }
 
             }
