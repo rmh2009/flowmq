@@ -89,7 +89,6 @@ class ClientManager{
                             auto to_remove = client_sessions_.find(id);
                             if(to_remove != client_sessions_.end()){
                             client_sessions_.erase(client_sessions_.find(id));
-                            client_disconnected_handler_(id);
                             }
                             else{
                             std::cout << "Session " << id << " already removed!\n";
@@ -102,6 +101,8 @@ class ClientManager{
                             else{
                             std::cout << "Session " << id << " does not exist in consumer id array!\n";
                             }
+
+                            client_disconnected_handler_(id);
 
                             });
 

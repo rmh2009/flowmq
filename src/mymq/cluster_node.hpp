@@ -198,6 +198,11 @@ class ClusterNode{
 
                     std::cout << "commit_index : " << commit_index_ << '\n';
 
+                    std::cout << "undelivered_messages : \n";
+                    for(auto& id : undelivered_messages_){
+                    std::cout << id << ", ";
+                    }
+
                     std::cout << "\n ___________________________________________________________________________\n";
                     start_statistics_scheduler();
 
@@ -384,6 +389,7 @@ class ClusterNode{
                         const ClientCommitMessageType& req = raft_msg.get_commit_message_request();
                         LogEntry entry({(int)log_entries_.size(), cur_term_, req.message_id, LogEntry::COMMIT, ""});
                         add_log_entry(entry);
+                        break;
                     }
                 default :
                     break;
@@ -512,8 +518,13 @@ class ClusterNode{
         // fetch undelivered messages and send to consumers (if any exists)
         void trigger_message_delivery(){
 
+            std::cout << "trying to deliver messages \n";
             if(!client_manager_.has_consumers()) return;
-            for(auto& message_id : undelivered_messages_){
+            std::vector<int> id_temp;
+            for(auto message_id : undelivered_messages_){
+                id_temp.push_back(message_id);
+            }
+            for(auto message_id : id_temp){
                 RaftMessage msg;
                 msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_store_[message_id]});
                 int consumer_id = client_manager_.deliver_one_message_round_robin(serialize_raft_message(msg));

@@ -9,6 +9,17 @@
 
 using boost::asio::ip::tcp;
 
+
+void open_queue(ChatClient& client, const std::string& queue_name, int mode){
+
+        RaftMessage raft_msg;
+        raft_msg.loadClientOpenQueueRequest(ClientOpenQueueRequestType{
+                mode,
+                queue_name
+                });
+        client.write_message(Message(raft_msg.serialize()));
+}
+
 int main(int argc, char* argv[]){
 
     try
@@ -32,6 +43,11 @@ int main(int argc, char* argv[]){
         std::string line;
         while (client.running() && std::getline(std::cin, line))
         {
+            if(line == "open"){ //magic word!
+                open_queue(client, "test_queue", 0);
+                continue;
+            }
+
             RaftMessage raft_msg;
             raft_msg.loadClientPutMessageRequest(ClientPutMessageType{line});
             client.write_message(Message(raft_msg.serialize()));

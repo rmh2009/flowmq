@@ -23,9 +23,17 @@ int main(int argc, char* argv[]){
     };
     size_t ips_length  = 5;
 
+    const char* mq_port[5] = {
+        "9000",
+        "9001",
+        "9002",
+        "9003",
+        "9004"
+    };
+
     try
     {
-        if (argc < 3)
+        if (argc < 2)
         {
             std::cerr << "Usage: cluster_node current_id\n";
             return 1;
@@ -47,7 +55,7 @@ int main(int argc, char* argv[]){
         //ClusterManager cluster(io_context, this_endpoint, others);
         //cluster.start();
         
-        auto client_facing_endpoint = tcp::endpoint(tcp::v4(), std::atoi(argv[2]));
+        auto client_facing_endpoint = tcp::endpoint(tcp::v4(), std::atoi(mq_port[choice]));
         ClusterNode cluster(client_facing_endpoint, choice, ips_length, io_context, this_endpoint, others);
         
         io_context.run();
