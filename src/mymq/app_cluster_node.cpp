@@ -25,7 +25,7 @@ int main(int argc, char* argv[]){
 
     try
     {
-        if (argc < 2)
+        if (argc < 3)
         {
             std::cerr << "Usage: cluster_node current_id\n";
             return 1;
@@ -47,7 +47,8 @@ int main(int argc, char* argv[]){
         //ClusterManager cluster(io_context, this_endpoint, others);
         //cluster.start();
         
-        ClusterNode cluster(choice, ips_length, io_context, this_endpoint, others);
+        auto client_facing_endpoint = tcp::endpoint(tcp::v4(), std::atoi(argv[2]));
+        ClusterNode cluster(client_facing_endpoint, choice, ips_length, io_context, this_endpoint, others);
         
         io_context.run();
 

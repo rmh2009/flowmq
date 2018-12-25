@@ -13,6 +13,7 @@
 #include <mymq/raft_message.hpp>
 #include <mymq/session.hpp>
 #include <mymq/cluster_manager.hpp>
+#include <mymq/client_manager.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -26,13 +27,6 @@ using boost::asio::ip::tcp;
 // Uses other in-memory and on-disk 
 // log manangement classes.
 //
-
-struct LogEntry{
-
-    int index;
-    int term;
-    std::string msg;
-};
 
 class ClusterNode{
 
@@ -48,7 +42,11 @@ class ClusterNode{
         };
 
         template<class... ARGS>
-            ClusterNode(int node_id, int total_nodes, boost::asio::io_context& io_context, ARGS&&... args):
+            ClusterNode(const tcp::endpoint& client_facing_endpoint, 
+                    int node_id, 
+                    int total_nodes, 
+                    boost::asio::io_context& io_context, 
+                    ARGS&&... args):
                 node_id_(node_id),
                 total_nodes_(total_nodes),
                 io_context_(io_context),
@@ -60,7 +58,9 @@ class ClusterNode{
                 cur_term_(0),
                 voted_for_(-1),
                 commit_index_(0),
-                last_applied_(0)
+                last_applied_(0),
+                client_manager_(io_context, client_facing_endpoint)
+
         {
             //initialize random seed
             
@@ -77,7 +77,7 @@ class ClusterNode{
                 matched_index_[i] = 0;
             }
 
-            log_entries_.push_back(LogEntry{0, 0, ""});
+            log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
 
             std::cout << "init: " << log_entries_.size() << ", " << log_entries_[0].term << '\n';
             check_if_previous_log_in_sync(0, 0);
@@ -86,8 +86,16 @@ class ClusterNode{
             start_vote_scheduler();
             start_send_hearbeat();
             start_statistics_scheduler();
+
+            // start cluster
             cluster_manager_.register_handler(std::bind(&ClusterNode::message_handler, this, std::placeholders::_1));
             cluster_manager_.start();
+
+            // start client manager
+            client_manager_.register_handler(std::bind(&ClusterNode::message_handler, this, std::placeholders::_1));
+            client_manager_.register_disconnect_handler(std::bind(&ClusterNode::consumer_disconnected, this, std::placeholders::_1));
+            client_manager_.start();
+
         }
 
         ClusterNode() = delete;
@@ -96,10 +104,10 @@ class ClusterNode{
         ClusterNode(ClusterNode&& ) = delete;
 
     private:
-        void add_log_entry(const std::string& msg){
+        void add_log_entry(const LogEntry& entry){
             // this should always be run in io_context, client should not directly call this
-
-            log_entries_.push_back(LogEntry({(int)log_entries_.size(), cur_term_, msg}));
+            
+            log_entries_.push_back(entry);
             for(auto& endpoint : next_index_){ //get endpoints from next_index_ map
                 trigger_entry_update(endpoint.first);
             }
@@ -121,7 +129,7 @@ class ClusterNode{
                     int last_log_term = log_entries_.back().term;
                     int last_log_index = log_entries_.back().index;
                     msg.loadAppendEntriesRequest(AppendEntriesRequestType(
-                                {cur_term_, node_id_, last_log_index, last_log_term, std::vector<std::string>(), std::vector<int>(), last_log_index}));
+                                {cur_term_, node_id_, last_log_index, last_log_term, {}, last_log_index}));
 
                     cluster_manager_.broad_cast(serialize_raft_message(msg));
                     }
@@ -129,7 +137,6 @@ class ClusterNode{
                     start_send_hearbeat();
 
                     });
-
         }
 
         //this will send vote request if current state is candidate
@@ -153,7 +160,7 @@ class ClusterNode{
                     ++cur_term_;
                     //reset voting related states
                     voted_for_ = -1;
-                    votes_collected_ = 1; //always vote self first
+                    votes_collected_ = 0; 
 
                     RaftMessage raft_msg;
                     int last_log_term = log_entries_.back().term;
@@ -166,6 +173,9 @@ class ClusterNode{
                     std::cout << "random delay in start_vote_scheduler : " << delay << " miliseconds \n";
                     timer -> expires_from_now(boost::posix_time::milliseconds(delay));
                     timer->async_wait([timer, this, raft_msg](boost::system::error_code const&){
+                            if(voted_for_ != -1) return; //already voted
+                            voted_for_ = node_id_;
+                            votes_collected_++; //vote for self
                             cluster_manager_.broad_cast(serialize_raft_message(raft_msg));
                             });
                     }
@@ -183,7 +193,7 @@ class ClusterNode{
                     std::cout << "Printing statistics \n ___________________________________________________________________________\n\n";
 
                     for(auto entry : log_entries_){
-                    std::cout << "{" << entry.index << " , " << entry.term << " , " << entry.msg << "}, ";
+                    std::cout << "{" << entry.index << " , " << entry.term << " , " << entry.operation << ", " << entry.message << "}, ";
                     }
 
                     std::cout << "commit_index : " << commit_index_ << '\n';
@@ -238,7 +248,7 @@ class ClusterNode{
                         }
 
                         //append logs from leader
-                        append_log_entries(req.prev_log_index, req.entries, req.entry_terms);
+                        append_log_entries(req.prev_log_index, req.entries);
 
                         //we've updated our logs, return success!
                         RaftMessage msg;
@@ -265,9 +275,10 @@ class ClusterNode{
                                 for(auto index : matched_index_){
                                     if(index.second >= resp.last_index_synced) count_synced_nodes++;
                                 }
-                                if(count_synced_nodes > total_nodes_ / 2){
+                                if(count_synced_nodes + 1 > total_nodes_ / 2){
                                     std::cout << "index " << resp.last_index_synced << " is synced among majority nodes, will commit this index.\n";
                                     commit_index_ = std::max(commit_index_, resp.last_index_synced);
+                                    commit_log_entry(commit_index_);
                                 }
                                 else{
                                     std::cout << "index " << resp.last_index_synced << " is not synced among majority nodes yet, will not commit this index.\n";
@@ -357,8 +368,22 @@ class ClusterNode{
                             return;
                         }
                         const ClientPutMessageType& req = raft_msg.get_put_message_request();
-                        add_log_entry(req.message);
+
+                        int random_id = std::rand();
+                        LogEntry entry({(int)log_entries_.size(), cur_term_, random_id, LogEntry::ADD, req.message});
+                        add_log_entry(entry);
                         break;
+                    }
+                case RaftMessage::ClientOpenQueue:
+                    {
+                        trigger_message_delivery();
+                        break;
+                    }
+                case RaftMessage::ClientCommitMessage:
+                    {
+                        const ClientCommitMessageType& req = raft_msg.get_commit_message_request();
+                        LogEntry entry({(int)log_entries_.size(), cur_term_, req.message_id, LogEntry::COMMIT, ""});
+                        add_log_entry(entry);
                     }
                 default :
                     break;
@@ -381,8 +406,7 @@ class ClusterNode{
 
                 RaftMessage msg;
                 msg.loadAppendEntriesRequest(AppendEntriesRequestType{
-                        cur_term_, node_id_, prev_index, prev_term, std::vector<std::string>{log_entries_[index_to_send].msg},
-                        std::vector<int>{log_entries_[index_to_send].term},
+                        cur_term_, node_id_, prev_index, prev_term, std::vector<LogEntry>{log_entries_[index_to_send]},
                         commit_index_
                         });
 
@@ -411,24 +435,96 @@ class ClusterNode{
             log_entries_.erase(log_entries_.begin() + index_to_remove, log_entries_.end());
         }
 
-        void append_log_entries(int last_log_index, const std::vector<std::string>& new_entries, const std::vector<int>& new_entry_terms){
+        void append_log_entries(int last_log_index, const std::vector<LogEntry>& new_entries){
 
-            assert(new_entries.size() == new_entry_terms.size());
             for(size_t i = 0; i < new_entries.size(); ++i){
                 size_t index_in_log_entries = i + last_log_index + 1;
 
                 if( index_in_log_entries > log_entries_.size() - 1){
                     //new entry
-                    log_entries_.push_back(LogEntry{(int)index_in_log_entries, new_entry_terms[i], new_entries[i]});
+                    log_entries_.push_back(new_entries[i]); 
                 }
-                else if(log_entries_[index_in_log_entries].term == new_entry_terms[i]){
+                else if(log_entries_[index_in_log_entries].term == new_entries[i].term){
                     //already exists and terms match
                 }
                 else {
                     //does not match, need to cleanup
                     clean_log_entries_out_of_sync(index_in_log_entries);
-                    log_entries_.push_back(LogEntry{(int)index_in_log_entries, new_entry_terms[i], new_entries[i]});
+                    log_entries_.push_back(new_entries[i]);
                 }
+
+            }
+
+        }
+
+        Message serialize_raft_message(const RaftMessage& raft_message){
+            return Message(raft_message.serialize());
+        }
+
+        // ---------------- Message Queue Related Operations ----------------  
+        // either put a new message or commit a delivered message
+        void commit_log_entry(int entry_index){
+            if(entry_index <= 0) return;
+            if(entry_index >= (int)log_entries_.size()){
+                std::cout << "ERROR: commit index " << entry_index << " is out of bound!\n";
+                return;
+            }
+
+            //committing now
+            
+            if(log_entries_[entry_index].operation == LogEntry::ADD){ //add
+                message_store_[log_entries_[entry_index].message_id] = log_entries_[entry_index].message;
+                undelivered_messages_.insert(log_entries_[entry_index].message_id);
+                trigger_message_delivery();
+            }
+            else if(log_entries_[entry_index].operation == LogEntry::COMMIT){
+
+                int message_id = log_entries_[entry_index].message_id;
+                if(message_id_to_consumer_.count(message_id) == 0){
+                    std::cout << "ERROR message << " << message_id << " not found, unable to commit\n";
+                    return;
+                }
+                int consumer_id = message_id_to_consumer_[message_id];
+                message_id_to_consumer_.erase(message_id);
+                consumer_id_delivered_messages_[consumer_id].erase(message_id);
+                committed_messages_.insert(message_id);
+                std ::cout << "message " << message_id << " consumed!\n";
+            }
+            
+        }
+
+        // put all pending messages delivered to this consumer back to pending state
+        void consumer_disconnected(int client_id){
+
+            if(consumer_id_delivered_messages_.count(client_id) == 0) {
+                std::cout << "ERROR consumer " << client_id << " not found (in consumer disconnected handler) \n";
+                return;
+            }
+
+            for(auto& msg_id : consumer_id_delivered_messages_[client_id]){
+                undelivered_messages_.insert(msg_id);
+                message_id_to_consumer_.erase(msg_id);
+            }
+            consumer_id_delivered_messages_.erase(client_id);
+            trigger_message_delivery();
+        }
+
+        // fetch undelivered messages and send to consumers (if any exists)
+        void trigger_message_delivery(){
+
+            if(!client_manager_.has_consumers()) return;
+            for(auto& message_id : undelivered_messages_){
+                RaftMessage msg;
+                msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_store_[message_id]});
+                int consumer_id = client_manager_.deliver_one_message_round_robin(serialize_raft_message(msg));
+                if(consumer_id == -1){
+                    std::cout << "ERROR: unable to deliver message " << message_id << " to consumer!\n";
+                    return;
+                }
+                undelivered_messages_.erase(message_id);
+                consumer_id_delivered_messages_[consumer_id].insert(message_id);
+                message_id_to_consumer_[message_id] = consumer_id;
+                std::cout << "Delivered message " << message_id << " to consumer " << consumer_id << '\n';
 
             }
 
@@ -456,9 +552,20 @@ class ClusterNode{
         std::map<int, int> next_index_; //map from node id to next index
         std::map<int, int> matched_index_; // map from node id to last matched index
 
-        Message serialize_raft_message(const RaftMessage& raft_message){
-            return Message(raft_message.serialize());
-        }
+        // state for message queue
+        std::map<int, std::string> message_store_;  // message id to message
+
+        // a message at anytime is only in one of the three states: undelivered(no consumers), delivered(but not committed yet), and committed.
+        // delivered state is a temporary state, meaning it's not persisted on hard disk. When a cluster node crashes it reload 
+        // all messages into message_store_, and committed message ids, all others are put into undelivered state.
+        
+        std::set<int> undelivered_messages_;
+        std::set<int> committed_messages_;
+        std::map<int, std::set<int>> consumer_id_delivered_messages_; //consumer id to pending message ids
+        std::map<int, int> message_id_to_consumer_; //map from message id to consumer
+        
+        // state for publisher/consumers
+        ClientManager client_manager_;
 
 };
 

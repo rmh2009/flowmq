@@ -11,7 +11,6 @@
 
 using boost::asio::ip::tcp;
 
-
 // Manages connections with other nodes in the cluster. 
 // Does following things:
 //     Internally retries connection with cluster nodes periodically.
@@ -22,6 +21,7 @@ class ClusterManager{
 
         public:
             using ReadHandler = std::function<void(const Message&)>;
+            using SessionPtr = std::shared_ptr<Session>;
 
         ClusterManager(boost::asio::io_context& io_context, 
                 const tcp::endpoint& endpoint,  // this instance endpoint
@@ -45,7 +45,6 @@ class ClusterManager{
             }
         }
 
-        using SessionPtr = std::shared_ptr<Session>;
 
         void register_handler(const ReadHandler& handler){
             handler_ = handler;

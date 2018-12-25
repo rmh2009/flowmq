@@ -5,10 +5,57 @@
 #include <iostream>
 #include <exception>
 
+
+// Class for Log Entry
+struct LogEntry{
+    enum OPERATION {
+        ADD = 0, 
+        COMMIT = 1
+    };
+
+    int index;
+    int term;
+
+    int message_id;
+    int operation; 
+    std::string message;
+
+    std::string serialize() const {
+
+        std::stringstream ss;
+        ss << index << ' ';
+        ss << term << ' ';
+        ss << message_id << ' ';
+        ss << operation << ' ';
+        ss << message.size() << ' ';
+        ss << message ;
+        
+        return ss.str();
+    }
+
+    static LogEntry deserialize(const std::string& str){
+
+        LogEntry entry;
+        std::stringstream ss(str);
+        ss >> entry.index ; 
+        ss >> entry.term ; 
+        ss >> entry.message_id; 
+        ss >> entry.operation;
+        int msg_size;
+        ss >> msg_size;
+        char space;
+        ss.read(&space, 1);
+        entry.message.resize(msg_size);
+        ss.read(&entry.message[0], msg_size);
+
+        return entry;
+
+    }
+};
+
 // two types of Raft RPC message, RequestVote and 
 // AppendEntries, each type could be either request 
 // or response.
-//
 
 struct RequestVoteRequestType{
 
@@ -28,8 +75,7 @@ struct AppendEntriesRequestType{
     int leader_id;
     int prev_log_index;
     int prev_log_term;
-    std::vector<std::string> entries;
-    std::vector<int> entry_terms;
+    std::vector<LogEntry> entries;
     int leader_commit;
 };
 
@@ -40,9 +86,27 @@ struct AppendEntriesResponseType{
     int last_index_synced;
 };
 
-//message for message queue client to put a message onto the queue
+//message for message queue client to put a message onto the queue or commit message in queue
 struct ClientPutMessageType{
     std::string message;
+};
+
+struct ClientCommitMessageType{
+    int message_id;
+};
+
+struct ServerSendMessageType{
+    int message_id; 
+    std::string message;
+};
+
+struct ClientOpenQueueRequestType{
+    int open_mode;
+    std::string queue_name;
+};
+
+struct ConsumerDisconnectedType{
+    int client_id;
 };
 
 class RaftMessage {
@@ -54,6 +118,10 @@ class RaftMessage {
             AppendEntriesRequest = 2, 
             AppendEntriesResponse = 3,
             ClientPutMessage = 10,
+            ClientCommitMessage = 11,
+            ServerSendMessage = 12,
+            ClientOpenQueue = 13,
+            ConsumerDisconnected = 14,
             Unknown = 99
         };
 
@@ -91,6 +159,24 @@ class RaftMessage {
             client_put_message_ = ClientPutMessageType(std::forward<ARGS>(args)...);
         }
 
+        template<class... ARGS>
+        void loadClientMessageMessageRequest(ARGS&&... args){
+            type_ = ClientCommitMessage;
+            client_commit_message_ = ClientCommitMessageType(std::forward<ARGS>(args)...);
+        }
+
+        template<class... ARGS>
+        void loadClientOpenQueueRequest(ARGS&&... args){
+            type_ = ClientOpenQueue;
+            client_open_queue_request_ = ClientOpenQueueRequestType(std::forward<ARGS>(args)...);
+        }
+
+        template<class... ARGS>
+        void loadServerSendMessageRequest(ARGS&&... args){
+            type_ = ServerSendMessage;
+            server_send_messag_ = ServerSendMessageType(std::forward<ARGS>(args)...);
+        }
+
 
 
         int type() const{
@@ -122,11 +208,9 @@ class RaftMessage {
                 ss << append_request_.leader_commit << ' ';
                 ss << append_request_.entries.size() << ' ';
                 for ( auto& entry : append_request_.entries){
-                    ss << entry.size() << ' ';
-                    ss << entry;
-                }
-                for ( auto& entry_term : append_request_.entry_terms){
-                    ss << entry_term << ' ';
+                    std::string temp = entry.serialize();
+                    ss << temp.size() << ' ';
+                    ss << temp;
                 }
                 break;
             case AppendEntriesResponse:
@@ -139,6 +223,19 @@ class RaftMessage {
             case ClientPutMessage : 
                 ss << client_put_message_.message.size() << ' ';
                 ss << client_put_message_.message;
+                break;
+            case ClientCommitMessage :
+                ss << client_commit_message_.message_id << ' ';
+                break;
+            case ClientOpenQueue:
+                ss << client_open_queue_request_.open_mode << ' ';
+                ss << client_open_queue_request_.queue_name.size() << ' ';
+                ss << client_open_queue_request_.queue_name;
+                break;
+            case ServerSendMessage :
+                ss << server_send_messag_.message_id << ' ';
+                ss << server_send_messag_.message.size() << ' ';
+                ss << server_send_messag_.message ;
                 break;
             default :
                 throw std::runtime_error("unsupported raft message type!");
@@ -180,14 +277,10 @@ class RaftMessage {
                     ss >> next_string_size;
                     char space;
                     ss.read(&space, 1);
-                    msg.append_request_.entries.emplace_back();
-                    msg.append_request_.entries.back().resize(next_string_size);
-                    ss.read(&msg.append_request_.entries.back()[0], next_string_size);
-                }
-                for(int i = 0; i < entries_count; ++i){
-                    int term; 
-                    ss >> term;
-                    msg.append_request_.entry_terms.push_back(term);
+                    std::string temp;
+                    temp.resize(next_string_size);
+                    ss.read(&temp[0], next_string_size);
+                    msg.append_request_.entries.push_back(LogEntry::deserialize(temp));
                 }
                 break;
             case AppendEntriesResponse:
@@ -197,13 +290,40 @@ class RaftMessage {
                 ss >> msg.append_response_.last_index_synced;
                 break;
             case ClientPutMessage:
-                int msg_size;
-                ss >> msg_size;
-                char space;
-                ss.read(&space, 1);
-                msg.client_put_message_.message.resize(msg_size);
-                ss.read(&msg.client_put_message_.message[0], msg_size);
+                {
+                    int msg_size;
+                    ss >> msg_size;
+                    char space;
+                    ss.read(&space, 1);
+                    msg.client_put_message_.message.resize(msg_size);
+                    ss.read(&msg.client_put_message_.message[0], msg_size);
+                    break;
+                }
+            case ClientCommitMessage :
+                ss >> msg.client_commit_message_.message_id;
                 break;
+            case ClientOpenQueue:
+                {
+                    ss >> msg.client_open_queue_request_.open_mode;
+                    int msg_size;
+                    ss >> msg_size;
+                    char space;
+                    ss.read(&space, 1);
+                    msg.client_open_queue_request_.queue_name.resize(msg_size);
+                    ss.read(&msg.client_open_queue_request_.queue_name[0], msg_size);
+                    break;
+                }
+            case ServerSendMessage:
+                {
+                    ss >> msg.server_send_messag_.message_id;
+                    int msg_size;
+                    ss >> msg_size;
+                    char space;
+                    ss.read(&space, 1);
+                    msg.server_send_messag_.message.resize(msg_size);
+                    ss.read(&msg.server_send_messag_.message[0], msg_size);
+                    break;
+                }
             default :
                 std::cout << "ERROR unkown message type " << msg.type_ << '\n';
                 throw std::runtime_error("unsupported raft message type!");
@@ -227,10 +347,18 @@ class RaftMessage {
         const RequestVoteResponseType& get_vote_response() const{
             return vote_response_;
         }
+
         const ClientPutMessageType& get_put_message_request() const{
             return client_put_message_;
         }
 
+        const ClientCommitMessageType& get_commit_message_request() const{
+            return client_commit_message_;
+        }
+
+        const ClientOpenQueueRequestType get_open_queue_request() const{
+            return client_open_queue_request_;
+        }
 
     private:
 
@@ -242,6 +370,9 @@ class RaftMessage {
         RequestVoteRequestType vote_request_;
         RequestVoteResponseType vote_response_;
         ClientPutMessageType client_put_message_;
+        ClientCommitMessageType client_commit_message_;
+        ClientOpenQueueRequestType client_open_queue_request_;
+        ServerSendMessageType server_send_messag_;
         
 };
 

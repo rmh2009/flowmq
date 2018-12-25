@@ -10,26 +10,36 @@ int main(){
 
         auto new_msg = RaftMessage::deserialize(str);
         std::cout << "deserialized then serialized again : " << new_msg.serialize() << '\n';
+
+        assert(str == new_msg.serialize());
     };
 
 
     {
         RaftMessage msg; 
-        AppendEntriesRequestType append_req({0, 1, 100, 200, std::vector<std::string>(),std::vector<int>(), 5});
+        AppendEntriesRequestType append_req({0, 1, 100, 200, {}, 5});
         msg.loadAppendEntriesRequest(append_req);
                 
         fun(msg);
     }
     {
         RaftMessage msg; 
-        AppendEntriesRequestType append_req({0, 1, 100, 200, std::vector<std::string>({"test1", "test2 abc", " sdfsdf!  sdfsdf"}),std::vector<int>({1,2,3}), 5});
+        AppendEntriesRequestType append_req({0, 1, 100, 200, {}, 5});
+        append_req.entries.push_back({0, 1, 12345, 0, "test"});
+        append_req.entries.push_back({1, 1, 12345, 0, "test1"});
+        append_req.entries.push_back({2, 1, 12345, 0, "test2"});
         msg.loadAppendEntriesRequest(append_req);
         fun(msg);
     }
 
     {
         RaftMessage msg; 
-        AppendEntriesRequestType append_req({0, 1, 100, 200, std::vector<std::string>({"naughty\0 sdfd", "test2 abc", " sdfsdf!  sdfsdf","4th one"}), std::vector<int>({1,2,3,4}), 5});
+        AppendEntriesRequestType append_req({0, 1, 100, 200, {}, 5});
+        append_req.entries.push_back({0, 1, 12345, 0, "naughty\0 sdfd"});
+        append_req.entries.push_back({1, 1, 12345, 0, "test2 abc"});
+        append_req.entries.push_back({2, 1, 12345, 1, ""});
+        append_req.entries.push_back({3, 1, 12345, 0, "4th one!"});
+ 
         msg.loadAppendEntriesRequest(append_req);
         fun(msg);
     }
