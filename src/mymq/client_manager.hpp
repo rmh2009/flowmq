@@ -133,6 +133,7 @@ class ClientManager{
                     break;
                     }
                 case RaftMessage::ClientPutMessage:
+                case RaftMessage::ClientCommitMessage:
                     //forward to handler (in this case the cluster node)
                     handler_(msg);
                     break;

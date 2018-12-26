@@ -129,7 +129,7 @@ class ClusterNode{
                     int last_log_term = log_entries_.back().term;
                     int last_log_index = log_entries_.back().index;
                     msg.loadAppendEntriesRequest(AppendEntriesRequestType(
-                                {cur_term_, node_id_, last_log_index, last_log_term, {}, last_log_index}));
+                                {cur_term_, node_id_, last_log_index, last_log_term, {}, commit_index_}));
 
                     cluster_manager_.broad_cast(serialize_raft_message(msg));
                     }
@@ -196,10 +196,15 @@ class ClusterNode{
                     std::cout << "{" << entry.index << " , " << entry.term << " , " << entry.operation << ", " << entry.message << "}, ";
                     }
 
-                    std::cout << "commit_index : " << commit_index_ << '\n';
+                    std::cout << "\ncommit_index : " << commit_index_ << '\n';
 
-                    std::cout << "undelivered_messages : \n";
-                    for(auto& id : undelivered_messages_){
+                    std::cout << "\nundelivered_messages : \n";
+                    for(auto id : undelivered_messages_){
+                    std::cout << id << ", ";
+                    }
+
+                    std::cout << "\ncommitted messages : \n";
+                    for(auto id :committed_messages_){
                     std::cout << id << ", ";
                     }
 
@@ -240,9 +245,7 @@ class ClusterNode{
                         std::time(&last_heart_beat_received_);
                         cur_term_ = req.term;
 
-                        //update leader commit
-                        commit_index_ = req.leader_commit;
-
+                       
                         //check if previous log in sync, if not return false
                         if(!check_if_previous_log_in_sync(req.prev_log_term, req.prev_log_index)){
                             std::cout << "ERROR: previous log not in sync! " << req.prev_log_term << ", " << req.prev_log_index << '\n';
@@ -252,12 +255,18 @@ class ClusterNode{
                             return;
                         }
 
+                        //update leader commit
+                        if(commit_index_ < req.leader_commit && req.leader_commit < (int)log_entries_.size()){
+                            commit_log_entries(commit_index_ + 1, req.leader_commit + 1);
+                            commit_index_ = req.leader_commit;
+                        }
+
                         //append logs from leader
                         append_log_entries(req.prev_log_index, req.entries);
 
                         //we've updated our logs, return success!
                         RaftMessage msg;
-                        msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 1, (int)log_entries_.size() - 1}));
+                        msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 1, log_entries_.back().index}));
                         cluster_manager_.write_message(req.leader_id, serialize_raft_message(msg));
                         return;
 
@@ -272,7 +281,16 @@ class ClusterNode{
 
                         if(resp.append_result_success){
                             //received success!
-                            matched_index_[follower_id] = std::max(matched_index_[follower_id], last_index_synced);
+                            // This is very tricky, matched_index_ should be increasing only, however in the scenario where one 
+                            // node crashed and lost all of its data, then restarted, the matched_index_[node_id] for that node 
+                            // should be allowed to rollback to a smaller value ... however it seems allowing this would break 
+                            // the assumptions required to guarantee the consensus of the Raft algorithm, because leader could no longer 
+                            // make assumptions that majority nodes have committed an entry if any node could lose committed data ...
+                            
+                            // version 1, matched index increases only, this causes some slowness issues when a node could lose persisted data and recover as a clean node
+                            //matched_index_[follower_id] = std::max(matched_index_[follower_id], last_index_synced);
+                            // version 2, matched index is allowed to decrease, I prefer this one for now but needs more testing and proof
+                            matched_index_[follower_id] =  last_index_synced;
                             
                             if(commit_index_ < resp.last_index_synced){
                                 //update commit_index_
@@ -282,8 +300,8 @@ class ClusterNode{
                                 }
                                 if(count_synced_nodes + 1 > total_nodes_ / 2){
                                     std::cout << "index " << resp.last_index_synced << " is synced among majority nodes, will commit this index.\n";
+                                    commit_log_entries(commit_index_ + 1, resp.last_index_synced + 1); // left close right open 
                                     commit_index_ = std::max(commit_index_, resp.last_index_synced);
-                                    commit_log_entry(commit_index_);
                                 }
                                 else{
                                     std::cout << "index " << resp.last_index_synced << " is not synced among majority nodes yet, will not commit this index.\n";
@@ -381,11 +399,21 @@ class ClusterNode{
                     }
                 case RaftMessage::ClientOpenQueue:
                     {
+                        if(state_ != LEADER){
+                            std::cout << "ERROR! current node is not leader! only leader accepts open queue reqeust.\n";
+                            return;
+                        }
+
                         trigger_message_delivery();
                         break;
                     }
                 case RaftMessage::ClientCommitMessage:
                     {
+                        if(state_ != LEADER){
+                            std::cout << "ERROR! current node is not leader! only leader accepts commit message reqeust.\n";
+                            return;
+                        }
+
                         const ClientCommitMessageType& req = raft_msg.get_commit_message_request();
                         LogEntry entry({(int)log_entries_.size(), cur_term_, req.message_id, LogEntry::COMMIT, ""});
                         add_log_entry(entry);
@@ -426,7 +454,6 @@ class ClusterNode{
         }
 
         bool check_if_previous_log_in_sync(int prev_log_term, int prev_log_index){
-            std::cout << log_entries_.size() << ", " << log_entries_[prev_log_index].term << '\n';
             if((int)log_entries_.size() < prev_log_index + 1) {
                 return false;
             }
@@ -468,6 +495,12 @@ class ClusterNode{
         }
 
         // ---------------- Message Queue Related Operations ----------------  
+        void commit_log_entries(int start_entry_index, int stop_entry_index){
+            while(start_entry_index < stop_entry_index){
+                commit_log_entry(start_entry_index);
+                ++start_entry_index;
+            }
+        }
         // either put a new message or commit a delivered message
         void commit_log_entry(int entry_index){
             if(entry_index <= 0) return;
@@ -486,14 +519,20 @@ class ClusterNode{
             else if(log_entries_[entry_index].operation == LogEntry::COMMIT){
 
                 int message_id = log_entries_[entry_index].message_id;
-                if(message_id_to_consumer_.count(message_id) == 0){
+                if(message_store_.count(message_id) == 0){
                     std::cout << "ERROR message << " << message_id << " not found, unable to commit\n";
                     return;
                 }
-                int consumer_id = message_id_to_consumer_[message_id];
+
+                //this only exists in leader, follower should skip this
+                if(message_id_to_consumer_.count(message_id) > 0){
+                    int consumer_id = message_id_to_consumer_[message_id];
+                    consumer_id_delivered_messages_[consumer_id].erase(message_id);
+                }
                 message_id_to_consumer_.erase(message_id);
-                consumer_id_delivered_messages_[consumer_id].erase(message_id);
+
                 committed_messages_.insert(message_id);
+                undelivered_messages_.erase(message_id); //this is necessary for followers as the trigger_message_delivery() is only run in the leader.
                 std ::cout << "message " << message_id << " consumed!\n";
             }
             

@@ -160,7 +160,7 @@ class RaftMessage {
         }
 
         template<class... ARGS>
-        void loadClientMessageMessageRequest(ARGS&&... args){
+        void loadClientCommitMessageRequest(ARGS&&... args){
             type_ = ClientCommitMessage;
             client_commit_message_ = ClientCommitMessageType(std::forward<ARGS>(args)...);
         }

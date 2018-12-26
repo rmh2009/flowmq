@@ -20,6 +20,17 @@ void open_queue(ChatClient& client, const std::string& queue_name, int mode){
         client.write_message(Message(raft_msg.serialize()));
 }
 
+void commit_message(ChatClient& client, int message_id){
+
+
+    RaftMessage raft_msg;
+    raft_msg.loadClientCommitMessageRequest(ClientCommitMessageType{
+            message_id
+            });
+    client.write_message(Message(raft_msg.serialize()));
+
+}
+
 int main(int argc, char* argv[]){
 
     try
@@ -45,6 +56,15 @@ int main(int argc, char* argv[]){
         {
             if(line == "open"){ //magic word!
                 open_queue(client, "test_queue", 0);
+                continue;
+            }
+
+            if(line.find("commit") != std::string::npos){
+                int msg_id = -1;
+                msg_id = std::stoi(line.substr(6, line.size()));
+                if(msg_id == -1) continue;
+                commit_message(client, msg_id);
+                std::cout << "committing message id " << msg_id << '\n';
                 continue;
             }
 
