@@ -335,7 +335,7 @@ class ClusterNode{
 
                         // TODO, must handle this case:  if req.last_log_index and req.last_log_term is older than current log entries, reject this vote
                         if(req.term < cur_term_ || 
-                                (voted_for_ != -1 && voted_for_ != req.candidate_id)){ //we voted for somebody else this term!
+                                (req.term == cur_term_ && voted_for_ != -1 && voted_for_ != req.candidate_id)){ //we voted for somebody else this term!
                             if(voted_for_ != -1){
                                 std::cout << "ERROR: Already voted " << voted_for_ << " this term!\n";
                             }
@@ -347,6 +347,11 @@ class ClusterNode{
                             msg.loadVoteResult(RequestVoteResponseType({request_term, 0})); // 0 is not granted
                             cluster_manager_.write_message(candidate_node_id, serialize_raft_message(msg));
                             return;
+                        }
+
+                        if(req.term > cur_term_){
+                            cur_term_ = request_term;
+                            votes_collected_ = 0;
                         }
 
                         //grant vote request
