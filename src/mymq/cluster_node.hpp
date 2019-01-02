@@ -64,11 +64,8 @@ class ClusterNode{
         {
             //initialize random seed
             
-            auto ut = boost::posix_time::microsec_clock::universal_time();
-            auto duration = ut.time_of_day();
-            std::cout << "setting random seed according to microseconds" << duration.total_microseconds() % 1000000
-                << " and pid " << getpid() << '\n';
-            std::srand(getpid() + duration.total_microseconds() % 1000000);
+            std::cout << "setting random seed according to pid " << getpid() << '\n';
+            std::srand(getpid());
 
             //initialize state
             for(int i = 0; i < total_nodes; ++i){
@@ -169,7 +166,7 @@ class ClusterNode{
 
                     //set a random timer to send vote request so that all candidates will not send this request at the same time.
                     auto timer = std::make_shared<boost::asio::deadline_timer>(io_context_);
-                    int delay = 1000 + std::rand() % 1000 ;
+                    int delay = std::rand() % 1000 ;
                     std::cout << "random delay in start_vote_scheduler : " << delay << " miliseconds \n";
                     timer -> expires_from_now(boost::posix_time::milliseconds(delay));
                     timer->async_wait([timer, this, raft_msg](boost::system::error_code const&){
