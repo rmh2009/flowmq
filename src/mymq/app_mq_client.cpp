@@ -42,14 +42,19 @@ int main(int argc, char* argv[]){
         }
 
         boost::asio::io_context io_context;
+        std::thread t([&io_context](){ io_context.run(); });
         tcp::resolver resolver(io_context);
+
         auto endpoints = resolver.resolve(argv[1], argv[2]);
         std::string user_name(argv[3]);
         ChatClient client(io_context, endpoints);
+        client.register_handler([](const Message& msg){
+                std::cout << "Received message : " << std::string(msg.body(), msg.body_length())
+                << '\n';
+                });
 
+        client.start();
         std::cout << "client started \n";
-
-        std::thread t([&io_context](){ io_context.run(); });
 
         std::string line;
         while (client.running() && std::getline(std::cin, line))

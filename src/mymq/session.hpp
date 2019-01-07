@@ -62,7 +62,10 @@ class Session : public std::enable_shared_from_this<Session>
             std::shared_ptr<Message> msg_copy = std::make_shared<Message>(msg);
             boost::asio::async_write(socket_, boost::asio::buffer(msg.header(), msg.header_length() + msg.body_length()), 
                     [msg_copy, this, self](boost::system::error_code error, std::size_t){
-                    if(!error) return;
+                    if(!error) {
+                    //std::cout << "INFO session.cpp successfully wrote message!\n";
+                    return;
+                    }
                     std::cout << "ERROR write failed! error code "<< error << ' '  
                     << std::string(msg_copy -> body(), msg_copy -> body_length()) << '\n';
                     disconneted();
@@ -120,6 +123,9 @@ class Session : public std::enable_shared_from_this<Session>
                     [this, self](boost::system::error_code error, std::size_t /*length*/){
 
                     if (!error){
+                        //std::cout << "session : obtained message : " << 
+                        //std::string(read_message_buffer_.body(), read_message_buffer_.body_length()) << '\n';
+
                         msg_handler_(read_message_buffer_);
                     }
                     else{

@@ -50,7 +50,10 @@ class ClientManager{
         // Returns the client id the message was delivered to. Returns -1 on failure.
         int deliver_one_message_round_robin(const Message& msg){
 
-            if(consumer_client_id_array_.size() == 0) return -1;
+            if(consumer_client_id_array_.size() == 0) {
+                std::cout << "ERROR! client_manager.cpp no active client not found!\n";
+                return -1;
+            }
 
             size_t index_in_array = deliver_count_ % consumer_client_id_array_.size();
             int client_id = consumer_client_id_array_[index_in_array];

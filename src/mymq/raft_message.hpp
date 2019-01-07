@@ -360,6 +360,10 @@ class RaftMessage {
             return client_open_queue_request_;
         }
 
+        const ServerSendMessageType& get_server_send_essage() const{
+            return server_send_messag_;
+        }
+
     private:
 
         // generic
