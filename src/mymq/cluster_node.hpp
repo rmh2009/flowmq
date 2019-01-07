@@ -85,6 +85,8 @@ class ClusterNode{
             start_send_hearbeat();
             start_statistics_scheduler();
 
+            // load persisted log entries
+
             // start cluster
             cluster_manager_.register_handler(std::bind(&ClusterNode::message_handler, this, std::placeholders::_1));
             cluster_manager_.start();
@@ -490,9 +492,7 @@ class ClusterNode{
                     clean_log_entries_out_of_sync(index_in_log_entries);
                     log_entries_.push_back(new_entries[i]);
                 }
-
             }
-
         }
 
         Message serialize_raft_message(const RaftMessage& raft_message){
@@ -505,6 +505,7 @@ class ClusterNode{
                 commit_log_entry(start_entry_index);
                 ++start_entry_index;
             }
+            trigger_message_delivery();
         }
         // either put a new message or commit a delivered message
         void commit_log_entry(int entry_index){
@@ -515,55 +516,19 @@ class ClusterNode{
             }
 
             //committing now
-            
             if(log_entries_[entry_index].operation == LogEntry::ADD){ //add
-
                 message_queue_.insert_message(log_entries_[entry_index].message_id, log_entries_[entry_index].message);
-
-                //message_store_[log_entries_[entry_index].message_id] = log_entries_[entry_index].message;
-                //undelivered_messages_.insert(log_entries_[entry_index].message_id);
-                trigger_message_delivery();
             }
             else if(log_entries_[entry_index].operation == LogEntry::COMMIT){
-
                 int message_id = log_entries_[entry_index].message_id;
-
                 message_queue_.commit_message(message_id);
-
-                //if(message_store_.count(message_id) == 0){
-                //    std::cout << "ERROR message << " << message_id << " not found, unable to commit\n";
-                //    return;
-                //}
-
-                ////this only exists in leader, follower should skip this
-                //if(message_id_to_consumer_.count(message_id) > 0){
-                //    int consumer_id = message_id_to_consumer_[message_id];
-                //    consumer_id_delivered_messages_[consumer_id].erase(message_id);
-                //}
-                //message_id_to_consumer_.erase(message_id);
-
-                //committed_messages_.insert(message_id);
-                //undelivered_messages_.erase(message_id); //this is necessary for followers as the trigger_message_delivery() is only run in the leader.
-                //std ::cout << "message " << message_id << " consumed!\n";
             }
             
         }
 
         // put all pending messages delivered to this consumer back to pending state
         void consumer_disconnected(int client_id){
-
             message_queue_.handle_client_disconnected(client_id);
-
-            //if(consumer_id_delivered_messages_.count(client_id) == 0) {
-            //    std::cout << "ERROR consumer " << client_id << " not found (in consumer disconnected handler) \n";
-            //    return;
-            //}
-
-            //for(auto& msg_id : consumer_id_delivered_messages_[client_id]){
-            //    undelivered_messages_.insert(msg_id);
-            //    message_id_to_consumer_.erase(msg_id);
-            //}
-            //consumer_id_delivered_messages_.erase(client_id);
             trigger_message_delivery();
         }
 
@@ -575,9 +540,6 @@ class ClusterNode{
             std::vector<MessageQueue::MessageId_t> id_temp;
             message_queue_.get_all_undelivered_messages(&id_temp);
 
-            //for(auto message_id : undelivered_messages_){
-            //    id_temp.push_back(message_id);
-            //}
             for(auto message_id : id_temp){
                 RaftMessage msg;
                 msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_queue_.get_message(message_id)});
@@ -586,16 +548,8 @@ class ClusterNode{
                     std::cout << "ERROR: unable to deliver message " << message_id << " to consumer!\n";
                     return;
                 }
-
                 message_queue_.deliver_message_to_client_id(message_id, consumer_id);
-
-                //undelivered_messages_.erase(message_id);
-                //consumer_id_delivered_messages_[consumer_id].insert(message_id);
-                //message_id_to_consumer_[message_id] = consumer_id;
-                //std::cout << "Delivered message " << message_id << " to consumer " << consumer_id << '\n';
-
             }
-
         }
 
         int node_id_;
@@ -608,30 +562,17 @@ class ClusterNode{
         boost::asio::deadline_timer stats_timer_;
 
         int cur_term_;
-        std::vector<LogEntry> log_entries_;
         time_t last_heart_beat_received_;
         int votes_collected_;
         int voted_for_; // -1 means did not vote yet
 
         //state for commits and index
 
+        std::vector<LogEntry> log_entries_;
         int commit_index_;
         int last_applied_;
         std::map<int, int> next_index_; //map from node id to next index
         std::map<int, int> matched_index_; // map from node id to last matched index
-
-        // state for message queue
-        //std::map<int, std::string> message_store_;  // message id to message
-
-        // a message at anytime is only in one of the three states: undelivered(no consumers), delivered(but not committed yet), and committed.
-        // delivered state is a temporary state, meaning it's not persisted on hard disk. When a cluster node crashes it reload 
-        // all messages into message_store_, and committed message ids, all others are put into undelivered state.
-        
-        //std::set<int> undelivered_messages_;
-        //std::set<int> committed_messages_;
-        //std::map<int, std::set<int>> consumer_id_delivered_messages_; //consumer id to pending message ids
-        //std::map<int, int> message_id_to_consumer_; //map from message id to consumer
-        
 
         // state for a message queue
         MessageQueue message_queue_;

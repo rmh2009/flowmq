@@ -4,54 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <exception>
-
-
-// Class for Log Entry
-struct LogEntry{
-    enum OPERATION {
-        ADD = 0, 
-        COMMIT = 1
-    };
-
-    int index;
-    int term;
-
-    int message_id;
-    int operation; 
-    std::string message;
-
-    std::string serialize() const {
-
-        std::stringstream ss;
-        ss << index << ' ';
-        ss << term << ' ';
-        ss << message_id << ' ';
-        ss << operation << ' ';
-        ss << message.size() << ' ';
-        ss << message ;
-        
-        return ss.str();
-    }
-
-    static LogEntry deserialize(const std::string& str){
-
-        LogEntry entry;
-        std::stringstream ss(str);
-        ss >> entry.index ; 
-        ss >> entry.term ; 
-        ss >> entry.message_id; 
-        ss >> entry.operation;
-        int msg_size;
-        ss >> msg_size;
-        char space;
-        ss.read(&space, 1);
-        entry.message.resize(msg_size);
-        ss.read(&entry.message[0], msg_size);
-
-        return entry;
-
-    }
-};
+#include <mymq/log_entry.hpp>
 
 // two types of Raft RPC message, RequestVote and 
 // AppendEntries, each type could be either request 
