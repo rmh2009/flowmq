@@ -15,6 +15,7 @@
 #include <mymq/cluster_manager.hpp>
 #include <mymq/client_manager.hpp>
 #include <mymq/message_queue.hpp>
+#include <mymq/log_entry_storage.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -27,7 +28,11 @@ using boost::asio::ip::tcp;
 //
 // Uses other in-memory and on-disk 
 // log manangement classes.
-//
+
+namespace {
+const char* LOG_ENTRY_STORAGE_PREFIX = "storage_log_entry_";
+const char* METADATA_STORAGE_PREFIX  = "storage_metadata_";
+}
 
 class ClusterNode{
 
@@ -86,6 +91,19 @@ class ClusterNode{
             start_statistics_scheduler();
 
             // load persisted log entries
+            storage_log_entry_filename_ = LOG_ENTRY_STORAGE_PREFIX + std::to_string(node_id) + ".data";
+            storage_metadata_file_name_ = METADATA_STORAGE_PREFIX + std::to_string(node_id) + ".data";
+            if(0 != LogEntryStorage::load_log_entry_from_file(storage_log_entry_filename_, &log_entries_)){
+                std::cout << "WARNING : Error loading log entries from storage\n";
+            }
+            for(size_t i = 1; i < log_entries_.size(); ++i){
+                commit_log_entry(i); //update the queue state, this should not trigger delivery to client
+            }
+            LogEntryMetaData metadata{0};
+            if(0 == MetadataStorage::load_metadata_from_file(storage_metadata_file_name_, &metadata)){
+                commit_index_ = metadata.last_committed;
+            }
+            std::cout << "after loading data: commit index is : " << commit_index_ << ", log entry size: " << log_entries_.size() << '\n';
 
             // start cluster
             cluster_manager_.register_handler(std::bind(&ClusterNode::message_handler, this, std::placeholders::_1));
@@ -260,6 +278,7 @@ class ClusterNode{
                         //update leader commit
                         if(commit_index_ < req.leader_commit && req.leader_commit < (int)log_entries_.size()){
                             commit_log_entries(commit_index_ + 1, req.leader_commit + 1);
+                            store_log_entries_and_commit_index(commit_index_ + 1, req.leader_commit + 1);
                             commit_index_ = req.leader_commit;
                         }
 
@@ -303,6 +322,7 @@ class ClusterNode{
                                 if(count_synced_nodes + 1 > total_nodes_ / 2){
                                     std::cout << "index " << resp.last_index_synced << " is synced among majority nodes, will commit this index.\n";
                                     commit_log_entries(commit_index_ + 1, resp.last_index_synced + 1); // left close right open 
+                                    store_log_entries_and_commit_index(commit_index_ + 1, resp.last_index_synced + 1);
                                     commit_index_ = std::max(commit_index_, resp.last_index_synced);
                                 }
                                 else{
@@ -499,7 +519,19 @@ class ClusterNode{
             return Message(raft_message.serialize());
         }
 
+
         // ---------------- Message Queue Related Operations ----------------  
+         
+        // storage related
+        void store_log_entries_and_commit_index(int start_entry_index, int stop_entry_index){
+            assert(start_entry_index < stop_entry_index);
+
+            std::vector<LogEntry> temp_entries(log_entries_.begin() + start_entry_index, log_entries_.begin() + stop_entry_index);
+            LogEntryStorage::append_log_entry_to_file(storage_log_entry_filename_, temp_entries);
+            LogEntryMetaData metadata({stop_entry_index - 1});
+            MetadataStorage::save_metadata_to_file(storage_metadata_file_name_, metadata);
+        }
+        // commit log entries to message queue
         void commit_log_entries(int start_entry_index, int stop_entry_index){
             while(start_entry_index < stop_entry_index){
                 commit_log_entry(start_entry_index);
@@ -566,8 +598,11 @@ class ClusterNode{
         int votes_collected_;
         int voted_for_; // -1 means did not vote yet
 
-        //state for commits and index
+        // storge files
+        std::string storage_log_entry_filename_;
+        std::string storage_metadata_file_name_;
 
+        //state for commits and index
         std::vector<LogEntry> log_entries_;
         int commit_index_;
         int last_applied_;
