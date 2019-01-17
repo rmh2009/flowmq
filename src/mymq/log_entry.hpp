@@ -4,7 +4,6 @@
 #include <vector>
 #include <sstream>
 
-
 // Class for Log Entry
 
 
@@ -23,6 +22,7 @@ struct LogEntryMetaData{
     }
 };
 
+inline
 bool operator==(const LogEntryMetaData& l, const LogEntryMetaData& r){
     return l.last_committed == r.last_committed;
 }
@@ -73,6 +73,7 @@ struct LogEntry{
     }
 };
 
+inline
 bool operator==(const LogEntry& l, const LogEntry& r){
     if(l.index != r.index) return false;
     if(l.message != r.message) return false;

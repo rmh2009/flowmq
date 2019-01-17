@@ -2,6 +2,9 @@
 MAIN=$1
 echo "compiling $1.cpp"
 g++ -o $MAIN.tsk $MAIN.cpp  \
+    log_entry_storage.cpp \
+    client_manager.cpp \
+    message_queue.cpp \
     /Users/hong/usr/googletest/googletest/src/gtest-all.cc \
     /Users/hong/usr/googletest/googletest/src/gtest_main.cc \
     /Users/hong/usr/boost-1.68.0/lib/libboost_system.a \
