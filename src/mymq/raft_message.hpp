@@ -25,6 +25,10 @@ using ServerSendMessageType = FlowMessage_ServerSendMessage;
 using ClientOpenQueueRequestType = FlowMessage_ClientOpenQueue;
 using ConsumerDisconnectedType = FlowMessage_ConsumerDisconnected;
 
+// Wrapper class on top of the Protobuf class flowmq::FlowMessage. 
+// Provides utility functions for interacting with the lower level 
+// flowmq::Message class.
+
 class RaftMessage {
     public:
         enum MessageType {
@@ -83,7 +87,6 @@ class RaftMessage {
             (*flow_message_.mutable_server_send_message()) = std::move(send);
         }
 
-
         const AppendEntriesRequestType& get_append_request() const{
             return flow_message_.append_entries_request();
         }
@@ -121,10 +124,21 @@ class RaftMessage {
             return static_cast<MessageType>(flow_message_.type());
         }
 
+        // Should only be used for debugging 
         std::string serialize() const {
-            return flow_message_.SerializeAsString();
+            if(flow_message_.type() == FlowMessage::UNKNOWN){
+                std::cout << "ERROR! message type is not set!" << flow_message_.DebugString() << '\n';
+                throw(std::runtime_error("Message type not set!"));
+            }
+            return DebugString();
         }
 
+        // Should only be used for debugging 
+        std::string DebugString() const { 
+            return flow_message_.DebugString();
+        }
+
+        // Should only be used for debugging 
         static RaftMessage deserialize(const std::string& str){
             RaftMessage msg;
             msg.flow_message_.ParseFromString(str);
@@ -132,10 +146,24 @@ class RaftMessage {
             return msg;
         }
 
-        static RaftMessage deserialize(const ::flowmq::Message& message){
-            RaftMessage msg;
-            msg.flow_message_.ParseFromArray(message.body(), message.body_length());
+        void serialize_to_message(Message* msg) const {
+
+            size_t msg_len = flow_message_.google::protobuf::Message::ByteSizeLong();
+            msg->set_body_length(msg_len);
+            flow_message_.SerializeToArray(msg->body(), msg_len);
+
+        }
+
+        Message serialize_as_message() const{
+            Message msg;
+            serialize_to_message(&msg);
             return msg;
+        }
+
+        static RaftMessage deserialize_from_message(const ::flowmq::Message& message){
+            RaftMessage raft_msg;
+            raft_msg.flow_message_.ParseFromArray(message.body(), message.body_length());
+            return raft_msg;
         }
 
 

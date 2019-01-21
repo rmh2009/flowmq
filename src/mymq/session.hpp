@@ -57,12 +57,17 @@ class Session : public std::enable_shared_from_this<Session>
             disconnected_handler_ = fun;
         }
 
-        void write_message(const Message& msg){
+        void write_message(Message msg){
+            //the message will be taken and managed by a shared pointer
+            write_message(std::make_shared<Message>(std::move(msg)));
+        }
+
+        void write_message(std::shared_ptr<Message>msg_copy){
             auto self(shared_from_this());
             boost::system::error_code error;
-            //the message will be copied and managed by a shared pointer
-            std::shared_ptr<Message> msg_copy = std::make_shared<Message>(msg);
-            boost::asio::async_write(socket_, boost::asio::buffer(msg.header(), msg.header_length() + msg.body_length()), 
+            boost::asio::async_write(socket_, boost::asio::buffer(
+                        msg_copy->header(), 
+                        msg_copy->header_length() + msg_copy->body_length()), 
                     [msg_copy, this, self](boost::system::error_code error, std::size_t){
                     if(!error) {
                     //std::cout << "INFO session.cpp successfully wrote message!\n";

@@ -52,17 +52,19 @@ class ClusterManager{
             handler_ = handler;
         }
 
-        void broad_cast(const Message& msg){
+        void broad_cast(Message msg){
             std::cout << "current outoing connections: " << outgoing_sessions_.size() << '\n';
+            // here this needs to be shared since it is sent to multiple receivers.
+            auto msg_shared = std::make_shared<Message>(std::move(msg));
             for(auto& session : outgoing_sessions_){
-                session.second -> write_message(msg);
+                session.second -> write_message(msg_shared); 
             }
         }
 
-        void write_message(int endpoint_id, const Message& msg){
+        void write_message(int endpoint_id, Message msg){
 
             if(outgoing_sessions_.count(endpoint_id) != 0){
-                outgoing_sessions_[endpoint_id] -> write_message(msg);
+                outgoing_sessions_[endpoint_id] -> write_message(std::move(msg));
             }
 
         }
@@ -131,7 +133,7 @@ class ClusterManager{
                     auto new_session = std::make_shared<Session>(std::move(socket));
 
                     new_session -> register_handler([this](const Message& msg){
-                            std::cout << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
+                            //std::cout << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
                             handler_(msg);
                             });
 

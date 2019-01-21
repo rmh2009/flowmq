@@ -19,7 +19,7 @@ void open_queue(ChatClient& client, const std::string& queue_name, int mode){
         req.set_open_mode(mode);
         req.set_queue_name(queue_name);
         raft_msg.loadClientOpenQueueRequest(std::move(req));
-        client.write_message(Message(raft_msg.serialize()));
+        client.write_message(raft_msg.serialize_as_message());
 }
 
 void commit_message(ChatClient& client, int message_id){
@@ -28,7 +28,7 @@ void commit_message(ChatClient& client, int message_id){
     flowmq::ClientCommitMessageType req;
     req.set_message_id(message_id);
     raft_msg.loadClientCommitMessageRequest(std::move(req));
-    client.write_message(Message(raft_msg.serialize()));
+    client.write_message(raft_msg.serialize_as_message());
 }
 
 void send_message(ChatClient& client, const std::string& message){
@@ -37,7 +37,7 @@ void send_message(ChatClient& client, const std::string& message){
     flowmq::ClientPutMessageType req;
     req.set_message(message);
     msg.loadClientPutMessageRequest(std::move(req));
-    client.write_message(Message(msg.serialize()));
+    client.write_message(msg.serialize_as_message());
 }
 
 std::shared_ptr<ChatClient> get_new_client(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints,

@@ -234,7 +234,7 @@ class ClusterNode{
                     std::cout << "Printing statistics \n ___________________________________________________________________________\n\n";
 
                     for(auto entry : log_entries_){
-                    std::cout << entry.DebugString() << '\n';
+                    std::cout << entry.index() << ',' << entry.operation() << ',' << entry.message() << "   ";
                     }
 
                     std::cout << "\ncommit_index : " << commit_index_ << '\n';
@@ -262,7 +262,8 @@ class ClusterNode{
         // this is run in the io_context thread.
         void message_handler(const Message& msg){
 
-            RaftMessage raft_msg = RaftMessage::deserialize(std::string(msg.body(), msg.body_length()));
+            RaftMessage raft_msg = RaftMessage::deserialize_from_message(msg);
+            std::cout << "#] " << raft_msg.DebugString() << '\n';
 
             switch(raft_msg.type()){
                 case RaftMessage::APPEND_ENTRIES_REQUEST: 
@@ -595,7 +596,9 @@ class ClusterNode{
         }
 
         Message serialize_raft_message(const RaftMessage& raft_message){
-            return Message(raft_message.serialize());
+            Message msg;
+            raft_message.serialize_to_message(&msg);
+            return msg;
         }
 
 
@@ -656,7 +659,9 @@ class ClusterNode{
                 ServerSendMessageType send;
                 send.set_message_id(message_id);
                 send.set_message(message_queue_.get_message(message_id));
+                msg.loadServerSendMessageRequest(std::move(send));
                 //msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_queue_.get_message(message_id)});
+                std::cout << "delivering message to client : " << msg.DebugString() << '\n';
                 int consumer_id = client_manager_.deliver_one_message_round_robin(serialize_raft_message(msg));
                 if(consumer_id == -1){
                     std::cout << "ERROR: unable to deliver message " << message_id << " to consumer!\n";

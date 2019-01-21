@@ -29,7 +29,7 @@ void ClientManager::register_disconnect_handler(const ClientDisconnectedHandler&
 //}
 
 // Returns the client id the message was delivered to. Returns -1 on failure.
-int ClientManager::deliver_one_message_round_robin(const Message& msg){
+int ClientManager::deliver_one_message_round_robin(Message msg){
 
     if(consumer_client_id_array_.size() == 0) {
         std::cout << "ERROR! client_manager.cpp no active client not found!\n";
@@ -39,7 +39,7 @@ int ClientManager::deliver_one_message_round_robin(const Message& msg){
     size_t index_in_array = deliver_count_ % consumer_client_id_array_.size();
     int client_id = consumer_client_id_array_[index_in_array];
 
-    client_sessions_[client_id]->write_message(msg);
+    client_sessions_[client_id]->write_message(std::move(msg));
     ++deliver_count_;
 
     return client_id;
@@ -104,10 +104,12 @@ void ClientManager::accept_new_connection(){
 
 void ClientManager::handle_message(const Message& msg, int client_id){
 
-    RaftMessage raft_msg = RaftMessage::deserialize(std::string(msg.body(), msg.body_length()));
+    // TODO optimize this. This is currently deserialized twice, once here, second time
+    // in the handler_()
+    RaftMessage raft_msg = RaftMessage::deserialize_from_message(msg);
 
     switch(raft_msg.type()){
-        case FlowMessage::CLIENT_OPEN_QUEUE: 
+        case RaftMessage::CLIENT_OPEN_QUEUE: 
             {
                 const ClientOpenQueueRequestType& req = raft_msg.get_open_queue_request();
                 std::cout << "Obtained request to open queue : " << req.DebugString() << '\n';
@@ -116,8 +118,8 @@ void ClientManager::handle_message(const Message& msg, int client_id){
                 handler_(msg);
                 break;
             }
-        case FlowMessage::CLIENT_PUT_MESSAGE:
-        case FlowMessage::CLIENT_COMMIT_MESSAGE:
+        case RaftMessage::CLIENT_PUT_MESSAGE:
+        case RaftMessage::CLIENT_COMMIT_MESSAGE:
             //forward to handler (in this case the cluster node)
             handler_(msg);
             break;

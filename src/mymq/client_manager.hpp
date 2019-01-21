@@ -38,7 +38,7 @@ class ClientManager{
         //}
 
         // Returns the client id the message was delivered to. Returns -1 on failure.
-        int deliver_one_message_round_robin(const Message& msg);
+        int deliver_one_message_round_robin(Message msg);
 
         bool has_consumers() const;
 

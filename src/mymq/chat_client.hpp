@@ -29,8 +29,8 @@ class ChatClient
             connect(io_context_, endpoints_);
         }
 
-        void write_message(const Message& msg){
-            session_ -> write_message(msg);
+        void write_message(Message msg){
+            session_ -> write_message(std::move(msg));
         }
         ~ChatClient(){
             session_ -> close();
