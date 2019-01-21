@@ -16,6 +16,8 @@ using boost::asio::ip::tcp;
 
 namespace flowmq{
 
+// Manages connection with message queue client on the server side. 
+// This class is mainly used in the cluster_node manager.
 class ClientManager{
 
     public:

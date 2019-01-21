@@ -1,18 +1,18 @@
-#include <mymq/chat_client.hpp>
 #include <iostream>
 #include <functional>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
+#include <mymq/generic_client.hpp>
 #include <mymq/message.hpp>
 #include <mymq/raft_message.hpp>
 
 using boost::asio::ip::tcp;
-using flowmq::ChatClient;
+using flowmq::GenericClient;
 using flowmq::RaftMessage;
 using flowmq::Message;
 
-void open_queue(ChatClient& client, const std::string& queue_name, int mode){
+void open_queue(GenericClient& client, const std::string& queue_name, int mode){
 
         RaftMessage raft_msg;
         flowmq::ClientOpenQueueRequestType req;
@@ -22,7 +22,7 @@ void open_queue(ChatClient& client, const std::string& queue_name, int mode){
         client.write_message(raft_msg.serialize_as_message());
 }
 
-void commit_message(ChatClient& client, int message_id){
+void commit_message(GenericClient& client, int message_id){
 
     RaftMessage raft_msg;
     flowmq::ClientCommitMessageType req;
@@ -31,7 +31,7 @@ void commit_message(ChatClient& client, int message_id){
     client.write_message(raft_msg.serialize_as_message());
 }
 
-void send_message(ChatClient& client, const std::string& message){
+void send_message(GenericClient& client, const std::string& message){
 
     RaftMessage msg;
     flowmq::ClientPutMessageType req;
@@ -40,10 +40,10 @@ void send_message(ChatClient& client, const std::string& message){
     client.write_message(msg.serialize_as_message());
 }
 
-std::shared_ptr<ChatClient> get_new_client(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints,
+std::shared_ptr<GenericClient> get_new_client(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints,
         std::vector<int>& message_ids){
 
-    std::shared_ptr<ChatClient> client = std::make_shared<ChatClient>(io_context, endpoints);
+    std::shared_ptr<GenericClient> client = std::make_shared<GenericClient>(io_context, endpoints);
     client -> register_handler([&message_ids](const Message& msg){
 
             std::cout << "Received message : " << std::string(msg.body(), msg.body_length())

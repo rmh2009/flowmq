@@ -1,19 +1,19 @@
-#include <mymq/chat_client.hpp>
 #include <iostream>
 #include <functional>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
+#include <mymq/generic_client.hpp>
 #include <mymq/message.hpp>
 #include <mymq/raft_message.hpp>
 
 using boost::asio::ip::tcp;
 
 using flowmq::RaftMessage;
-using flowmq::ChatClient;
+using flowmq::GenericClient;
 using flowmq::Message;
 
-void open_queue(ChatClient& client, const std::string& queue_name, int mode){
+void open_queue(GenericClient& client, const std::string& queue_name, int mode){
 
         RaftMessage raft_msg;
         flowmq::ClientOpenQueueRequestType req;
@@ -23,7 +23,7 @@ void open_queue(ChatClient& client, const std::string& queue_name, int mode){
         client.write_message(raft_msg.serialize_as_message());
 }
 
-void commit_message(ChatClient& client, int message_id){
+void commit_message(GenericClient& client, int message_id){
 
 
     RaftMessage raft_msg;
@@ -48,7 +48,7 @@ int main(int argc, char* argv[]){
 
         auto endpoints = resolver.resolve(argv[1], argv[2]);
         std::string user_name(argv[3]);
-        ChatClient client(io_context, endpoints);
+        GenericClient client(io_context, endpoints);
         client.register_handler([](const Message& msg){
                 std::cout << "received message : \n";
                 std::cout << RaftMessage::deserialize(std::string(msg.body(), msg.body_length())).DebugString() << '\n';

@@ -68,7 +68,6 @@ class Message{
         Message& operator=(const Message& msg) = delete;
 
         size_t body_length_;
-        char data_[HEADER_LENGTH + MAX_BODY_LENGTH];
         std::vector<char> data_buffer_;
 };
 
