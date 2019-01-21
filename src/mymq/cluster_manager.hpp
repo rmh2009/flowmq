@@ -11,6 +11,8 @@
 
 using boost::asio::ip::tcp;
 
+namespace flowmq{
+
 // Manages connections with other nodes in the cluster. 
 // Does following things:
 //     Internally retries connection with cluster nodes periodically.
@@ -171,5 +173,7 @@ class ClusterManager{
         ReadHandler handler_;
 
 };
+
+} // namespace flowmq
 
 

@@ -14,6 +14,8 @@
 
 using boost::asio::ip::tcp;
 
+namespace flowmq{
+
 class ClientManager{
 
     public:
@@ -55,6 +57,8 @@ class ClientManager{
         ReadHandler handler_;
         ClientDisconnectedHandler client_disconnected_handler_;
 };
+
+} // namespace flowmq
 
 
 

@@ -19,6 +19,8 @@
 
 using boost::asio::ip::tcp;
 
+namespace flowmq{
+
 // Player in a distributed system using 
 // Raft consensus algorithm for leader election 
 // and log replication. 
@@ -80,6 +82,10 @@ class ClusterNode{
                 matched_index_[i] = 0;
             }
 
+            flowmq::LogEntry log_entry;
+            log_entry.set_term(0);
+            log_entry.set_term(0);
+            log_entry.set_term(0);
             log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
 
             std::cout << "init: " << log_entries_.size() << ", " << log_entries_[0].term << '\n';
@@ -144,8 +150,8 @@ class ClusterNode{
                     if(state_ == LEADER){
                     std::cout << " *************** node " << node_id_ << " : I'm the leader, sending heartbeat now! *************\n";
                     RaftMessage msg;
-                    int last_log_term = log_entries_.back().term;
-                    int last_log_index = log_entries_.back().index;
+                    int last_log_term = log_entries_.back().term();
+                    int last_log_index = log_entries_.back().index();
                     msg.loadAppendEntriesRequest(AppendEntriesRequestType(
                                 {cur_term_, node_id_, last_log_index, last_log_term, {}, commit_index_}));
 
@@ -181,8 +187,8 @@ class ClusterNode{
                     votes_collected_ = 0; 
 
                     RaftMessage raft_msg;
-                    int last_log_term = log_entries_.back().term;
-                    int last_log_index = log_entries_.back().index;
+                    int last_log_term = log_entries_.back().term();
+                    int last_log_index = log_entries_.back().index();
                     raft_msg.loadVoteRequest(RequestVoteRequestType({cur_term_, node_id_, last_log_index, last_log_term}));
 
                     //set a random timer to send vote request so that all candidates will not send this request at the same time.
@@ -616,5 +622,7 @@ class ClusterNode{
         ClientManager client_manager_;
 
 };
+
+} // namespace flowmq
 
 

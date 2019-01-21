@@ -10,6 +10,8 @@
 
 using boost::asio::ip::tcp;
 
+namespace flowmq{
+
 // This takes an established socket and owns it by moving semantics. 
 // Exposes APIs for writing and reading messages, and registering message handler.
 // All write and read operations are async.
@@ -154,6 +156,7 @@ class Session : public std::enable_shared_from_this<Session>
 
 };
 
+} // namespace flowmq
 
 
 

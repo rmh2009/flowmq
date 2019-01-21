@@ -5,17 +5,23 @@
 const char* TEST_FILE_NAME = "test_file_log_entry.data";
 const char* TEST_FILE_NAME_META = "test_log_metadata.data";
 
+using flowmq::LogEntryStorage;
+using flowmq::MetadataStorage;
+using flowmq::LogEntry;
+using flowmq::LogEntryMetaData;
+
 TEST(LogEntryStorage, TestWriteAndRead1000){
     //construct 10000 log entries
 
     std::vector<LogEntry> entries;
     for(int i = 0; i < 1000; ++i){
-        entries.emplace_back(LogEntry(
-                    {i, 2, 
-                    1000+i, 
-                    (i%2 == 0? LogEntry::ADD : LogEntry::COMMIT), 
-                    std::to_string(i)+ "_message"}
-                    ));
+        LogEntry entry;
+        entry.set_index(i);
+        entry.set_term(2);
+        entry.set_message_id(1000+i);
+        entry.set_operation((i%2 == 0? LogEntry::ADD : LogEntry::COMMIT));
+        entry.set_message(std::to_string(i)+ "_message");
+        entries.push_back(std::move(entry));
     }
 
     EXPECT_EQ(0, LogEntryStorage::save_log_entry_to_file(TEST_FILE_NAME, entries));
@@ -27,7 +33,7 @@ TEST(LogEntryStorage, TestWriteAndRead1000){
     EXPECT_EQ(loaded_entries.size(), entries.size());
 
     for(int i = 0; i < 1000; ++i){
-        EXPECT_TRUE(entries[i] == loaded_entries[i]);
+        EXPECT_TRUE(entries[i].SerializeAsString() == loaded_entries[i].SerializeAsString());
     }
 
     EXPECT_EQ(0, LogEntryStorage::append_log_entry_to_file(TEST_FILE_NAME, entries));

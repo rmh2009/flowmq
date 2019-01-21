@@ -8,6 +8,8 @@
 #include <mymq/message.hpp>
 #include <mymq/session.hpp>
 
+namespace flowmq{
+
 class ChatClient 
 {
     public:
@@ -77,3 +79,5 @@ class ChatClient
         tcp::resolver::results_type endpoints_;
 
 };
+
+} // namespace flowmq

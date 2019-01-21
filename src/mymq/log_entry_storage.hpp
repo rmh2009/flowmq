@@ -1,8 +1,10 @@
 #pragma once
 #include <fstream>
 #include <iostream>
-
+#include <mymq/flow_message.pb.h>
 #include <mymq/log_entry.hpp>
+
+namespace flowmq{
 
 class MetadataStorage{
     public:
@@ -16,3 +18,5 @@ class LogEntryStorage{
         static int append_log_entry_to_file(const std::string& filename, const std::vector<LogEntry>& entries);
         static int load_log_entry_from_file(const std::string& filename, std::vector<LogEntry>* entries);
 };
+
+} // namespace flowmq

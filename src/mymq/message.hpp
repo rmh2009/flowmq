@@ -2,6 +2,8 @@
 #include <string>
 
 // Super simplified message
+namespace flowmq{
+
 class Message{
 
     public:
@@ -53,3 +55,5 @@ class Message{
         size_t body_length_;
         char data_[HEADER_LENGTH + MAX_BODY_LENGTH];
 };
+
+}

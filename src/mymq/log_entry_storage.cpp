@@ -1,5 +1,7 @@
 #include <mymq/log_entry_storage.hpp>
 
+namespace flowmq{
+
 int MetadataStorage::save_metadata_to_file(
         const std::string& filename, 
         const LogEntryMetaData& metadata){
@@ -25,7 +27,7 @@ int LogEntryStorage::save_log_entry_to_file(const std::string& filename, const s
     if(!f.is_open()) return 1;
 
     for(auto& entry : entries){
-        std::string temp = entry.serialize();
+        std::string temp = entry.SerializeAsString();
         f << temp.size() << ' ' << temp;
     }
 
@@ -40,7 +42,7 @@ int LogEntryStorage::append_log_entry_to_file(const std::string& filename, const
     if(!f.is_open()) return 1;
 
     for(auto& entry : entries){
-        std::string temp = entry.serialize();
+        std::string temp = entry.SerializeAsString();
         f << temp.size() << ' ' << temp;
     }
     f.close();
@@ -59,7 +61,9 @@ int LogEntryStorage::load_log_entry_from_file(const std::string& filename, std::
         temp.resize(entry_size);
         f.read(&temp[0], entry_size);
         std::cout << "read message :" << temp << '\n';
-        entries->emplace_back(LogEntry::deserialize(temp));
+        LogEntry temp_entry;
+        temp_entry.ParseFromString(temp);
+        entries->push_back(std::move(temp_entry));
     }
 
     if(f.eof()) {
@@ -73,4 +77,6 @@ int LogEntryStorage::load_log_entry_from_file(const std::string& filename, std::
         return 1;
     }   
 }
+
+} // namespace flowmq
 

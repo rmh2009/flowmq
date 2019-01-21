@@ -1,6 +1,8 @@
 #include <mymq/client_manager.hpp>
 #include <mymq/raft_message.hpp>
 
+namespace flowmq{
+
 ClientManager::ClientManager(
         boost::asio::io_context& io_context, 
         const tcp::endpoint& endpoint  // this instance endpoint
@@ -105,16 +107,16 @@ void ClientManager::handle_message(const Message& msg, int client_id){
     RaftMessage raft_msg = RaftMessage::deserialize(std::string(msg.body(), msg.body_length()));
 
     switch(raft_msg.type()){
-        case RaftMessage::ClientOpenQueue : 
+        case FlowMessage::CLIENT_OPEN_QUEUE: 
             {
                 const ClientOpenQueueRequestType& req = raft_msg.get_open_queue_request();
-                std::cout << "Obtained request to open queue : " << req.queue_name << " open mode : " << req.open_mode << '\n';
+                std::cout << "Obtained request to open queue : " << req.DebugString() << '\n';
                 consumer_client_id_array_.push_back(client_id);
                 handler_(msg);
                 break;
             }
-        case RaftMessage::ClientPutMessage:
-        case RaftMessage::ClientCommitMessage:
+        case FlowMessage::CLIENT_PUT_MESSAGE:
+        case FlowMessage::CLIENT_COMMIT_MESSAGE:
             //forward to handler (in this case the cluster node)
             handler_(msg);
             break;
@@ -123,5 +125,7 @@ void ClientManager::handle_message(const Message& msg, int client_id){
             break;
     }
 }
+
+} // namespace flowmq
 
 
