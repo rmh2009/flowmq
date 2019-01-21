@@ -184,11 +184,11 @@ template<class... ARGS>
         matched_index_[i] = 0;
     }
 
-    flowmq::LogEntry log_entry;
-    log_entry.set_term(0);
-    log_entry.set_term(0);
-    log_entry.set_term(0);
     LogEntry entry;
+    entry.set_term(0);
+    entry.set_index(0);
+    entry.set_operation(0);
+    entry.set_message("");
     log_entries_.push_back(std::move(entry));
     //log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
 

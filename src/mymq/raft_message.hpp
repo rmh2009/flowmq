@@ -148,7 +148,7 @@ class RaftMessage {
 
         void serialize_to_message(Message* msg) const {
 
-            size_t msg_len = flow_message_.google::protobuf::Message::ByteSizeLong();
+            size_t msg_len = flow_message_.ByteSizeLong();
             msg->set_body_length(msg_len);
             flow_message_.SerializeToArray(msg->body(), msg_len);
 
