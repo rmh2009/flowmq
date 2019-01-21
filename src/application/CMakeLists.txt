@@ -15,4 +15,12 @@ target_link_libraries(flowmq_test_client
         libflowmq
         )
 
-install(TARGETS flowmq_node flowmq_test_client DESTINATION ${PROJECT_SOURCE_DIR}/build)
+set (APP_CLIENT app_chat_client.cpp)
+add_executable(app_chat_client ${APP_CLIENT})
+target_link_libraries(app_chat_client
+        ${BOOST_LIB}
+        ${PROTOBUF_LIB}
+        libflowmq
+        )
+
+install(TARGETS flowmq_node flowmq_test_client app_chat_client DESTINATION ${PROJECT_SOURCE_DIR}/build)

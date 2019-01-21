@@ -55,7 +55,7 @@ int main(int argc, char* argv[]){
         //cluster.start();
         
         auto client_facing_endpoint = tcp::endpoint(tcp::v4(), std::atoi(mq_port[choice]));
-        ClusterNode cluster(client_facing_endpoint, choice, ips_length, io_context, this_endpoint, others);
+        flowmq::ClusterNode cluster(client_facing_endpoint, choice, ips_length, io_context, this_endpoint, others);
         
         io_context.run();
 

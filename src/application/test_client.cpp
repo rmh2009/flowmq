@@ -8,33 +8,35 @@
 #include <mymq/raft_message.hpp>
 
 using boost::asio::ip::tcp;
-
+using flowmq::ChatClient;
+using flowmq::RaftMessage;
+using flowmq::Message;
 
 void open_queue(ChatClient& client, const std::string& queue_name, int mode){
 
         RaftMessage raft_msg;
-        raft_msg.loadClientOpenQueueRequest(ClientOpenQueueRequestType{
-                mode,
-                queue_name
-                });
+        flowmq::ClientOpenQueueRequestType req;
+        req.set_open_mode(mode);
+        req.set_queue_name(queue_name);
+        raft_msg.loadClientOpenQueueRequest(std::move(req));
         client.write_message(Message(raft_msg.serialize()));
 }
 
 void commit_message(ChatClient& client, int message_id){
 
-
     RaftMessage raft_msg;
-    raft_msg.loadClientCommitMessageRequest(ClientCommitMessageType{
-            message_id
-            });
+    flowmq::ClientCommitMessageType req;
+    req.set_message_id(message_id);
+    raft_msg.loadClientCommitMessageRequest(std::move(req));
     client.write_message(Message(raft_msg.serialize()));
-
 }
 
 void send_message(ChatClient& client, const std::string& message){
 
     RaftMessage msg;
-    msg.loadClientPutMessageRequest(ClientPutMessageType{message});
+    flowmq::ClientPutMessageType req;
+    req.set_message(message);
+    msg.loadClientPutMessageRequest(std::move(req));
     client.write_message(Message(msg.serialize()));
 }
 
@@ -48,9 +50,9 @@ std::shared_ptr<ChatClient> get_new_client(boost::asio::io_context& io_context, 
             << '\n';
             RaftMessage raft_msg = RaftMessage::deserialize(std::string(msg.body(), msg.body_length()));
 
-            if(raft_msg.type() == RaftMessage::ServerSendMessage){
-            const ServerSendMessageType& send_message_result = raft_msg.get_server_send_essage();
-            message_ids.push_back(send_message_result.message_id);
+            if(raft_msg.type() == RaftMessage::SERVER_SEND_MESSAGE){
+            const flowmq::ServerSendMessageType& send_message_result = raft_msg.get_server_send_essage();
+            message_ids.push_back(send_message_result.message_id());
             }
 
             });

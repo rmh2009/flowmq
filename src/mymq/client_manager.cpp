@@ -112,6 +112,7 @@ void ClientManager::handle_message(const Message& msg, int client_id){
                 const ClientOpenQueueRequestType& req = raft_msg.get_open_queue_request();
                 std::cout << "Obtained request to open queue : " << req.DebugString() << '\n';
                 consumer_client_id_array_.push_back(client_id);
+                //TODO optimization: pass the deserialized raft_msg instead 
                 handler_(msg);
                 break;
             }

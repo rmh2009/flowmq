@@ -27,7 +27,18 @@ using ConsumerDisconnectedType = FlowMessage_ConsumerDisconnected;
 
 class RaftMessage {
     public:
-        using MessageType = FlowMessage::MessageType;
+        enum MessageType {
+            REQUEST_VOTE_REQUEST    = FlowMessage::REQUEST_VOTE_REQUEST   ,
+            REQUEST_VOTE_RESPONSE   = FlowMessage::REQUEST_VOTE_RESPONSE  ,
+            APPEND_ENTRIES_REQUEST  = FlowMessage::APPEND_ENTRIES_REQUEST ,
+            APPEND_ENTRIES_RESPONSE = FlowMessage::APPEND_ENTRIES_RESPONSE,
+            CLIENT_PUT_MESSAGE      = FlowMessage::CLIENT_PUT_MESSAGE     ,
+            CLIENT_COMMIT_MESSAGE   = FlowMessage::CLIENT_COMMIT_MESSAGE  ,
+            SERVER_SEND_MESSAGE     = FlowMessage::SERVER_SEND_MESSAGE    ,
+            CLIENT_OPEN_QUEUE       = FlowMessage::CLIENT_OPEN_QUEUE      ,
+            CONSUMER_DISCONNECTED   = FlowMessage::CONSUMER_DISCONNECTED  ,
+            UNKNOWN                 = FlowMessage::UNKNOWN                
+        };
 
         RaftMessage()
         {};
@@ -107,7 +118,7 @@ class RaftMessage {
 
 
         MessageType type() const{
-            return flow_message_.type();
+            return static_cast<MessageType>(flow_message_.type());
         }
 
         std::string serialize() const {

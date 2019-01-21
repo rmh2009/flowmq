@@ -86,9 +86,11 @@ class ClusterNode{
             log_entry.set_term(0);
             log_entry.set_term(0);
             log_entry.set_term(0);
-            log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
+            LogEntry entry;
+            log_entries_.push_back(std::move(entry));
+            //log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
 
-            std::cout << "init: " << log_entries_.size() << ", " << log_entries_[0].term << '\n';
+            std::cout << "init: " << log_entries_.size() << ", " << log_entries_[0].term() << '\n';
             check_if_previous_log_in_sync(0, 0);
 
             //scheduler to check hearbeat and initiate vote periodically
@@ -128,7 +130,7 @@ class ClusterNode{
         ClusterNode(ClusterNode&& ) = delete;
 
     private:
-        void add_log_entry(const LogEntry& entry){
+        void add_log_entry(const LogEntry entry){
             // this should always be run in io_context, client should not directly call this
             
             log_entries_.push_back(entry);
@@ -152,8 +154,16 @@ class ClusterNode{
                     RaftMessage msg;
                     int last_log_term = log_entries_.back().term();
                     int last_log_index = log_entries_.back().index();
-                    msg.loadAppendEntriesRequest(AppendEntriesRequestType(
-                                {cur_term_, node_id_, last_log_index, last_log_term, {}, commit_index_}));
+                    AppendEntriesRequestType req;
+                    req.set_term(cur_term_);
+                    req.set_leader_id(node_id_);
+                    req.set_prev_log_index(last_log_index);
+                    req.set_prev_log_term(last_log_term);
+                    req.set_leader_commit(commit_index_);
+                    msg.loadAppendEntriesRequest(std::move(req));
+                    
+                    //msg.loadAppendEntriesRequest(AppendEntriesRequestType(
+                    //            {cur_term_, node_id_, last_log_index, last_log_term, {}, commit_index_}));
 
                     cluster_manager_.broad_cast(serialize_raft_message(msg));
                     }
@@ -189,7 +199,14 @@ class ClusterNode{
                     RaftMessage raft_msg;
                     int last_log_term = log_entries_.back().term();
                     int last_log_index = log_entries_.back().index();
-                    raft_msg.loadVoteRequest(RequestVoteRequestType({cur_term_, node_id_, last_log_index, last_log_term}));
+                    RequestVoteRequestType req;
+                    req.set_term(cur_term_);
+                    req.set_candidate_id(node_id_);
+                    req.set_last_log_index(last_log_index);
+                    req.set_last_log_term(last_log_term);
+                    raft_msg.loadVoteRequest(std::move(req));
+
+                    //raft_msg.loadVoteRequest(RequestVoteRequestType({cur_term_, node_id_, last_log_index, last_log_term}));
 
                     //set a random timer to send vote request so that all candidates will not send this request at the same time.
                     auto timer = std::make_shared<boost::asio::deadline_timer>(io_context_);
@@ -217,7 +234,7 @@ class ClusterNode{
                     std::cout << "Printing statistics \n ___________________________________________________________________________\n\n";
 
                     for(auto entry : log_entries_){
-                    std::cout << "{" << entry.index << " , " << entry.term << " , " << entry.operation << ", " << entry.message << "}, ";
+                    std::cout << entry.DebugString() << '\n';
                     }
 
                     std::cout << "\ncommit_index : " << commit_index_ << '\n';
@@ -248,65 +265,86 @@ class ClusterNode{
             RaftMessage raft_msg = RaftMessage::deserialize(std::string(msg.body(), msg.body_length()));
 
             switch(raft_msg.type()){
-                case RaftMessage::AppendEntriesRequest : 
+                case RaftMessage::APPEND_ENTRIES_REQUEST: 
                     {
                         const AppendEntriesRequestType& req = raft_msg.get_append_request();
                         //check if term is up-to-date, if not send back current term, leader should update its term.
-                        if(req.term < cur_term_){
+                        if(req.term() < cur_term_){
                             std::cout << "WARNING: Received expired heart beat from leader! sending back current term \n";
 
                             RaftMessage msg;
-                            msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 0, -1}));
-                            cluster_manager_.write_message(req.leader_id, serialize_raft_message(msg));
+                            AppendEntriesResponseType resp;
+                            resp.set_term(cur_term_);
+                            resp.set_follower_id(node_id_);
+                            resp.set_append_result_success(0); //0 is failure
+                            resp.set_last_index_synced(-1);
+                            msg.loadAppendEntriesResponse(std::move(resp));
+                            
+                            //msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 0, -1}));
+                            cluster_manager_.write_message(req.leader_id(), serialize_raft_message(msg));
                             return;
                         }
 
                         //convert to follower
-                        if( state_ == CANDIDATE || (state_ == LEADER && req.term > cur_term_)){
-                            std::cout << "Received new leader id " << req.leader_id << "\n";
+                        if( state_ == CANDIDATE || (state_ == LEADER && req.term() > cur_term_)){
+                            std::cout << "Received new leader id " << req.leader_id() << "\n";
                             state_ = FOLLOWER;
                         }
 
                         //update last_heart_beat_received_
                         std::time(&last_heart_beat_received_);
-                        cur_term_ = req.term;
+                        cur_term_ = req.term();
 
                        
                         //check if previous log in sync, if not return false
-                        if(!check_if_previous_log_in_sync(req.prev_log_term, req.prev_log_index)){
-                            std::cout << "ERROR: previous log not in sync! " << req.prev_log_term << ", " << req.prev_log_index << '\n';
+                        if(!check_if_previous_log_in_sync(req.prev_log_term(), req.prev_log_index())){
+                            std::cout << "ERROR: previous log not in sync! " << req.DebugString() << '\n';
                             RaftMessage msg;
-                            msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 0, -1}));
-                            cluster_manager_.write_message(req.leader_id, serialize_raft_message(msg));
+                            AppendEntriesResponseType resp;
+                            resp.set_term(cur_term_);
+                            resp.set_follower_id(node_id_);
+                            resp.set_append_result_success(0); //0 is failure
+                            resp.set_last_index_synced(-1);
+                            msg.loadAppendEntriesResponse(std::move(resp));
+ 
+                            //msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 0, -1}));
+                            cluster_manager_.write_message(req.leader_id(), serialize_raft_message(msg));
                             return;
                         }
 
                         //update leader commit
-                        if(commit_index_ < req.leader_commit && req.leader_commit < (int)log_entries_.size()){
-                            commit_log_entries(commit_index_ + 1, req.leader_commit + 1);
-                            store_log_entries_and_commit_index(commit_index_ + 1, req.leader_commit + 1);
-                            commit_index_ = req.leader_commit;
+                        if(commit_index_ < req.leader_commit() && req.leader_commit() < (int)log_entries_.size()){
+                            commit_log_entries(commit_index_ + 1, req.leader_commit() + 1);
+                            store_log_entries_and_commit_index(commit_index_ + 1, req.leader_commit() + 1);
+                            commit_index_ = req.leader_commit();
                         }
 
                         //append logs from leader
-                        append_log_entries(req.prev_log_index, req.entries);
+                        append_log_entries(req.prev_log_index(), req.entries());
 
                         //we've updated our logs, return success!
                         RaftMessage msg;
-                        msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 1, log_entries_.back().index}));
-                        cluster_manager_.write_message(req.leader_id, serialize_raft_message(msg));
+                        AppendEntriesResponseType resp;
+                        resp.set_term(cur_term_);
+                        resp.set_follower_id(node_id_);
+                        resp.set_append_result_success(1); // 1 is success!
+                        resp.set_last_index_synced(log_entries_.back().index());
+                        msg.loadAppendEntriesResponse(std::move(resp));
+ 
+                        //msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 1, log_entries_.back().index}));
+                        cluster_manager_.write_message(req.leader_id(), serialize_raft_message(msg));
                         return;
 
                         break;
                     }
-                case RaftMessage::AppendEntriesResponse : 
+                case RaftMessage::APPEND_ENTRIES_RESPONSE: 
                     {
                         const AppendEntriesResponseType& resp = raft_msg.get_append_response();
 
-                        int follower_id = resp.follower_id;
-                        int last_index_synced = resp.last_index_synced;
+                        int follower_id = resp.follower_id();
+                        int last_index_synced = resp.last_index_synced();
 
-                        if(resp.append_result_success){
+                        if(resp.append_result_success()){
                             //received success!
                             // This is very tricky, matched_index_ should be increasing only, however in the scenario where one 
                             // node crashed and lost all of its data, then restarted, the matched_index_[node_id] for that node 
@@ -319,30 +357,30 @@ class ClusterNode{
                             // version 2, matched index is allowed to decrease, I prefer this one for now but needs more testing and proof
                             matched_index_[follower_id] =  last_index_synced;
                             
-                            if(commit_index_ < resp.last_index_synced){
+                            if(commit_index_ < resp.last_index_synced()){
                                 //update commit_index_
                                 int count_synced_nodes = 0;
                                 for(auto index : matched_index_){
-                                    if(index.second >= resp.last_index_synced) count_synced_nodes++;
+                                    if(index.second >= resp.last_index_synced()) count_synced_nodes++;
                                 }
                                 if(count_synced_nodes + 1 > total_nodes_ / 2){
-                                    std::cout << "index " << resp.last_index_synced << " is synced among majority nodes, will commit this index.\n";
-                                    commit_log_entries(commit_index_ + 1, resp.last_index_synced + 1); // left close right open 
-                                    store_log_entries_and_commit_index(commit_index_ + 1, resp.last_index_synced + 1);
-                                    commit_index_ = std::max(commit_index_, resp.last_index_synced);
+                                    std::cout << "index " << resp.last_index_synced() << " is synced among majority nodes, will commit this index.\n";
+                                    commit_log_entries(commit_index_ + 1, resp.last_index_synced() + 1); // left close right open 
+                                    store_log_entries_and_commit_index(commit_index_ + 1, resp.last_index_synced() + 1);
+                                    commit_index_ = std::max(commit_index_, resp.last_index_synced());
                                 }
                                 else{
-                                    std::cout << "index " << resp.last_index_synced << " is not synced among majority nodes yet, will not commit this index.\n";
+                                    std::cout << "index " << resp.last_index_synced() << " is not synced among majority nodes yet, will not commit this index.\n";
                                 }
                             }
 
                             //set next index to update to be after the matched index
                             next_index_[follower_id] = matched_index_[follower_id]+1; 
                         }
-                        else if (resp.term > cur_term_){
+                        else if (resp.term() > cur_term_){
                             //failed due to expired term
-                            std::cout << "Updating current term to " << resp.term << '\n';
-                            cur_term_ = resp.term;
+                            std::cout << "Updating current term to " << resp.term() << '\n';
+                            cur_term_ = resp.term();
                         }
                         else{
                             //failed due to out of sync, try send earlier entries
@@ -354,16 +392,16 @@ class ClusterNode{
 
                         break;
                     }
-                case RaftMessage::RequestVoteRequest:
+                case RaftMessage::REQUEST_VOTE_REQUEST:
                     {
                         const RequestVoteRequestType& req = raft_msg.get_vote_request();
 
-                        int candidate_node_id = req.candidate_id;
-                        int request_term = req.term;
+                        int candidate_node_id = req.candidate_id();
+                        int request_term = req.term();
 
                         // TODO, must handle this case:  if req.last_log_index and req.last_log_term is older than current log entries, reject this vote
-                        if(req.term < cur_term_ || 
-                                (req.term == cur_term_ && voted_for_ != -1 && voted_for_ != req.candidate_id)){ //we voted for somebody else this term!
+                        if(req.term() < cur_term_ || 
+                                (req.term() == cur_term_ && voted_for_ != -1 && voted_for_ != req.candidate_id())){ //we voted for somebody else this term!
                             if(voted_for_ != -1){
                                 std::cout << "ERROR: Already voted " << voted_for_ << " this term!\n";
                             }
@@ -372,12 +410,16 @@ class ClusterNode{
                             }
 
                             RaftMessage msg;
-                            msg.loadVoteResult(RequestVoteResponseType({request_term, 0})); // 0 is not granted
+                            RequestVoteResponseType resp;
+                            resp.set_term(request_term);
+                            resp.set_vote_result_term_granted(0); // 0 is not granted
+                            msg.loadVoteResult(std::move(resp));
+
                             cluster_manager_.write_message(candidate_node_id, serialize_raft_message(msg));
                             return;
                         }
 
-                        if(req.term > cur_term_){
+                        if(req.term() > cur_term_){
                             cur_term_ = request_term;
                             votes_collected_ = 0;
                         }
@@ -387,13 +429,18 @@ class ClusterNode{
                             RaftMessage msg;
                             voted_for_ = candidate_node_id;
                             std::cout << "voting for " << candidate_node_id << '\n';
-                            msg.loadVoteResult(RequestVoteResponseType({req.term, 1}));
+                            RequestVoteResponseType resp;
+                            resp.set_term(request_term);
+                            resp.set_vote_result_term_granted(1); // 1 is granted
+                            msg.loadVoteResult(std::move(resp));
+
+                            //msg.loadVoteResult(RequestVoteResponseType({req.term, 1}));
                             cluster_manager_.write_message(candidate_node_id, serialize_raft_message(msg));
                         }
 
                         break;
                     }
-                case RaftMessage::RequestVoteResponse:
+                case RaftMessage::REQUEST_VOTE_RESPONSE:
                     {
                         if(state_ != CANDIDATE){
                             std::cout << "ERROR: received request vote response, but current state is not candidate! current state: " << state_ << "\n";
@@ -401,23 +448,23 @@ class ClusterNode{
                         }
 
                         const RequestVoteResponseType& resp = raft_msg.get_vote_response();
-                        if(resp.term < cur_term_){
+                        if(resp.term() < cur_term_){
                             std::cout << "ERROR: Received request vote response with a term lower than current! Ignoring this response!\n";
                             return;
                         }
 
-                        if(resp.vote_result_term_granted == 1)
+                        if(resp.vote_result_term_granted() == 1)
                             votes_collected_++;
                         if(votes_collected_ > total_nodes_ / 2){
                             // Voted as the new LEADER!!
                             std::cout << "node " << node_id_ << " : I am the new leader!\n";
                             state_ = LEADER;
-                            cur_term_ = resp.term;
+                            cur_term_ = resp.term();
                         }
 
                         break;
                     }
-                case RaftMessage::ClientPutMessage:
+                case RaftMessage::CLIENT_PUT_MESSAGE:
                     {
                         if(state_ != LEADER){
                             std::cout << "ERROR! current node is not leader! only leader accepts put message reqeust.\n";
@@ -426,11 +473,17 @@ class ClusterNode{
                         const ClientPutMessageType& req = raft_msg.get_put_message_request();
 
                         int random_id = std::rand();
-                        LogEntry entry({(int)log_entries_.size(), cur_term_, random_id, LogEntry::ADD, req.message});
-                        add_log_entry(entry);
+                        LogEntry entry;
+                        entry.set_index((int)log_entries_.size());
+                        entry.set_term(cur_term_);
+                        entry.set_message_id(random_id);
+                        entry.set_operation(LogEntry::ADD);
+                        entry.set_message(req.message());
+                        //LogEntry entry({(int)log_entries_.size(), cur_term_, random_id, LogEntry::ADD, req.message});
+                        add_log_entry(std::move(entry));
                         break;
                     }
-                case RaftMessage::ClientOpenQueue:
+                case RaftMessage::CLIENT_OPEN_QUEUE:
                     {
                         if(state_ != LEADER){
                             std::cout << "ERROR! current node is not leader! only leader accepts open queue reqeust.\n";
@@ -440,7 +493,7 @@ class ClusterNode{
                         trigger_message_delivery();
                         break;
                     }
-                case RaftMessage::ClientCommitMessage:
+                case RaftMessage::CLIENT_COMMIT_MESSAGE:
                     {
                         if(state_ != LEADER){
                             std::cout << "ERROR! current node is not leader! only leader accepts commit message reqeust.\n";
@@ -448,8 +501,15 @@ class ClusterNode{
                         }
 
                         const ClientCommitMessageType& req = raft_msg.get_commit_message_request();
-                        LogEntry entry({(int)log_entries_.size(), cur_term_, req.message_id, LogEntry::COMMIT, ""});
-                        add_log_entry(entry);
+                        LogEntry entry;
+                        entry.set_index((int)log_entries_.size());
+                        entry.set_term(cur_term_);
+                        entry.set_message_id(req.message_id());
+                        entry.set_operation(LogEntry::COMMIT);
+                        entry.set_message("");
+
+                        //LogEntry entry({(int)log_entries_.size(), cur_term_, req.message_id, LogEntry::COMMIT, ""});
+                        add_log_entry(std::move(entry));
                         break;
                     }
                 default :
@@ -469,13 +529,23 @@ class ClusterNode{
             if(index_to_send >=1 && index_to_send <= (int)log_entries_.size() - 1){
 
                 int prev_index = next_index_[follower_id] - 1;
-                int prev_term = log_entries_[prev_index].term;
+                int prev_term = log_entries_[prev_index].term();
 
                 RaftMessage msg;
-                msg.loadAppendEntriesRequest(AppendEntriesRequestType{
-                        cur_term_, node_id_, prev_index, prev_term, std::vector<LogEntry>{log_entries_[index_to_send]},
-                        commit_index_
-                        });
+                AppendEntriesRequestType req;
+                req.set_term(cur_term_);
+                req.set_leader_id(node_id_);
+                req.set_prev_log_index(prev_index);
+                req.set_prev_log_term(prev_term);
+                auto new_elem = req.mutable_entries()->Add();
+                (*new_elem) = log_entries_[index_to_send];
+                req.set_leader_commit(commit_index_);
+                msg.loadAppendEntriesRequest(std::move(req));
+
+                //msg.loadAppendEntriesRequest(AppendEntriesRequestType{
+                //        cur_term_, node_id_, prev_index, prev_term, std::vector<LogEntry>{log_entries_[index_to_send]},
+                //        commit_index_
+                //        });
 
                 cluster_manager_.write_message(follower_id, serialize_raft_message(msg));
 
@@ -490,7 +560,7 @@ class ClusterNode{
             if((int)log_entries_.size() < prev_log_index + 1) {
                 return false;
             }
-            if(log_entries_[prev_log_index].term != prev_log_term){
+            if(log_entries_[prev_log_index].term() != prev_log_term){
                 return false;
             }
             return true;
@@ -501,7 +571,10 @@ class ClusterNode{
             log_entries_.erase(log_entries_.begin() + index_to_remove, log_entries_.end());
         }
 
-        void append_log_entries(int last_log_index, const std::vector<LogEntry>& new_entries){
+        // Takes a container of entries, the API of C should be similar to std::vector.
+        // This works for protobuf::RepeatedPtrField<> as well.
+        template<class C>
+        void append_log_entries(int last_log_index, const C& new_entries){
 
             for(size_t i = 0; i < new_entries.size(); ++i){
                 size_t index_in_log_entries = i + last_log_index + 1;
@@ -510,7 +583,7 @@ class ClusterNode{
                     //new entry
                     log_entries_.push_back(new_entries[i]); 
                 }
-                else if(log_entries_[index_in_log_entries].term == new_entries[i].term){
+                else if(log_entries_[index_in_log_entries].term() == new_entries[i].term()){
                     //already exists and terms match
                 }
                 else {
@@ -554,11 +627,11 @@ class ClusterNode{
             }
 
             //committing now
-            if(log_entries_[entry_index].operation == LogEntry::ADD){ //add
-                message_queue_.insert_message(log_entries_[entry_index].message_id, log_entries_[entry_index].message);
+            if(log_entries_[entry_index].operation() == LogEntry::ADD){ //add
+                message_queue_.insert_message(log_entries_[entry_index].message_id(), log_entries_[entry_index].message());
             }
-            else if(log_entries_[entry_index].operation == LogEntry::COMMIT){
-                int message_id = log_entries_[entry_index].message_id;
+            else if(log_entries_[entry_index].operation() == LogEntry::COMMIT){
+                int message_id = log_entries_[entry_index].message_id();
                 message_queue_.commit_message(message_id);
             }
             
@@ -580,7 +653,10 @@ class ClusterNode{
 
             for(auto message_id : id_temp){
                 RaftMessage msg;
-                msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_queue_.get_message(message_id)});
+                ServerSendMessageType send;
+                send.set_message_id(message_id);
+                send.set_message(message_queue_.get_message(message_id));
+                //msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_queue_.get_message(message_id)});
                 int consumer_id = client_manager_.deliver_one_message_round_robin(serialize_raft_message(msg));
                 if(consumer_id == -1){
                     std::cout << "ERROR: unable to deliver message " << message_id << " to consumer!\n";
