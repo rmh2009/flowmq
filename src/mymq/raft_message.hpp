@@ -5,6 +5,7 @@
 #include <iostream>
 #include <exception>
 #include <mymq/log_entry.hpp>
+#include <mymq/flow_message.pb.h>
 
 // two types of Raft RPC message, RequestVote and 
 // AppendEntries, each type could be either request 
@@ -314,6 +315,7 @@ class RaftMessage {
         }
 
         const ServerSendMessageType& get_server_send_essage() const{
+
             return server_send_messag_;
         }
 
@@ -330,6 +332,8 @@ class RaftMessage {
         ClientCommitMessageType client_commit_message_;
         ClientOpenQueueRequestType client_open_queue_request_;
         ServerSendMessageType server_send_messag_;
+
+        flowmq::FlowMessage flow_message_;
         
 };
 

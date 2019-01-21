@@ -1,4 +1,3 @@
-#include <mymq/chat_room.hpp>
 #include <iostream>
 #include <functional>
 #include <boost/asio.hpp>

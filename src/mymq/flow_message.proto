@@ -1,0 +1,99 @@
+syntax = "proto2";
+
+package flowmq;
+
+message LogEntry{
+    enum OPERATION {
+        ADD = 0;
+        COMMIT = 1;
+    };
+
+    required int32 index = 1;
+    required int32 term = 2;
+
+    required int32 message_id = 3;
+    required int32 operation = 4; 
+    required string message = 5;
+}
+
+message FlowMessage {
+    enum MessageType {
+        REQUEST_VOTE_REQUEST = 0; 
+        REQUEST_VOTE_RESPONSE = 1; 
+        APPEND_ENTRIES_REQUEST = 2; 
+        APPEND_ENTRIES_RESPONSE = 3;
+
+        CLIENT_PUT_MESSAGE = 10;
+        CLIENT_COMMIT_MESSAGE = 11;
+        SERVER_SEND_MESSAGE = 12;
+        CLIENT_OPEN_QUEUE = 13;
+        CONSUMER_DISCONNECTED = 14;
+        UNKNOWN = 99;
+    }
+
+    required MessageType type = 1;
+
+    message RequestVoteRequest{
+
+        required int32 term = 1;
+        required int32 candidate_id = 2;
+        required int32 last_log_index = 3;
+        required int32 last_log_term = 4;
+    }
+
+    message RequestVoteResponse{
+        required int32 term = 1;
+        required int32 vote_result_term_granted = 2;
+    }
+
+    message AppendEntriesRequest{
+        required int32 term = 1;
+        required int32 leader_id = 2;
+        required int32 prev_log_index = 3;
+        required int32 prev_log_term = 4;
+        repeated LogEntry entries = 5;
+        required int32 leader_commit = 6;
+    }
+
+    message AppendEntriesResponse{
+        required int32 term = 1;
+        required int32 follower_id = 2;
+        required int32 append_result_success = 3;
+        required int32 last_index_synced = 4;
+    }
+
+    //message for message queue client to put a message onto the queue or commit message in queue
+    message ClientPutMessage{
+        required string message = 1;
+    }
+
+    message ClientCommitMessage{
+        required int64 message_id = 1;
+    }
+
+    message ServerSendMessage{
+        required int64 message_id = 1; 
+        required string message = 2;
+    }
+
+    message ClientOpenQueue{
+        required int32 open_mode = 1;
+        required string queue_name = 2;
+    }
+
+    message ConsumerDisconnected{
+        required int32 client_id = 1;
+    }
+
+    optional RequestVoteRequest request_vote_request = 2; 
+    optional RequestVoteResponse request_vote_response = 3; 
+    optional AppendEntriesRequest append_entries_request = 4; 
+    optional AppendEntriesResponse append_entries_response = 5;
+
+    optional ClientPutMessage client_put_message = 6;
+    optional ClientCommitMessage client_commit_message = 7;
+    optional ServerSendMessage server_send_message = 8;
+    optional ClientOpenQueue client_open_queue = 9;
+    optional ConsumerDisconnected consumer_disconnected = 10;
+}
+

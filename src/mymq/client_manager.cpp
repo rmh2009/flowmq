@@ -1,4 +1,5 @@
 #include <mymq/client_manager.hpp>
+#include <mymq/raft_message.hpp>
 
 ClientManager::ClientManager(
         boost::asio::io_context& io_context, 

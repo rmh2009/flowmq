@@ -10,7 +10,6 @@
 #include <boost/array.hpp>
 
 #include <mymq/message.hpp>
-#include <mymq/raft_message.hpp>
 #include <mymq/session.hpp>
 
 using boost::asio::ip::tcp;
