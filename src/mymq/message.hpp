@@ -15,16 +15,19 @@ class Message{
     public:
         Message():
             body_length_(0)
-        {
-            data_buffer_.resize(HEADER_LENGTH + MAX_BODY_LENGTH);
-        }
-        Message(Message&& msg){
-            body_length_ = msg.body_length_;
-            data_buffer_ = std::move(msg.data_buffer_);
-        }
+    {
+        data_buffer_.resize(HEADER_LENGTH + MAX_BODY_LENGTH);
+    }
+
+        Message(Message&& msg):
+            body_length_(msg.body_length_),
+            data_buffer_(std::move(msg.data_buffer_))
+    {
+        msg.body_length_ = 0;
+    }
 
         enum { HEADER_LENGTH = 20,
-               MAX_BODY_LENGTH = 1000};
+            MAX_BODY_LENGTH = 1000};
 
         const char* body() const {
             return &data_buffer_.data()[HEADER_LENGTH];
