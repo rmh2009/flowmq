@@ -10,6 +10,7 @@ add_library(libflowmq
     session.cpp
     cluster_node.cpp
     generic_client.cpp
+    configuration.cpp
     )
 
 add_executable(log_entry_storage_test
@@ -19,4 +20,11 @@ target_link_libraries(log_entry_storage_test
     gtest_main
     libflowmq)
 
+add_executable(configuration_test
+    configuration_test.cpp)
+target_link_libraries(configuration_test 
+    gtest_main
+    libflowmq)
+
 add_test(NAME EntryStorageTest COMMAND log_entry_storage_test)
+add_test(NAME ConfigurationTest COMMAND configuration_test)
