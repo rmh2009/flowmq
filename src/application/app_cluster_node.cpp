@@ -14,29 +14,11 @@ using boost::asio::ip::tcp;
 
 int main(int argc, char* argv[]){
 
-    
-    //const char* ips[][2] = {
-    //    {"localhost", "13"},
-    //    {"localhost", "14"},
-    //    {"localhost", "15"},
-    //    {"localhost", "16"},
-    //    {"localhost", "17"}
-    //};
-    //size_t ips_length  = 5;
-
-    //const char* mq_port[5] = {
-    //    "9000",
-    //    "9001",
-    //    "9002",
-    //    "9003",
-    //    "9004"
-    //};
-
     try
     {
         if (argc < 2)
         {
-            std::cerr << "Usage: cluster_node [config_file_path]";
+            std::cerr << "Usage: cluster_node [config_file_path] [override current_node]\n";
             return 1;
         }
         boost::asio::io_context io_context;
@@ -49,6 +31,9 @@ int main(int argc, char* argv[]){
             throw std::runtime_error("could not open config file : " + config_file);
         }
         auto config = flowmq::ServerConfigurationLoader::load_config(in_file);
+        if(argc > 2){
+            config.current_node = atoi(argv[2]);
+        }
         int choice = config.current_node;
 
         tcp::endpoint this_endpoint;

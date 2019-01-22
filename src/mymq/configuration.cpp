@@ -76,7 +76,6 @@ namespace flowmq{
         *key = strip(line.substr(0, del));
         *value = strip(line.substr(del + 1));
         return (!key->empty() && !value->empty());
-
     }
 
     // strip whie spaces
