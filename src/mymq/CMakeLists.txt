@@ -1,6 +1,3 @@
-
-set(PROTOBUF_LIB /Users/hong/usr/lib/libprotobuf.a)
-
 add_library(libflowmq 
     flow_message.pb.cc
     client_manager.cpp
@@ -12,11 +9,12 @@ add_library(libflowmq
     generic_client.cpp
     configuration.cpp
     )
+target_include_directories(libflowmq PUBLIC ..)
 
 add_executable(log_entry_storage_test
     log_entry_storage_test.cpp)
 target_link_libraries(log_entry_storage_test 
-    ${PROTOBUF_LIB}
+    ${Protobuf_LIBRARY}
     gtest_main
     libflowmq)
 

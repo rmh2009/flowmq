@@ -2,13 +2,30 @@ cmake_minimum_required (VERSION 3.0)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 project (Flowmq)
 
-SET(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/src"
-    /Users/hong/usr/boost-1.68.0/include
-    /Users/hong/usr/include
-    )
-INCLUDE_DIRECTORIES( ${INCLUDE_DIR} )
-SET(LINK_DIR /Users/hong/usr/lib)
-LINK_DIRECTORIES(${LINK_DIR})
+# If Boost and Protobuf are installed in nonstandard 
+# locations, use environment variable CMAKE_PREFIX_PATH to 
+# specify root paths of Boost and Protobuf libraries
+# so that find_package can locate them.
+# e.g. 
+# CMAKE_PREFIX_PATH=/users/yourname/usr cmake ..
+
+set(Boost_USE_STATIC_LIBS ON)
+find_package(Boost 1.68 REQUIRED COMPONENTS system)
+
+set(Protobuf_USE_STATIC_LIBS ON)
+find_package(Protobuf REQUIRED)
+
+message(${Boost_INCLUDE_DIRS})
+message(${Boost_LIBRARY_DIRS})
+message(${Boost_LIBRARIES})
+message(${Protobuf_INCLUDE_DIRS})
+message(${Protobuf_LIBRARY})
+
+SET(CUSTOM_INCLUDE_DIRS 
+    ${Boost_INCLUDE_DIRS} 
+    ${Protobuf_INCLUDE_DIRS})
+
+INCLUDE_DIRECTORIES(${CUSTOM_INCLUDE_DIRS})
 
 enable_testing()
 add_subdirectory(src)
