@@ -1,6 +1,6 @@
-# flowmq
+# Flowmq - A Lightweight Distributed Message Queue based on Raft
 
-## Into 
+## Introduction 
 
 This is a distributed message queue in C++ based on the Raft consensus algorithm. 
 The implementation uses boost Asio library for network communication and async executions. 
