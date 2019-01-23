@@ -3,7 +3,7 @@
 ## Into 
 
 This is a distributed message queue in C++ based on the Raft consensus algorithm. 
-The implementation uses boost Asio library for network communication and asyn executions. 
+The implementation uses boost Asio library for network communication and async executions. 
 This library also depends on Protobuf.
 
 External library dependencies: 
@@ -28,9 +28,9 @@ specify root paths of Boost and Protobuf libraries
 so that find_package can locate them.
 
 ```
-makedir cmake.build 
+mkdir cmake.build 
 cd cmake.build
-CMAKE_PREFIX_PATH=/users/yourname/usr cmake ..
+CMAKE_PREFIX_PATH=/path/to/your/lib/root cmake ..
 make
 ```
 
