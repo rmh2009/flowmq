@@ -33,6 +33,7 @@ lambda functions, R-value reference etc.
 External library dependencies: 
 - Boost Asio (1.68 or above recommended)
 - Protobuf
+- Google Test 
 
 ## Install Dependencies
 
