@@ -3,15 +3,6 @@
 ## Introduction 
 
 This is a distributed message queue in C++ based on the Raft consensus algorithm. 
-The implementation uses boost Asio library for network communication and async executions. 
-This library also depends on Protobuf.
-
-External library dependencies: 
-- Boost Asio (1.68 or above recommended)
-- Protobuf
-- Google Test
-
-C++11 features are used extensively such as lambda functions, R-value reference etc. 
 
 At present state this is mainly my hobby project to learn about network programming and 
 distibuted systems by implementing the major components and algorithms to build a distributed
@@ -31,6 +22,15 @@ More features to be implemented:
 - Support for multiple message queues.
 - Support for partitioning within a message queue.
 - Improve multithread performance
+- Benchmark tools
+
+The implementation uses boost Asio library for network communication and async executions. 
+This library also depends on Protobuf. C++11 features are used extensively such as 
+lambda functions, R-value reference etc. 
+
+External library dependencies: 
+- Boost Asio (1.68 or above recommended)
+- Protobuf
 
 ## Install Dependencies
 
@@ -68,5 +68,11 @@ CMAKE_PREFIX_PATH=/path/to/your/lib/root cmake ..
 make
 ```
 
+## Test 
+
+run unit tests
+```
+cmake test
+```
 
 
