@@ -28,8 +28,9 @@ Key features supported at present stage:
 - Strong consensus guarantee based on Raft Algorithm.
 
 More features to be implemented:
-Support for multiple message queues.
-Support for partitioning within a message queue.
+- Support for multiple message queues.
+- Support for partitioning within a message queue.
+- Improve multithread performance
 
 ## Install Dependencies
 
@@ -44,10 +45,12 @@ On other platforms (or if the brew install failed),
 you can try build and install the libraries from github repo 
 
 https://github.com/boostorg/boost
+
 https://github.com/protocolbuffers/protobuf
 
 Google test is not available in brew, so you can download 
 and build it using CMake:
+
 https://github.com/google/googletest
 
 ## Build
