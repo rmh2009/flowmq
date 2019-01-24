@@ -9,15 +9,46 @@ This library also depends on Protobuf.
 External library dependencies: 
 - Boost Asio (1.68 or above recommended)
 - Protobuf
+- Google Test
 
 C++11 features are used extensively such as lambda functions, R-value reference etc. 
 
-At present state this is mostly my hobby project to learn about network programming and 
-distibuted systems by implementing all the components required to build a persistent 
+At present state this is mainly my hobby project to learn about network programming and 
+distibuted systems by implementing the major components and algorithms to build a distributed
 and resilient message queue system. These include socket communication layer, async 
-execution management, cluster management, Raft algorithm protocals, serialization and 
-storage modules for messages, support for message subscription and commits, 
-support for arbitrary number of topics(to be implemented), etc. 
+executions, cluster management, Raft algorithm protocals, serialization and 
+storage, etc. 
+
+Key features supported at present stage:
+- Resilient server nodes. Handles node crashes, leader 
+  re-election, data recovery automatically.
+- Messages are persisted on disk.
+- Support for message delivery to multiple consumers based on round-robin.
+- Support message consumption from consumer. 
+- Strong consensus guarantee based on Raft Algorithm.
+
+More features to be implemented:
+Support for multiple message queues.
+Support for partitioning within a message queue.
+
+## Install Dependencies
+
+On mac, boost and protobuf can be installed using brew 
+
+```
+brew install protobuf --c++11
+brew install boost --c++11
+```
+
+On other platforms (or if the brew install failed), 
+you can try build and install the libraries from github repo 
+
+https://github.com/boostorg/boost
+https://github.com/protocolbuffers/protobuf
+
+Google test is not available in brew, so you can download 
+and build it using CMake:
+https://github.com/google/googletest
 
 ## Build
 

@@ -14,19 +14,23 @@ find_package(Boost 1.68 REQUIRED COMPONENTS system)
 
 set(Protobuf_USE_STATIC_LIBS ON)
 find_package(Protobuf REQUIRED)
+find_package(GTest REQUIRED)
 
 message(${Boost_INCLUDE_DIRS})
 message(${Boost_LIBRARY_DIRS})
 message(${Boost_LIBRARIES})
 message(${Protobuf_INCLUDE_DIRS})
 message(${Protobuf_LIBRARY})
+message(${GTEST_LIBRARIES})
+message(${GTEST_MAIN_LIBRARIES})
 
 SET(CUSTOM_INCLUDE_DIRS 
     ${Boost_INCLUDE_DIRS} 
-    ${Protobuf_INCLUDE_DIRS})
+    ${Protobuf_INCLUDE_DIRS}
+    ${GTEST_INCLUDE_DIRS}
+    )
 
 INCLUDE_DIRECTORIES(${CUSTOM_INCLUDE_DIRS})
 
 enable_testing()
 add_subdirectory(src)
-add_subdirectory(third_party/googletest/googletest)
