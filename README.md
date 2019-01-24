@@ -75,7 +75,7 @@ make
 
 run unit tests
 ```
-cmake test
+make test
 ```
 
 
