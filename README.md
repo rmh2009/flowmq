@@ -1,14 +1,16 @@
-# Flowmq - A Lightweight Distributed Message Queue based on Raft
+# Flowmq 
 
 ## Introduction 
 
-This is a distributed message queue in C++ based on the Raft consensus algorithm. 
+Flowmq is a lightweight, distributed, and resilient message queue implemented in C++ 
+based on the Raft consensus algorithm. Key features include resilience to node crashes, 
+data persistence on disk, round-robin message delivery, message consuption, etc.
 
 At present state this is mainly my hobby project to learn about network programming and 
 distibuted systems by implementing the major components and algorithms to build a distributed
-and resilient message queue system. These include socket communication layer, async 
-executions, cluster management, Raft algorithm protocals, serialization and 
-storage, etc. 
+message queue system. The key components I'm interested in through this exercise include socket 
+communication layer, async executions paradigm, cluster management, Raft algorithm protocals, 
+serialization and storage, "zero"-copy optimizations, etc.
 
 Key features supported at present stage:
 - Resilient server nodes. Handles node crashes, leader 
