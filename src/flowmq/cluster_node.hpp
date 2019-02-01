@@ -9,13 +9,13 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#include <mymq/message.hpp>
-#include <mymq/raft_message.hpp>
-#include <mymq/session.hpp>
-#include <mymq/cluster_manager.hpp>
-#include <mymq/client_manager.hpp>
-#include <mymq/message_queue.hpp>
-#include <mymq/log_entry_storage.hpp>
+#include <flowmq/message.hpp>
+#include <flowmq/raft_message.hpp>
+#include <flowmq/session.hpp>
+#include <flowmq/cluster_manager.hpp>
+#include <flowmq/client_manager.hpp>
+#include <flowmq/message_queue.hpp>
+#include <flowmq/log_entry_storage.hpp>
 
 using boost::asio::ip::tcp;
 

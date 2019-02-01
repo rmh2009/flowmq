@@ -1,4 +1,4 @@
-#include <mymq/log_entry_storage.hpp>
+#include <flowmq/log_entry_storage.hpp>
 
 #include <gtest/gtest.h>
 

@@ -1,4 +1,4 @@
-#include <mymq/generic_client.hpp>
+#include <flowmq/generic_client.hpp>
 
 namespace flowmq {
 

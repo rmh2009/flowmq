@@ -6,7 +6,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#include <mymq/message.hpp>
+#include <flowmq/message.hpp>
 
 using boost::asio::ip::tcp;
 

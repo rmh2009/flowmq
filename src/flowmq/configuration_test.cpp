@@ -1,4 +1,4 @@
-#include <mymq/configuration.hpp>
+#include <flowmq/configuration.hpp>
 
 #include <gtest/gtest.h>
 

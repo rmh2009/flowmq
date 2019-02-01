@@ -1,2 +1,2 @@
-add_subdirectory(mymq)
+add_subdirectory(flowmq)
 add_subdirectory(application)

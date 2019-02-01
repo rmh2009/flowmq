@@ -1,8 +1,8 @@
 #pragma once
 #include <fstream>
 #include <iostream>
-#include <mymq/flow_message.pb.h>
-#include <mymq/log_entry.hpp>
+#include <flowmq/flow_message.pb.h>
+#include <flowmq/log_entry.hpp>
 
 namespace flowmq{
 

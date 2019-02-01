@@ -1,10 +1,10 @@
-#include <mymq/chat_client.hpp>
+#include <flowmq/chat_client.hpp>
 #include <iostream>
 #include <functional>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#include <mymq/message.hpp>
+#include <flowmq/message.hpp>
 
 using boost::asio::ip::tcp;
 

@@ -3,9 +3,9 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#include <mymq/generic_client.hpp>
-#include <mymq/message.hpp>
-#include <mymq/raft_message.hpp>
+#include <flowmq/generic_client.hpp>
+#include <flowmq/message.hpp>
+#include <flowmq/raft_message.hpp>
 
 using boost::asio::ip::tcp;
 using flowmq::GenericClient;

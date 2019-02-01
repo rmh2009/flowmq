@@ -4,9 +4,9 @@
 #include <sstream>
 #include <iostream>
 #include <exception>
-#include <mymq/log_entry.hpp>
-#include <mymq/message.hpp>
-#include <mymq/flow_message.pb.h>
+#include <flowmq/log_entry.hpp>
+#include <flowmq/message.hpp>
+#include <flowmq/flow_message.pb.h>
 
 // two types of Raft RPC message, RequestVote and 
 // AppendEntries, each type could be either request 

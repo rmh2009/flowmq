@@ -4,11 +4,11 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
-#include <mymq/message.hpp>
-#include <mymq/raft_message.hpp>
-#include <mymq/cluster_manager.hpp>
-#include <mymq/cluster_node.hpp>
-#include <mymq/configuration.hpp>
+#include <flowmq/message.hpp>
+#include <flowmq/raft_message.hpp>
+#include <flowmq/cluster_manager.hpp>
+#include <flowmq/cluster_node.hpp>
+#include <flowmq/configuration.hpp>
 
 using boost::asio::ip::tcp;
 
