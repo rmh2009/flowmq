@@ -71,6 +71,11 @@ CMAKE_PREFIX_PATH=/path/to/your/lib/root cmake ..
 make
 ```
 
+### Compiler Flags
+Use compiler flag "FLOWMQ_LOG_FULL" to enable full logging, use 
+flag "FLOWMQ_LOG_NONE" to suppress all internal logging. If neither 
+is set the default behavior would only log error messages.
+
 ## Test 
 
 run unit tests

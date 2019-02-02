@@ -1,4 +1,5 @@
 #include <flowmq/configuration.hpp>
+#include <flowmq/logging.hpp>
 
 #include <gtest/gtest.h>
 
@@ -26,6 +27,8 @@ TEST(TestLoadConfig, SimpleConfig){
         "\n"
         "\n"
         ;
+
+    LOG_INFO << "testing config " << ss.str();
     auto config = ServerConfigurationLoader::load_config(ss);
 
     EXPECT_EQ(config.current_node, 3);
