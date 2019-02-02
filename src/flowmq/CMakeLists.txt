@@ -15,13 +15,13 @@ add_executable(log_entry_storage_test
     log_entry_storage_test.cpp)
 target_link_libraries(log_entry_storage_test 
     ${Protobuf_LIBRARY}
-    gtest_main
+    ${GTEST_BOTH_LIBRARIES}
     libflowmq)
 
 add_executable(configuration_test
     configuration_test.cpp)
 target_link_libraries(configuration_test 
-    gtest_main
+    ${GTEST_BOTH_LIBRARIES}
     libflowmq)
 
 add_test(NAME EntryStorageTest COMMAND log_entry_storage_test)
