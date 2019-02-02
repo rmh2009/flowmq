@@ -16,6 +16,7 @@
 #include <flowmq/client_manager.hpp>
 #include <flowmq/message_queue.hpp>
 #include <flowmq/log_entry_storage.hpp>
+#include <flowmq/logging.hpp>
 
 using boost::asio::ip::tcp;
 
@@ -174,7 +175,7 @@ template<class... ARGS>
 {
     //initialize random seed
 
-    std::cout << "setting random seed according to pid " << getpid() << '\n';
+    LOG_INFO << "setting random seed according to pid " << getpid() << '\n';
     std::srand(getpid());
 
     //initialize state
@@ -192,7 +193,7 @@ template<class... ARGS>
     log_entries_.push_back(std::move(entry));
     //log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
 
-    std::cout << "init: " << log_entries_.size() << ", " << log_entries_[0].term() << '\n';
+    LOG_INFO << "init: " << log_entries_.size() << ", " << log_entries_[0].term() << '\n';
     check_if_previous_log_in_sync(0, 0);
 
     //scheduler to check hearbeat and initiate vote periodically
@@ -204,7 +205,7 @@ template<class... ARGS>
     storage_log_entry_filename_ = LOG_ENTRY_STORAGE_PREFIX + std::to_string(node_id) + ".data";
     storage_metadata_file_name_ = METADATA_STORAGE_PREFIX + std::to_string(node_id) + ".data";
     if(0 != LogEntryStorage::load_log_entry_from_file(storage_log_entry_filename_, &log_entries_)){
-        std::cout << "WARNING : Error loading log entries from storage\n";
+        LOG_INFO << "WARNING : Error loading log entries from storage\n";
     }
     for(size_t i = 1; i < log_entries_.size(); ++i){
         commit_log_entry(i); //update the queue state, this should not trigger delivery to client
@@ -213,7 +214,7 @@ template<class... ARGS>
     if(0 == MetadataStorage::load_metadata_from_file(storage_metadata_file_name_, &metadata)){
         commit_index_ = metadata.last_committed;
     }
-    std::cout << "after loading data: commit index is : " << commit_index_ << ", log entry size: " << log_entries_.size() << '\n';
+    LOG_INFO << "after loading data: commit index is : " << commit_index_ << ", log entry size: " << log_entries_.size() << '\n';
 
     // start cluster
     cluster_manager_.register_handler(std::bind(&ClusterNode::message_handler, this, std::placeholders::_1));

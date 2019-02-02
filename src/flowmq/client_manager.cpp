@@ -1,5 +1,6 @@
 #include <flowmq/client_manager.hpp>
 #include <flowmq/raft_message.hpp>
+#include <flowmq/logging.hpp>
 
 namespace flowmq{
 
@@ -32,7 +33,7 @@ void ClientManager::register_disconnect_handler(const ClientDisconnectedHandler&
 int ClientManager::deliver_one_message_round_robin(Message msg){
 
     if(consumer_client_id_array_.size() == 0) {
-        std::cout << "ERROR! client_manager.cpp no active client not found!\n";
+        LOG_INFO << "ERROR! client_manager.cpp no active client not found!\n";
         return -1;
     }
 
@@ -55,26 +56,26 @@ void ClientManager::accept_new_connection(){
 
             if(!error){
 
-            std::cout << "got new connection! current connections including this is " 
+            LOG_INFO << "got new connection! current connections including this is " 
             << client_sessions_.size() + 1 << '\n';
 
             auto new_session = std::make_shared<Session>(std::move(socket));
             int id = std::rand();
 
             new_session -> register_handler([this, id](const Message& msg){
-                    std::cout << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
+                    LOG_INFO << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
                     handle_message(msg, id);
                     });
 
 
             new_session -> register_disconnect_handler([this, id](){
-                    std::cout << "Removing session " << id << " from client manager!\n";
+                    LOG_INFO << "Removing session " << id << " from client manager!\n";
                     auto to_remove = client_sessions_.find(id);
                     if(to_remove != client_sessions_.end()){
                     client_sessions_.erase(client_sessions_.find(id));
                     }
                     else{
-                    std::cout << "Session " << id << " already removed!\n";
+                    LOG_INFO << "Session " << id << " already removed!\n";
                     }
 
                     auto to_remove_from_array = std::find(consumer_client_id_array_.begin(), consumer_client_id_array_.end(), id);
@@ -82,7 +83,7 @@ void ClientManager::accept_new_connection(){
                     consumer_client_id_array_.erase(to_remove_from_array);
                     }
                     else{
-                    std::cout << "Session " << id << " does not exist in consumer id array!\n";
+                    LOG_INFO << "Session " << id << " does not exist in consumer id array!\n";
                     }
 
                     client_disconnected_handler_(id);
@@ -94,7 +95,7 @@ void ClientManager::accept_new_connection(){
 
             }
             else{
-                std::cout << "ERROR: error while accepting new connection : " << error << '\n';
+                LOG_INFO << "ERROR: error while accepting new connection : " << error << '\n';
             }
 
             accept_new_connection();
@@ -112,7 +113,7 @@ void ClientManager::handle_message(const Message& msg, int client_id){
         case RaftMessage::CLIENT_OPEN_QUEUE: 
             {
                 const ClientOpenQueueRequestType& req = raft_msg.get_open_queue_request();
-                std::cout << "Obtained request to open queue : " << req.DebugString() << '\n';
+                LOG_INFO << "Obtained request to open queue : " << req.DebugString() << '\n';
                 consumer_client_id_array_.push_back(client_id);
                 //TODO optimization: pass the deserialized raft_msg instead 
                 handler_(msg);

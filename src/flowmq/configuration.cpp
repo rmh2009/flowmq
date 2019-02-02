@@ -1,4 +1,5 @@
 #include <flowmq/configuration.hpp>
+#include <flowmq/logging.hpp>
 
 namespace flowmq{
 
@@ -30,7 +31,7 @@ namespace flowmq{
                 continue;
             }
 
-            std::cout << "key : " << key << ", value : " << value << '\n';
+            LOG_INFO << "key : " << key << ", value : " << value << '\n';
 
             if(key == "current_node"){
                 config.current_node = stoi(value);

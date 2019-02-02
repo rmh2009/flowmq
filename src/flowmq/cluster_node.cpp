@@ -1,6 +1,5 @@
 #include <flowmq/cluster_node.hpp>
 
-
 namespace flowmq{
 
 void ClusterNode::add_log_entry(const LogEntry entry){
@@ -17,13 +16,13 @@ void ClusterNode::add_log_entry(const LogEntry entry){
 //this will send heart beats to all followers if current state is leader
 void ClusterNode::start_send_hearbeat(){
 
-    std::cout << "sending heartbeat (if leader) ... ... \n";
+    LOG_INFO << "sending heartbeat (if leader) ... ... \n";
 
     heartbeat_timer_.expires_from_now(boost::posix_time::seconds(HEARTBEAT_EXPIRE_SECONDS));
     heartbeat_timer_.async_wait([this](boost::system::error_code ){
 
             if(state_ == LEADER){
-            std::cout << " *************** node " << node_id_ << " : I'm the leader, sending heartbeat now! *************\n";
+            LOG_INFO << " *************** node " << node_id_ << " : I'm the leader, sending heartbeat now! *************\n";
             RaftMessage msg;
             int last_log_term = log_entries_.back().term();
             int last_log_index = log_entries_.back().index();
@@ -49,7 +48,7 @@ void ClusterNode::start_send_hearbeat(){
 //this will send vote request if current state is candidate
 void ClusterNode::start_vote_scheduler(){
 
-    std::cout << "checking hearbeat ... \n";
+    LOG_INFO << "checking hearbeat ... \n";
     //check repeatedly
     vote_timer_.expires_from_now(boost::posix_time::seconds(HEARTBEAT_CHECK_INTERVAL));
     vote_timer_.async_wait([this](boost::system::error_code ){
@@ -84,7 +83,7 @@ void ClusterNode::start_vote_scheduler(){
             //set a random timer to send vote request so that all candidates will not send this request at the same time.
             auto timer = std::make_shared<boost::asio::deadline_timer>(io_context_);
             int delay = std::rand() % 1000 ;
-            std::cout << "random delay in start_vote_scheduler : " << delay << " miliseconds \n";
+            LOG_INFO << "random delay in start_vote_scheduler : " << delay << " miliseconds \n";
             timer -> expires_from_now(boost::posix_time::milliseconds(delay));
             timer->async_wait([timer, this, raft_msg](boost::system::error_code const&){
                     if(voted_for_ != -1) return; //already voted
@@ -104,27 +103,27 @@ void ClusterNode::start_statistics_scheduler(){
     stats_timer_.expires_from_now(boost::posix_time::seconds(5));
     stats_timer_.async_wait([this](boost::system::error_code ){
 
-            std::cout << "Printing statistics \n ___________________________________________________________________________\n\n";
+            LOG_INFO << "Printing statistics \n ___________________________________________________________________________\n\n";
 
             for(auto entry : log_entries_){
-            std::cout << entry.index() << ',' << entry.operation() << ',' << entry.message() << "   ";
+            LOG_INFO << entry.index() << ',' << entry.operation() << ',' << entry.message() << "   ";
             }
 
-            std::cout << "\ncommit_index : " << commit_index_ << '\n';
+            LOG_INFO << "\ncommit_index : " << commit_index_ << '\n';
 
-            std::cout << "\nundelivered_messages : \n";
+            LOG_INFO << "\nundelivered_messages : \n";
             std::vector<MessageQueue::MessageId_t> ids;
             message_queue_.get_all_undelivered_messages(&ids);
             for(auto id : ids) {
-            std::cout << id << ", ";
+            LOG_INFO << id << ", ";
             }
 
-            //std::cout << "\ncommitted messages : \n";
+            //LOG_INFO << "\ncommitted messages : \n";
             //for(auto id :committed_messages_){
-            //std::cout << id << ", ";
+            //LOG_INFO << id << ", ";
             //}
 
-            std::cout << "\n ___________________________________________________________________________\n";
+            LOG_INFO << "\n ___________________________________________________________________________\n";
             start_statistics_scheduler();
 
     });
@@ -136,7 +135,7 @@ void ClusterNode::start_statistics_scheduler(){
 void ClusterNode::message_handler(const Message& msg){
 
     RaftMessage raft_msg = RaftMessage::deserialize_from_message(msg);
-    std::cout << "#] " << raft_msg.DebugString() << '\n';
+    LOG_INFO << "#] " << raft_msg.DebugString() << '\n';
 
     switch(raft_msg.type()){
         case RaftMessage::APPEND_ENTRIES_REQUEST: 
@@ -144,7 +143,7 @@ void ClusterNode::message_handler(const Message& msg){
                 const AppendEntriesRequestType& req = raft_msg.get_append_request();
                 //check if term is up-to-date, if not send back current term, leader should update its term.
                 if(req.term() < cur_term_){
-                    std::cout << "WARNING: Received expired heart beat from leader! sending back current term \n";
+                    LOG_INFO << "WARNING: Received expired heart beat from leader! sending back current term \n";
 
                     RaftMessage msg;
                     AppendEntriesResponseType resp;
@@ -161,7 +160,7 @@ void ClusterNode::message_handler(const Message& msg){
 
                 //convert to follower
                 if( state_ == CANDIDATE || (state_ == LEADER && req.term() > cur_term_)){
-                    std::cout << "Received new leader id " << req.leader_id() << "\n";
+                    LOG_INFO << "Received new leader id " << req.leader_id() << "\n";
                     state_ = FOLLOWER;
                 }
 
@@ -172,7 +171,7 @@ void ClusterNode::message_handler(const Message& msg){
 
                 //check if previous log in sync, if not return false
                 if(!check_if_previous_log_in_sync(req.prev_log_term(), req.prev_log_index())){
-                    std::cout << "ERROR: previous log not in sync! " << req.DebugString() << '\n';
+                    LOG_ERROR << "ERROR: previous log not in sync! " << req.DebugString() << '\n';
                     RaftMessage msg;
                     AppendEntriesResponseType resp;
                     resp.set_term(cur_term_);
@@ -238,13 +237,13 @@ void ClusterNode::message_handler(const Message& msg){
                             if(index.second >= resp.last_index_synced()) count_synced_nodes++;
                         }
                         if(count_synced_nodes + 1 > total_nodes_ / 2){
-                            std::cout << "index " << resp.last_index_synced() << " is synced among majority nodes, will commit this index.\n";
+                            LOG_INFO << "index " << resp.last_index_synced() << " is synced among majority nodes, will commit this index.\n";
                             commit_log_entries(commit_index_ + 1, resp.last_index_synced() + 1); // left close right open 
                             store_log_entries_and_commit_index(commit_index_ + 1, resp.last_index_synced() + 1);
                             commit_index_ = std::max(commit_index_, resp.last_index_synced());
                         }
                         else{
-                            std::cout << "index " << resp.last_index_synced() << " is not synced among majority nodes yet, will not commit this index.\n";
+                            LOG_INFO << "index " << resp.last_index_synced() << " is not synced among majority nodes yet, will not commit this index.\n";
                         }
                     }
 
@@ -253,7 +252,7 @@ void ClusterNode::message_handler(const Message& msg){
                 }
                 else if (resp.term() > cur_term_){
                     //failed due to expired term
-                    std::cout << "Updating current term to " << resp.term() << '\n';
+                    LOG_INFO << "Updating current term to " << resp.term() << '\n';
                     cur_term_ = resp.term();
                 }
                 else{
@@ -277,10 +276,10 @@ void ClusterNode::message_handler(const Message& msg){
                 if(req.term() < cur_term_ || 
                         (req.term() == cur_term_ && voted_for_ != -1 && voted_for_ != req.candidate_id())){ //we voted for somebody else this term!
                     if(voted_for_ != -1){
-                        std::cout << "ERROR: Already voted " << voted_for_ << " this term!\n";
+                        LOG_ERROR << "ERROR: Already voted " << voted_for_ << " this term!\n";
                     }
                     else{
-                        std::cout << "ERROR: Received request vote request from node that has a lower term than current! Ignoring this request!\n";
+                        LOG_ERROR << "ERROR: Received request vote request from node that has a lower term than current! Ignoring this request!\n";
                     }
 
                     RaftMessage msg;
@@ -302,7 +301,7 @@ void ClusterNode::message_handler(const Message& msg){
                 if(state_ == CANDIDATE || state_ == FOLLOWER){
                     RaftMessage msg;
                     voted_for_ = candidate_node_id;
-                    std::cout << "voting for " << candidate_node_id << '\n';
+                    LOG_INFO << "voting for " << candidate_node_id << '\n';
                     RequestVoteResponseType resp;
                     resp.set_term(request_term);
                     resp.set_vote_result_term_granted(1); // 1 is granted
@@ -317,13 +316,13 @@ void ClusterNode::message_handler(const Message& msg){
         case RaftMessage::REQUEST_VOTE_RESPONSE:
             {
                 if(state_ != CANDIDATE){
-                    std::cout << "ERROR: received request vote response, but current state is not candidate! current state: " << state_ << "\n";
+                    LOG_ERROR << "ERROR: received request vote response, but current state is not candidate! current state: " << state_ << "\n";
                     return;
                 }
 
                 const RequestVoteResponseType& resp = raft_msg.get_vote_response();
                 if(resp.term() < cur_term_){
-                    std::cout << "ERROR: Received request vote response with a term lower than current! Ignoring this response!\n";
+                    LOG_ERROR << "ERROR: Received request vote response with a term lower than current! Ignoring this response!\n";
                     return;
                 }
 
@@ -331,7 +330,7 @@ void ClusterNode::message_handler(const Message& msg){
                     votes_collected_++;
                 if(votes_collected_ > total_nodes_ / 2){
                     // Voted as the new LEADER!!
-                    std::cout << "node " << node_id_ << " : I am the new leader!\n";
+                    LOG_INFO << "node " << node_id_ << " : I am the new leader!\n";
                     state_ = LEADER;
                     cur_term_ = resp.term();
                 }
@@ -341,7 +340,7 @@ void ClusterNode::message_handler(const Message& msg){
         case RaftMessage::CLIENT_PUT_MESSAGE:
             {
                 if(state_ != LEADER){
-                    std::cout << "ERROR! current node is not leader! only leader accepts put message reqeust.\n";
+                    LOG_ERROR << "ERROR! current node is not leader! only leader accepts put message reqeust.\n";
                     return;
                 }
                 const ClientPutMessageType& req = raft_msg.get_put_message_request();
@@ -360,7 +359,7 @@ void ClusterNode::message_handler(const Message& msg){
         case RaftMessage::CLIENT_OPEN_QUEUE:
             {
                 if(state_ != LEADER){
-                    std::cout << "ERROR! current node is not leader! only leader accepts open queue reqeust.\n";
+                    LOG_ERROR << "ERROR! current node is not leader! only leader accepts open queue reqeust.\n";
                     return;
                 }
 
@@ -370,7 +369,7 @@ void ClusterNode::message_handler(const Message& msg){
         case RaftMessage::CLIENT_COMMIT_MESSAGE:
             {
                 if(state_ != LEADER){
-                    std::cout << "ERROR! current node is not leader! only leader accepts commit message reqeust.\n";
+                    LOG_ERROR << "ERROR! current node is not leader! only leader accepts commit message reqeust.\n";
                     return;
                 }
 
@@ -475,7 +474,7 @@ void ClusterNode::commit_log_entries(int start_entry_index, int stop_entry_index
 void ClusterNode::commit_log_entry(int entry_index){
     if(entry_index <= 0) return;
     if(entry_index >= (int)log_entries_.size()){
-        std::cout << "ERROR: commit index " << entry_index << " is out of bound!\n";
+        LOG_ERROR << "ERROR: commit index " << entry_index << " is out of bound!\n";
         return;
     }
 
@@ -499,7 +498,7 @@ void ClusterNode::consumer_disconnected(int client_id){
 // fetch undelivered messages and send to consumers (if any exists)
 void ClusterNode::trigger_message_delivery(){
 
-    std::cout << "trying to deliver messages \n";
+    LOG_INFO << "trying to deliver messages \n";
     if(!client_manager_.has_consumers()) return;
     std::vector<MessageQueue::MessageId_t> id_temp;
     message_queue_.get_all_undelivered_messages(&id_temp);
@@ -511,10 +510,10 @@ void ClusterNode::trigger_message_delivery(){
         send.set_message(message_queue_.get_message(message_id));
         msg.loadServerSendMessageRequest(std::move(send));
         //msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_queue_.get_message(message_id)});
-        std::cout << "delivering message to client : " << msg.DebugString() << '\n';
+        LOG_INFO << "delivering message to client : " << msg.DebugString() << '\n';
         int consumer_id = client_manager_.deliver_one_message_round_robin(serialize_raft_message(msg));
         if(consumer_id == -1){
-            std::cout << "ERROR: unable to deliver message " << message_id << " to consumer!\n";
+            LOG_ERROR << "ERROR: unable to deliver message " << message_id << " to consumer!\n";
             return;
         }
         message_queue_.deliver_message_to_client_id(message_id, consumer_id);

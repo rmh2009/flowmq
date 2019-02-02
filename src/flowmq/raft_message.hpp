@@ -6,6 +6,7 @@
 #include <exception>
 #include <flowmq/log_entry.hpp>
 #include <flowmq/message.hpp>
+#include <flowmq/logging.hpp>
 #include <flowmq/flow_message.pb.h>
 
 // two types of Raft RPC message, RequestVote and 
@@ -127,7 +128,7 @@ class RaftMessage {
         // Should only be used for debugging 
         std::string serialize() const {
             if(flow_message_.type() == FlowMessage::UNKNOWN){
-                std::cout << "ERROR! message type is not set!" << flow_message_.DebugString() << '\n';
+                LOG_INFO << "ERROR! message type is not set!" << flow_message_.DebugString() << '\n';
                 throw(std::runtime_error("Message type not set!"));
             }
             return DebugString();

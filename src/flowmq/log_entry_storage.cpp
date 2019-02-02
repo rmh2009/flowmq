@@ -1,4 +1,5 @@
 #include <flowmq/log_entry_storage.hpp>
+#include <flowmq/logging.hpp>
 
 namespace flowmq{
 
@@ -60,7 +61,7 @@ int LogEntryStorage::load_log_entry_from_file(const std::string& filename, std::
         f.read(&c, 1);
         temp.resize(entry_size);
         f.read(&temp[0], entry_size);
-        std::cout << "read message :" << temp << '\n';
+        LOG_INFO << "read message :" << temp << '\n';
         LogEntry temp_entry;
         temp_entry.ParseFromString(temp);
         entries->push_back(std::move(temp_entry));

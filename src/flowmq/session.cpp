@@ -1,4 +1,5 @@
 #include <flowmq/session.hpp>
+#include <flowmq/logging.hpp>
 
 namespace flowmq{
 
@@ -16,10 +17,10 @@ void Session::write_message(std::shared_ptr<Message>msg_copy){
                 msg_copy->header_length() + msg_copy->body_length()), 
             [msg_copy, this, self](boost::system::error_code error, std::size_t){
             if(!error) {
-            //std::cout << "INFO session.cpp successfully wrote message!\n";
+            //LOG_INFO << "INFO session.cpp successfully wrote message!\n";
             return;
             }
-            std::cout << "ERROR write failed! error code "<< error << ' '  
+            LOG_INFO << "ERROR write failed! error code "<< error << ' '  
             << std::string(msg_copy -> body(), msg_copy -> body_length()) << '\n';
             disconneted();
             });
@@ -48,7 +49,7 @@ void Session::read_header(){
 
             }
             else if (error){
-            std::cout << "Error while reading message: " << error
+            LOG_INFO << "Error while reading message: " << error
             << " Maybe socket was closed \n";
             disconneted();
             return;
@@ -58,19 +59,19 @@ void Session::read_header(){
 void Session::read_body(){
 
     auto self(shared_from_this());
-    //std::cout << "reading message size " << read_message_buffer_.body_length() << '\n';
+    //LOG_INFO << "reading message size " << read_message_buffer_.body_length() << '\n';
     boost::asio::async_read(socket_, boost::asio::buffer(
                 read_message_buffer_.body(), read_message_buffer_.body_length()), 
             [this, self](boost::system::error_code error, std::size_t /*length*/){
 
             if (!error){
-            //std::cout << "session : obtained message : " << 
+            //LOG_INFO << "session : obtained message : " << 
             //std::string(read_message_buffer_.body(), read_message_buffer_.body_length()) << '\n';
 
             msg_handler_(read_message_buffer_);
             }
             else{
-            std::cout << "Error while reading message: " << error
+            LOG_INFO << "Error while reading message: " << error
             << " Maybe socket was closed \n";
             disconneted();
             return;

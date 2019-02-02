@@ -1,4 +1,5 @@
 #include <flowmq/message_queue.hpp>
+#include <flowmq/logging.hpp>
 
 int MessageQueue::insert_message(MessageId_t message_id, const std::string& message){
 
@@ -46,7 +47,7 @@ int MessageQueue::deliver_message_to_client_id(MessageId_t message_id, ClientId_
     undelivered_messages_.erase(message_id);
     consumer_id_delivered_messages_[client_id].insert(message_id);
     message_id_to_consumer_[message_id] = client_id;
-    std::cout << "Delivered message " << message_id << " to consumer " << client_id << '\n';
+    LOG_ERROR << "Delivered message " << message_id << " to consumer " << client_id << '\n';
 
     return 0;
 }
@@ -54,7 +55,7 @@ int MessageQueue::deliver_message_to_client_id(MessageId_t message_id, ClientId_
 // client disconnected, put all delivered (but uncommitted) messages of this client back to the undelivered state
 int MessageQueue::handle_client_disconnected(ClientId_t client_id){
     if(consumer_id_delivered_messages_.count(client_id) == 0) {
-        std::cout << "ERROR consumer " << client_id << " not found (in consumer disconnected handler) \n";
+        LOG_ERROR << "ERROR consumer " << client_id << " not found (in consumer disconnected handler) \n";
         return 1;
     }
 

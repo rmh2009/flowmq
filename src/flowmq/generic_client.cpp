@@ -1,4 +1,5 @@
 #include <flowmq/generic_client.hpp>
+#include <flowmq/logging.hpp>
 
 namespace flowmq {
 
@@ -37,7 +38,7 @@ void GenericClient::connect(
         boost::asio::io_context& io_context, 
         const tcp::resolver::results_type& endpoints
         ){
-    std::cout << "connecting ... \n";
+    LOG_INFO << "connecting ... \n";
     tcp::socket socket(io_context);
     boost::asio::connect(socket, endpoints);
 
@@ -47,13 +48,13 @@ void GenericClient::connect(
             });
 
     session_-> register_disconnect_handler([this](){
-            std::cout << "Remote session closed, exiting ...\n" ;
+            LOG_INFO << "Remote session closed, exiting ...\n" ;
             running_ = false;
             });
 
     session_ -> start_read();
 
-    std::cout << "connected\n";
+    LOG_INFO << "connected\n";
 }
 
 
