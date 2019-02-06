@@ -171,7 +171,6 @@ template<class... ARGS>
         commit_index_(0),
         last_applied_(0),
         client_manager_(io_context, client_facing_endpoint)
-
 {
     //initialize random seed
 
