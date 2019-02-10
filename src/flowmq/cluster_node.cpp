@@ -197,10 +197,15 @@ void ClusterNode::start_statistics_scheduler(){
 }
 
 // handles all incoming messages from the cluster
-// this is run in the io_context thread.
+// this is run in the io_context thread of the socket session.
 void ClusterNode::message_handler(const Message& msg){
 
     RaftMessage raft_msg = RaftMessage::deserialize_from_message(msg);
+    boost::asio::post(io_context_, std::bind(&ClusterNode::local_message_handler, this, std::move(raft_msg)));
+}
+    
+void ClusterNode::local_message_handler(RaftMessage raft_msg){
+
     LOG_INFO << "#] " << raft_msg.DebugString() << '\n';
 
     switch(raft_msg.type()){
@@ -560,8 +565,12 @@ void ClusterNode::commit_log_entry(int entry_index){
 
 // put all pending messages delivered to this consumer back to pending state
 void ClusterNode::consumer_disconnected(int client_id){
-    message_queue_.handle_client_disconnected(client_id);
-    trigger_message_delivery();
+
+    io_context_.post([client_id, this](){
+            message_queue_.handle_client_disconnected(client_id);
+            trigger_message_delivery();
+    }
+    );
 }
 
 // fetch undelivered messages and send to consumers (if any exists)

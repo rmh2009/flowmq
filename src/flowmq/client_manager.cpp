@@ -32,6 +32,8 @@ void ClientManager::register_disconnect_handler(const ClientDisconnectedHandler&
 // Returns the client id the message was delivered to. Returns -1 on failure.
 int ClientManager::deliver_one_message_round_robin(PartitionIdType partition_id, Message msg){
 
+    std::unique_lock<std::mutex> lock(mutex_);
+
     if(consumer_client_id_array_.count(partition_id) == 0) return 1;
 
     if(consumer_client_id_array_[partition_id].size() == 0) {
@@ -72,6 +74,8 @@ void ClientManager::accept_new_connection(){
 
             new_session -> register_disconnect_handler([this, id](){
                     LOG_INFO << "Removing session " << id << " from client manager!\n";
+
+                    std::unique_lock<std::mutex> lock(mutex_);
                     auto to_remove = client_sessions_.find(id);
                     if(to_remove != client_sessions_.end()){
                     client_sessions_.erase(client_sessions_.find(id));
@@ -112,6 +116,8 @@ void ClientManager::handle_message(const Message& msg, int client_id){
     // TODO optimize this. This is currently deserialized twice, once here, second time
     // in the handler_()
     RaftMessage raft_msg = RaftMessage::deserialize_from_message(msg);
+
+    std::unique_lock<std::mutex> lock(mutex_);
 
     switch(raft_msg.type()){
         case RaftMessage::CLIENT_OPEN_QUEUE: 

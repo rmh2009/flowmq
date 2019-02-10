@@ -64,6 +64,7 @@ class ClientManager : public ClientManagerInterface{
         bool has_consumers() const override;
 
     private:
+
         void accept_new_connection();
 
         void handle_message(const Message& msg, int client_id);
@@ -77,6 +78,10 @@ class ClientManager : public ClientManagerInterface{
 
         ReadHandler handler_;
         ClientDisconnectedHandler client_disconnected_handler_;
+
+        // TODO this lock is required currently until we refactor the 
+        // deliver_one_message_round_robin() member function to be async.
+        std::mutex mutex_;
 };
 
 } // namespace flowmq

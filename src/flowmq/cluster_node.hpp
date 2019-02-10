@@ -85,6 +85,11 @@ class ClusterNode{
         void consumer_disconnected(int client_id);
 
     private:
+
+        // handles deserialized message, this is run in the 
+        // io_context of the current node_cluster instance.
+        void local_message_handler(RaftMessage msg);
+
         void add_log_entry(const LogEntry entry);
 
         //this will send heart beats to all followers if current state is leader

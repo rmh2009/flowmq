@@ -29,19 +29,26 @@ void ClusterManager::broad_cast(Message msg){
     LOG_INFO << "current outoing connections: " << outgoing_sessions_.size() << '\n';
     // here this needs to be shared since it is sent to multiple receivers.
     auto msg_shared = std::make_shared<Message>(std::move(msg));
-    for(auto& session : outgoing_sessions_){
-        session.second -> write_message(msg_shared); 
-    }
+    io_context_.post([msg_shared, this](){
+        for(auto& session : outgoing_sessions_){
+            session.second -> write_message(msg_shared); 
+        }
+    });
 }
 
 void ClusterManager::write_message(int endpoint_id, Message msg){
 
-    if(outgoing_sessions_.count(endpoint_id) != 0){
-        outgoing_sessions_[endpoint_id] -> write_message(std::move(msg));
-    }
-
+    auto msg_shared = std::make_shared<Message>(std::move(msg));
+    io_context_.post([msg_shared, endpoint_id, this](){
+        if(outgoing_sessions_.count(endpoint_id) != 0){
+            outgoing_sessions_[endpoint_id] -> write_message(msg_shared);
+        }
+    });
 }
 
+// By default all sessions created in this manager uses the same io_context, 
+// and is single threaded, so there is no need to lock between this read 
+// handler functions and the other write functions (which uses io_context_.post)
 void ClusterManager::connect(int endpoint_id){
     if(outgoing_sessions_.count(endpoint_id) 
             && outgoing_sessions_[endpoint_id] -> get_status() == Session::CONNECTED){
