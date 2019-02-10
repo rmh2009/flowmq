@@ -18,7 +18,28 @@ namespace flowmq{
 
 // Manages connection with message queue client on the server side. 
 // This class is mainly used in the cluster_node manager.
-class ClientManager{
+class ClientManagerInterface{
+
+    public:
+        using ReadHandler = std::function<void(const Message&)>;
+        using ClientDisconnectedHandler = std::function<void(int client_id)>;
+        using SessionPtr = std::shared_ptr<Session>;
+
+        virtual void start() = 0;
+
+        virtual void register_handler(const ReadHandler& handler) = 0;
+
+        virtual void register_disconnect_handler(const ClientDisconnectedHandler& handler) = 0;
+
+        // Returns the client id the message was delivered to. Returns -1 on failure.
+        virtual int deliver_one_message_round_robin(Message msg) = 0;
+
+        virtual bool has_consumers() const = 0;
+
+        virtual ~ClientManagerInterface(){};
+};
+
+class ClientManager : public ClientManagerInterface{
 
     public:
         using ReadHandler = std::function<void(const Message&)>;
@@ -30,19 +51,16 @@ class ClientManager{
                 const tcp::endpoint& endpoint  // this instance endpoint
                 );
 
-        void start();
+        void start() override;
 
-        void register_handler(const ReadHandler& handler);
+        void register_handler(const ReadHandler& handler) override;
 
-        void register_disconnect_handler(const ClientDisconnectedHandler& handler);
-
-        //int get_next_consumer(){
-        //}
+        void register_disconnect_handler(const ClientDisconnectedHandler& handler) override;
 
         // Returns the client id the message was delivered to. Returns -1 on failure.
-        int deliver_one_message_round_robin(Message msg);
+        int deliver_one_message_round_robin(Message msg) override;
 
-        bool has_consumers() const;
+        bool has_consumers() const override;
 
     private:
         void accept_new_connection();

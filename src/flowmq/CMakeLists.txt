@@ -8,6 +8,8 @@ add_library(libflowmq
     cluster_node.cpp
     generic_client.cpp
     configuration.cpp
+    cluster_node_storage.cpp
+    cluster_master.cpp
     )
 target_include_directories(libflowmq PUBLIC ..)
 

@@ -9,11 +9,12 @@
 #include <flowmq/cluster_manager.hpp>
 #include <flowmq/cluster_node.hpp>
 #include <flowmq/configuration.hpp>
+#include <flowmq/cluster_node_storage.hpp>
 
 using boost::asio::ip::tcp;
 
 int main(int argc, char* argv[]){
-
+    using namespace flowmq;
     try
     {
         if (argc < 2)
@@ -52,10 +53,29 @@ int main(int argc, char* argv[]){
         //cluster.start();
         
         auto client_facing_endpoint = tcp::endpoint(tcp::v4(), stoi(std::get<3>(config.server_nodes[choice])));
-        flowmq::ClusterNode cluster(client_facing_endpoint, choice, config.server_nodes.size(), io_context, this_endpoint, others);
-        
-        io_context.run();
 
+        // construct network managers: cluster_manager and client_manager
+        std::unique_ptr<ClusterManagerInterface> cluster_manager_p(new 
+                ClusterManager(io_context, this_endpoint, others));
+        std::unique_ptr<ClientManagerInterface> client_manager_p(new
+                ClientManager(io_context, client_facing_endpoint));
+        
+        // construct cluster_master
+        ClusterMaster master(std::move(cluster_manager_p), std::move(client_manager_p));
+
+        // construct cluster_node
+        std::unique_ptr<flowmq::ClusterNodeStorageInterface> storage_p(new flowmq::ClusterNodeStorage(0, choice));
+
+        // {partition_id, node_id, total_nodes}
+        ClusterNodeConfig node_config({0, choice, static_cast<int>(config.server_nodes.size())}); 
+        std::unique_ptr<ClusterNode> node_p(new 
+                ClusterNode(node_config, io_context, &master, std::move(storage_p)));
+
+        // add cluster_node to cluster_master and start
+        master.add_cluster_node(node_config.partition_id, node_config.node_id, std::move(node_p));
+
+        // run the context
+        io_context.run();
     }
     catch (std::exception& e)
     {

@@ -12,6 +12,7 @@ ClusterManager::ClusterManager(boost::asio::io_context& io_context,
     incoming_sessions_count_(0),
     endpoints_(endpoints)
 {
+
 }
 
 void ClusterManager::start(){

@@ -8,6 +8,7 @@
 #include <flowmq/message.hpp>
 #include <flowmq/logging.hpp>
 #include <flowmq/flow_message.pb.h>
+#include <flowmq/basic_types.h>
 
 // two types of Raft RPC message, RequestVote and 
 // AppendEntries, each type could be either request 
@@ -123,6 +124,14 @@ class RaftMessage {
 
         MessageType type() const{
             return static_cast<MessageType>(flow_message_.type());
+        }
+
+        PartitionIdType partition_id() const {
+            return flow_message_.partition_id();
+        }
+
+        void set_partition_id(PartitionIdType partition_id) {
+            return flow_message_.set_partition_id(partition_id);
         }
 
         // Should only be used for debugging 

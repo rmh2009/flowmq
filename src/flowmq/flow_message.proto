@@ -32,6 +32,7 @@ message FlowMessage {
     }
 
     required MessageType type = 1;
+    required int64 partition_id = 2;
 
     message RequestVoteRequest{
 
@@ -85,15 +86,15 @@ message FlowMessage {
         required int32 client_id = 1;
     }
 
-    optional RequestVoteRequest request_vote_request = 2; 
-    optional RequestVoteResponse request_vote_response = 3; 
-    optional AppendEntriesRequest append_entries_request = 4; 
-    optional AppendEntriesResponse append_entries_response = 5;
+    optional RequestVoteRequest request_vote_request = 3; 
+    optional RequestVoteResponse request_vote_response = 4; 
+    optional AppendEntriesRequest append_entries_request = 5; 
+    optional AppendEntriesResponse append_entries_response = 6;
 
-    optional ClientPutMessage client_put_message = 6;
-    optional ClientCommitMessage client_commit_message = 7;
-    optional ServerSendMessage server_send_message = 8;
-    optional ClientOpenQueue client_open_queue = 9;
-    optional ConsumerDisconnected consumer_disconnected = 10;
+    optional ClientPutMessage client_put_message = 7;
+    optional ClientCommitMessage client_commit_message = 8;
+    optional ServerSendMessage server_send_message = 9;
+    optional ClientOpenQueue client_open_queue = 10;
+    optional ConsumerDisconnected consumer_disconnected = 11;
 }
 

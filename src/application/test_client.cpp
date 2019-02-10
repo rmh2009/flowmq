@@ -12,33 +12,46 @@ using flowmq::GenericClient;
 using flowmq::RaftMessage;
 using flowmq::Message;
 
-void open_queue(GenericClient& client, const std::string& queue_name, int mode){
+class SimpleClient{
+    public:
+        SimpleClient(long long partition_id):
+            partition_id_(partition_id){}
 
-        RaftMessage raft_msg;
-        flowmq::ClientOpenQueueRequestType req;
-        req.set_open_mode(mode);
-        req.set_queue_name(queue_name);
-        raft_msg.loadClientOpenQueueRequest(std::move(req));
-        client.write_message(raft_msg.serialize_as_message());
-}
+        void open_queue(GenericClient& client, const std::string& queue_name, int mode){
 
-void commit_message(GenericClient& client, int message_id){
+            RaftMessage raft_msg;
+            flowmq::ClientOpenQueueRequestType req;
+            req.set_open_mode(mode);
+            req.set_queue_name(queue_name);
+            raft_msg.loadClientOpenQueueRequest(std::move(req));
+            raft_msg.set_partition_id(partition_id_);
+            client.write_message(raft_msg.serialize_as_message());
+        }
 
-    RaftMessage raft_msg;
-    flowmq::ClientCommitMessageType req;
-    req.set_message_id(message_id);
-    raft_msg.loadClientCommitMessageRequest(std::move(req));
-    client.write_message(raft_msg.serialize_as_message());
-}
+        void commit_message(GenericClient& client, int message_id){
 
-void send_message(GenericClient& client, const std::string& message){
+            RaftMessage raft_msg;
+            flowmq::ClientCommitMessageType req;
+            req.set_message_id(message_id);
+            raft_msg.loadClientCommitMessageRequest(std::move(req));
+            raft_msg.set_partition_id(partition_id_);
+            client.write_message(raft_msg.serialize_as_message());
+        }
 
-    RaftMessage msg;
-    flowmq::ClientPutMessageType req;
-    req.set_message(message);
-    msg.loadClientPutMessageRequest(std::move(req));
-    client.write_message(msg.serialize_as_message());
-}
+        void send_message(GenericClient& client, const std::string& message){
+
+            RaftMessage raft_msg;
+            flowmq::ClientPutMessageType req;
+            req.set_message(message);
+            raft_msg.loadClientPutMessageRequest(std::move(req));
+            raft_msg.set_partition_id(partition_id_);
+            client.write_message(raft_msg.serialize_as_message());
+        }
+
+    private:
+
+        long long partition_id_;
+};
 
 std::shared_ptr<GenericClient> get_new_client(boost::asio::io_context& io_context, const tcp::resolver::results_type& endpoints,
         std::vector<int>& message_ids){
@@ -84,10 +97,10 @@ int main(int argc, char* argv[]){
                 io_context.run(); 
 
                 while(!stop_iocontext){
-                  usleep(500000); 
-                  std::cout << "restarted io_context\n";
-                  io_context.restart();
-                  io_context.run();}
+                usleep(500000); 
+                std::cout << "restarted io_context\n";
+                io_context.restart();
+                io_context.run();}
                 }
 
                 );
@@ -99,17 +112,18 @@ int main(int argc, char* argv[]){
 
         // 1. test send and receive three messages
         auto client = get_new_client(io_context, endpoints, message_ids);
+        SimpleClient mqclient(0);
         client -> start();
         std::cout << "client started \n";
 
         std::string line;
 
-        open_queue(*client, "test_queue", 0);
+        mqclient.open_queue(*client, "test_queue", 0);
 
         std::cout << "sending messages to queue \n";
-        send_message(*client, "test1");
-        send_message(*client, "test2");
-        send_message(*client, "test3");
+        mqclient.send_message(*client, "test1");
+        mqclient.send_message(*client, "test2");
+        mqclient.send_message(*client, "test3");
 
         sleep_some_time();
 
@@ -119,7 +133,7 @@ int main(int argc, char* argv[]){
         }
 
         // commit one of them
-        commit_message(*client, message_ids[0]);
+        mqclient.commit_message(*client, message_ids[0]);
 
         sleep_some_time();
         client -> stop();
@@ -131,7 +145,7 @@ int main(int argc, char* argv[]){
         client = get_new_client(io_context, endpoints, message_ids);
         client -> start();
         sleep_some_time(1);
-        open_queue(*client, "test_queue", 0);
+        mqclient.open_queue(*client, "test_queue", 0);
 
         std::cout << "client restarted \n";
         sleep_some_time(1);
@@ -141,8 +155,8 @@ int main(int argc, char* argv[]){
             return 1;
         }
         //commit the remaining ones
-        commit_message(*client, message_ids[0]);
-        commit_message(*client, message_ids[1]);
+        mqclient.commit_message(*client, message_ids[0]);
+        mqclient.commit_message(*client, message_ids[1]);
         client -> stop();
 
         message_ids.clear();
@@ -150,7 +164,7 @@ int main(int argc, char* argv[]){
 
         // 3. Restart, test that we receive none
         client -> start();
-        open_queue(*client, "test_queue", 0);
+        mqclient.open_queue(*client, "test_queue", 0);
 
         if(message_ids.size() != 0){
             std::cout <<"ERROR! commit failed! received messages after committing all previous messages\n";

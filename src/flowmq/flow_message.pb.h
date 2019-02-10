@@ -1694,10 +1694,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
 
   // accessors -------------------------------------------------------
 
-  // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 2;
+  // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 3;
   bool has_request_vote_request() const;
   void clear_request_vote_request();
-  static const int kRequestVoteRequestFieldNumber = 2;
+  static const int kRequestVoteRequestFieldNumber = 3;
   private:
   const ::flowmq::FlowMessage_RequestVoteRequest& _internal_request_vote_request() const;
   public:
@@ -1706,10 +1706,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_RequestVoteRequest* mutable_request_vote_request();
   void set_allocated_request_vote_request(::flowmq::FlowMessage_RequestVoteRequest* request_vote_request);
 
-  // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 3;
+  // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 4;
   bool has_request_vote_response() const;
   void clear_request_vote_response();
-  static const int kRequestVoteResponseFieldNumber = 3;
+  static const int kRequestVoteResponseFieldNumber = 4;
   private:
   const ::flowmq::FlowMessage_RequestVoteResponse& _internal_request_vote_response() const;
   public:
@@ -1718,10 +1718,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_RequestVoteResponse* mutable_request_vote_response();
   void set_allocated_request_vote_response(::flowmq::FlowMessage_RequestVoteResponse* request_vote_response);
 
-  // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 4;
+  // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 5;
   bool has_append_entries_request() const;
   void clear_append_entries_request();
-  static const int kAppendEntriesRequestFieldNumber = 4;
+  static const int kAppendEntriesRequestFieldNumber = 5;
   private:
   const ::flowmq::FlowMessage_AppendEntriesRequest& _internal_append_entries_request() const;
   public:
@@ -1730,10 +1730,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_AppendEntriesRequest* mutable_append_entries_request();
   void set_allocated_append_entries_request(::flowmq::FlowMessage_AppendEntriesRequest* append_entries_request);
 
-  // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 5;
+  // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 6;
   bool has_append_entries_response() const;
   void clear_append_entries_response();
-  static const int kAppendEntriesResponseFieldNumber = 5;
+  static const int kAppendEntriesResponseFieldNumber = 6;
   private:
   const ::flowmq::FlowMessage_AppendEntriesResponse& _internal_append_entries_response() const;
   public:
@@ -1742,10 +1742,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_AppendEntriesResponse* mutable_append_entries_response();
   void set_allocated_append_entries_response(::flowmq::FlowMessage_AppendEntriesResponse* append_entries_response);
 
-  // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 6;
+  // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 7;
   bool has_client_put_message() const;
   void clear_client_put_message();
-  static const int kClientPutMessageFieldNumber = 6;
+  static const int kClientPutMessageFieldNumber = 7;
   private:
   const ::flowmq::FlowMessage_ClientPutMessage& _internal_client_put_message() const;
   public:
@@ -1754,10 +1754,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ClientPutMessage* mutable_client_put_message();
   void set_allocated_client_put_message(::flowmq::FlowMessage_ClientPutMessage* client_put_message);
 
-  // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 7;
+  // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 8;
   bool has_client_commit_message() const;
   void clear_client_commit_message();
-  static const int kClientCommitMessageFieldNumber = 7;
+  static const int kClientCommitMessageFieldNumber = 8;
   private:
   const ::flowmq::FlowMessage_ClientCommitMessage& _internal_client_commit_message() const;
   public:
@@ -1766,10 +1766,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ClientCommitMessage* mutable_client_commit_message();
   void set_allocated_client_commit_message(::flowmq::FlowMessage_ClientCommitMessage* client_commit_message);
 
-  // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 8;
+  // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 9;
   bool has_server_send_message() const;
   void clear_server_send_message();
-  static const int kServerSendMessageFieldNumber = 8;
+  static const int kServerSendMessageFieldNumber = 9;
   private:
   const ::flowmq::FlowMessage_ServerSendMessage& _internal_server_send_message() const;
   public:
@@ -1778,10 +1778,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ServerSendMessage* mutable_server_send_message();
   void set_allocated_server_send_message(::flowmq::FlowMessage_ServerSendMessage* server_send_message);
 
-  // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 9;
+  // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 10;
   bool has_client_open_queue() const;
   void clear_client_open_queue();
-  static const int kClientOpenQueueFieldNumber = 9;
+  static const int kClientOpenQueueFieldNumber = 10;
   private:
   const ::flowmq::FlowMessage_ClientOpenQueue& _internal_client_open_queue() const;
   public:
@@ -1790,10 +1790,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ClientOpenQueue* mutable_client_open_queue();
   void set_allocated_client_open_queue(::flowmq::FlowMessage_ClientOpenQueue* client_open_queue);
 
-  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 10;
+  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
   bool has_consumer_disconnected() const;
   void clear_consumer_disconnected();
-  static const int kConsumerDisconnectedFieldNumber = 10;
+  static const int kConsumerDisconnectedFieldNumber = 11;
   private:
   const ::flowmq::FlowMessage_ConsumerDisconnected& _internal_consumer_disconnected() const;
   public:
@@ -1801,6 +1801,13 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ConsumerDisconnected* release_consumer_disconnected();
   ::flowmq::FlowMessage_ConsumerDisconnected* mutable_consumer_disconnected();
   void set_allocated_consumer_disconnected(::flowmq::FlowMessage_ConsumerDisconnected* consumer_disconnected);
+
+  // required int64 partition_id = 2;
+  bool has_partition_id() const;
+  void clear_partition_id();
+  static const int kPartitionIdFieldNumber = 2;
+  ::google::protobuf::int64 partition_id() const;
+  void set_partition_id(::google::protobuf::int64 value);
 
   // required .flowmq.FlowMessage.MessageType type = 1;
   bool has_type() const;
@@ -1813,6 +1820,8 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
  private:
   void set_has_type();
   void clear_has_type();
+  void set_has_partition_id();
+  void clear_has_partition_id();
   void set_has_request_vote_request();
   void clear_has_request_vote_request();
   void set_has_request_vote_response();
@@ -1832,6 +1841,9 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   void set_has_consumer_disconnected();
   void clear_has_consumer_disconnected();
 
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
@@ -1844,6 +1856,7 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ServerSendMessage* server_send_message_;
   ::flowmq::FlowMessage_ClientOpenQueue* client_open_queue_;
   ::flowmq::FlowMessage_ConsumerDisconnected* consumer_disconnected_;
+  ::google::protobuf::int64 partition_id_;
   int type_;
   friend struct ::protobuf_flow_5fmessage_2eproto::TableStruct;
 };
@@ -2746,13 +2759,13 @@ inline void FlowMessage_ConsumerDisconnected::set_client_id(::google::protobuf::
 
 // required .flowmq.FlowMessage.MessageType type = 1;
 inline bool FlowMessage::has_type() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000400u) != 0;
 }
 inline void FlowMessage::set_has_type() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000400u;
 }
 inline void FlowMessage::clear_has_type() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000400u;
 }
 inline void FlowMessage::clear_type() {
   type_ = 0;
@@ -2769,7 +2782,31 @@ inline void FlowMessage::set_type(::flowmq::FlowMessage_MessageType value) {
   // @@protoc_insertion_point(field_set:flowmq.FlowMessage.type)
 }
 
-// optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 2;
+// required int64 partition_id = 2;
+inline bool FlowMessage::has_partition_id() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void FlowMessage::set_has_partition_id() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void FlowMessage::clear_has_partition_id() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void FlowMessage::clear_partition_id() {
+  partition_id_ = GOOGLE_LONGLONG(0);
+  clear_has_partition_id();
+}
+inline ::google::protobuf::int64 FlowMessage::partition_id() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.partition_id)
+  return partition_id_;
+}
+inline void FlowMessage::set_partition_id(::google::protobuf::int64 value) {
+  set_has_partition_id();
+  partition_id_ = value;
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.partition_id)
+}
+
+// optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 3;
 inline bool FlowMessage::has_request_vote_request() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -2827,7 +2864,7 @@ inline void FlowMessage::set_allocated_request_vote_request(::flowmq::FlowMessag
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.request_vote_request)
 }
 
-// optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 3;
+// optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 4;
 inline bool FlowMessage::has_request_vote_response() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -2885,7 +2922,7 @@ inline void FlowMessage::set_allocated_request_vote_response(::flowmq::FlowMessa
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.request_vote_response)
 }
 
-// optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 4;
+// optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 5;
 inline bool FlowMessage::has_append_entries_request() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -2943,7 +2980,7 @@ inline void FlowMessage::set_allocated_append_entries_request(::flowmq::FlowMess
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.append_entries_request)
 }
 
-// optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 5;
+// optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 6;
 inline bool FlowMessage::has_append_entries_response() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -3001,7 +3038,7 @@ inline void FlowMessage::set_allocated_append_entries_response(::flowmq::FlowMes
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.append_entries_response)
 }
 
-// optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 6;
+// optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 7;
 inline bool FlowMessage::has_client_put_message() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
@@ -3059,7 +3096,7 @@ inline void FlowMessage::set_allocated_client_put_message(::flowmq::FlowMessage_
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.client_put_message)
 }
 
-// optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 7;
+// optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 8;
 inline bool FlowMessage::has_client_commit_message() const {
   return (_has_bits_[0] & 0x00000020u) != 0;
 }
@@ -3117,7 +3154,7 @@ inline void FlowMessage::set_allocated_client_commit_message(::flowmq::FlowMessa
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.client_commit_message)
 }
 
-// optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 8;
+// optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 9;
 inline bool FlowMessage::has_server_send_message() const {
   return (_has_bits_[0] & 0x00000040u) != 0;
 }
@@ -3175,7 +3212,7 @@ inline void FlowMessage::set_allocated_server_send_message(::flowmq::FlowMessage
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.server_send_message)
 }
 
-// optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 9;
+// optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 10;
 inline bool FlowMessage::has_client_open_queue() const {
   return (_has_bits_[0] & 0x00000080u) != 0;
 }
@@ -3233,7 +3270,7 @@ inline void FlowMessage::set_allocated_client_open_queue(::flowmq::FlowMessage_C
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.client_open_queue)
 }
 
-// optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 10;
+// optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
 inline bool FlowMessage::has_consumer_disconnected() const {
   return (_has_bits_[0] & 0x00000100u) != 0;
 }

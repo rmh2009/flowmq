@@ -383,6 +383,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, type_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, partition_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, request_vote_request_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, request_vote_response_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, append_entries_request_),
@@ -392,6 +393,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, server_send_message_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, client_open_queue_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, consumer_disconnected_),
+  10,
   9,
   0,
   1,
@@ -414,7 +416,7 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROT
   { 81, 88, sizeof(::flowmq::FlowMessage_ServerSendMessage)},
   { 90, 97, sizeof(::flowmq::FlowMessage_ClientOpenQueue)},
   { 99, 105, sizeof(::flowmq::FlowMessage_ConsumerDisconnected)},
-  { 106, 121, sizeof(::flowmq::FlowMessage)},
+  { 106, 122, sizeof(::flowmq::FlowMessage)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -456,51 +458,52 @@ void AddDescriptorsImpl() {
       "y\022\r\n\005index\030\001 \002(\005\022\014\n\004term\030\002 \002(\005\022\022\n\nmessag"
       "e_id\030\003 \002(\005\022\021\n\toperation\030\004 \002(\005\022\017\n\007message"
       "\030\005 \002(\t\" \n\tOPERATION\022\007\n\003ADD\020\000\022\n\n\006COMMIT\020\001"
-      "\"\370\014\n\013FlowMessage\022-\n\004type\030\001 \002(\0162\037.flowmq."
-      "FlowMessage.MessageType\022D\n\024request_vote_"
-      "request\030\002 \001(\0132&.flowmq.FlowMessage.Reque"
-      "stVoteRequest\022F\n\025request_vote_response\030\003"
-      " \001(\0132\'.flowmq.FlowMessage.RequestVoteRes"
-      "ponse\022H\n\026append_entries_request\030\004 \001(\0132(."
-      "flowmq.FlowMessage.AppendEntriesRequest\022"
-      "J\n\027append_entries_response\030\005 \001(\0132).flowm"
-      "q.FlowMessage.AppendEntriesResponse\022@\n\022c"
-      "lient_put_message\030\006 \001(\0132$.flowmq.FlowMes"
-      "sage.ClientPutMessage\022F\n\025client_commit_m"
-      "essage\030\007 \001(\0132\'.flowmq.FlowMessage.Client"
-      "CommitMessage\022B\n\023server_send_message\030\010 \001"
-      "(\0132%.flowmq.FlowMessage.ServerSendMessag"
-      "e\022>\n\021client_open_queue\030\t \001(\0132#.flowmq.Fl"
-      "owMessage.ClientOpenQueue\022G\n\025consumer_di"
-      "sconnected\030\n \001(\0132(.flowmq.FlowMessage.Co"
-      "nsumerDisconnected\032g\n\022RequestVoteRequest"
-      "\022\014\n\004term\030\001 \002(\005\022\024\n\014candidate_id\030\002 \002(\005\022\026\n\016"
-      "last_log_index\030\003 \002(\005\022\025\n\rlast_log_term\030\004 "
-      "\002(\005\032E\n\023RequestVoteResponse\022\014\n\004term\030\001 \002(\005"
-      "\022 \n\030vote_result_term_granted\030\002 \002(\005\032\240\001\n\024A"
-      "ppendEntriesRequest\022\014\n\004term\030\001 \002(\005\022\021\n\tlea"
-      "der_id\030\002 \002(\005\022\026\n\016prev_log_index\030\003 \002(\005\022\025\n\r"
-      "prev_log_term\030\004 \002(\005\022!\n\007entries\030\005 \003(\0132\020.f"
-      "lowmq.LogEntry\022\025\n\rleader_commit\030\006 \002(\005\032t\n"
-      "\025AppendEntriesResponse\022\014\n\004term\030\001 \002(\005\022\023\n\013"
-      "follower_id\030\002 \002(\005\022\035\n\025append_result_succe"
-      "ss\030\003 \002(\005\022\031\n\021last_index_synced\030\004 \002(\005\032#\n\020C"
-      "lientPutMessage\022\017\n\007message\030\001 \002(\t\032)\n\023Clie"
-      "ntCommitMessage\022\022\n\nmessage_id\030\001 \002(\003\0328\n\021S"
-      "erverSendMessage\022\022\n\nmessage_id\030\001 \002(\003\022\017\n\007"
-      "message\030\002 \002(\t\0328\n\017ClientOpenQueue\022\021\n\topen"
-      "_mode\030\001 \002(\005\022\022\n\nqueue_name\030\002 \002(\t\032)\n\024Consu"
-      "merDisconnected\022\021\n\tclient_id\030\001 \002(\005\"\206\002\n\013M"
-      "essageType\022\030\n\024REQUEST_VOTE_REQUEST\020\000\022\031\n\025"
-      "REQUEST_VOTE_RESPONSE\020\001\022\032\n\026APPEND_ENTRIE"
-      "S_REQUEST\020\002\022\033\n\027APPEND_ENTRIES_RESPONSE\020\003"
-      "\022\026\n\022CLIENT_PUT_MESSAGE\020\n\022\031\n\025CLIENT_COMMI"
-      "T_MESSAGE\020\013\022\027\n\023SERVER_SEND_MESSAGE\020\014\022\025\n\021"
-      "CLIENT_OPEN_QUEUE\020\r\022\031\n\025CONSUMER_DISCONNE"
-      "CTED\020\016\022\013\n\007UNKNOWN\020c"
+      "\"\216\r\n\013FlowMessage\022-\n\004type\030\001 \002(\0162\037.flowmq."
+      "FlowMessage.MessageType\022\024\n\014partition_id\030"
+      "\002 \002(\003\022D\n\024request_vote_request\030\003 \001(\0132&.fl"
+      "owmq.FlowMessage.RequestVoteRequest\022F\n\025r"
+      "equest_vote_response\030\004 \001(\0132\'.flowmq.Flow"
+      "Message.RequestVoteResponse\022H\n\026append_en"
+      "tries_request\030\005 \001(\0132(.flowmq.FlowMessage"
+      ".AppendEntriesRequest\022J\n\027append_entries_"
+      "response\030\006 \001(\0132).flowmq.FlowMessage.Appe"
+      "ndEntriesResponse\022@\n\022client_put_message\030"
+      "\007 \001(\0132$.flowmq.FlowMessage.ClientPutMess"
+      "age\022F\n\025client_commit_message\030\010 \001(\0132\'.flo"
+      "wmq.FlowMessage.ClientCommitMessage\022B\n\023s"
+      "erver_send_message\030\t \001(\0132%.flowmq.FlowMe"
+      "ssage.ServerSendMessage\022>\n\021client_open_q"
+      "ueue\030\n \001(\0132#.flowmq.FlowMessage.ClientOp"
+      "enQueue\022G\n\025consumer_disconnected\030\013 \001(\0132("
+      ".flowmq.FlowMessage.ConsumerDisconnected"
+      "\032g\n\022RequestVoteRequest\022\014\n\004term\030\001 \002(\005\022\024\n\014"
+      "candidate_id\030\002 \002(\005\022\026\n\016last_log_index\030\003 \002"
+      "(\005\022\025\n\rlast_log_term\030\004 \002(\005\032E\n\023RequestVote"
+      "Response\022\014\n\004term\030\001 \002(\005\022 \n\030vote_result_te"
+      "rm_granted\030\002 \002(\005\032\240\001\n\024AppendEntriesReques"
+      "t\022\014\n\004term\030\001 \002(\005\022\021\n\tleader_id\030\002 \002(\005\022\026\n\016pr"
+      "ev_log_index\030\003 \002(\005\022\025\n\rprev_log_term\030\004 \002("
+      "\005\022!\n\007entries\030\005 \003(\0132\020.flowmq.LogEntry\022\025\n\r"
+      "leader_commit\030\006 \002(\005\032t\n\025AppendEntriesResp"
+      "onse\022\014\n\004term\030\001 \002(\005\022\023\n\013follower_id\030\002 \002(\005\022"
+      "\035\n\025append_result_success\030\003 \002(\005\022\031\n\021last_i"
+      "ndex_synced\030\004 \002(\005\032#\n\020ClientPutMessage\022\017\n"
+      "\007message\030\001 \002(\t\032)\n\023ClientCommitMessage\022\022\n"
+      "\nmessage_id\030\001 \002(\003\0328\n\021ServerSendMessage\022\022"
+      "\n\nmessage_id\030\001 \002(\003\022\017\n\007message\030\002 \002(\t\0328\n\017C"
+      "lientOpenQueue\022\021\n\topen_mode\030\001 \002(\005\022\022\n\nque"
+      "ue_name\030\002 \002(\t\032)\n\024ConsumerDisconnected\022\021\n"
+      "\tclient_id\030\001 \002(\005\"\206\002\n\013MessageType\022\030\n\024REQU"
+      "EST_VOTE_REQUEST\020\000\022\031\n\025REQUEST_VOTE_RESPO"
+      "NSE\020\001\022\032\n\026APPEND_ENTRIES_REQUEST\020\002\022\033\n\027APP"
+      "END_ENTRIES_RESPONSE\020\003\022\026\n\022CLIENT_PUT_MES"
+      "SAGE\020\n\022\031\n\025CLIENT_COMMIT_MESSAGE\020\013\022\027\n\023SER"
+      "VER_SEND_MESSAGE\020\014\022\025\n\021CLIENT_OPEN_QUEUE\020"
+      "\r\022\031\n\025CONSUMER_DISCONNECTED\020\016\022\013\n\007UNKNOWN\020"
+      "c"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1819);
+      descriptor, 1841);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "flow_message.proto", &protobuf_RegisterTypes);
 }
@@ -3904,6 +3907,7 @@ void FlowMessage::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int FlowMessage::kTypeFieldNumber;
+const int FlowMessage::kPartitionIdFieldNumber;
 const int FlowMessage::kRequestVoteRequestFieldNumber;
 const int FlowMessage::kRequestVoteResponseFieldNumber;
 const int FlowMessage::kAppendEntriesRequestFieldNumber;
@@ -3972,7 +3976,9 @@ FlowMessage::FlowMessage(const FlowMessage& from)
   } else {
     consumer_disconnected_ = NULL;
   }
-  type_ = from.type_;
+  ::memcpy(&partition_id_, &from.partition_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&type_) -
+    reinterpret_cast<char*>(&partition_id_)) + sizeof(type_));
   // @@protoc_insertion_point(copy_constructor:flowmq.FlowMessage)
 }
 
@@ -4058,7 +4064,11 @@ void FlowMessage::Clear() {
     GOOGLE_DCHECK(consumer_disconnected_ != NULL);
     consumer_disconnected_->Clear();
   }
-  type_ = 0;
+  if (cached_has_bits & 1536u) {
+    ::memset(&partition_id_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&type_) -
+        reinterpret_cast<char*>(&partition_id_)) + sizeof(type_));
+  }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -4093,10 +4103,24 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 2;
+      // required int64 partition_id = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+          set_has_partition_id();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &partition_id_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_request_vote_request()));
         } else {
@@ -4105,10 +4129,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 3;
-      case 3: {
+      // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 4;
+      case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_request_vote_response()));
         } else {
@@ -4117,10 +4141,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 4;
-      case 4: {
+      // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 5;
+      case 5: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(42u /* 42 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_append_entries_request()));
         } else {
@@ -4129,10 +4153,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 5;
-      case 5: {
+      // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 6;
+      case 6: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(42u /* 42 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_append_entries_response()));
         } else {
@@ -4141,10 +4165,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 6;
-      case 6: {
+      // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 7;
+      case 7: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(50u /* 50 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(58u /* 58 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_client_put_message()));
         } else {
@@ -4153,10 +4177,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 7;
-      case 7: {
+      // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 8;
+      case 8: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(58u /* 58 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(66u /* 66 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_client_commit_message()));
         } else {
@@ -4165,10 +4189,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 8;
-      case 8: {
+      // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 9;
+      case 9: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(66u /* 66 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(74u /* 74 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_server_send_message()));
         } else {
@@ -4177,10 +4201,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 9;
-      case 9: {
+      // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 10;
+      case 10: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(74u /* 74 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(82u /* 82 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_client_open_queue()));
         } else {
@@ -4189,10 +4213,10 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 10;
-      case 10: {
+      // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
+      case 11: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(82u /* 82 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(90u /* 90 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_consumer_disconnected()));
         } else {
@@ -4229,63 +4253,68 @@ void FlowMessage::SerializeWithCachedSizes(
 
   cached_has_bits = _has_bits_[0];
   // required .flowmq.FlowMessage.MessageType type = 1;
-  if (cached_has_bits & 0x00000200u) {
+  if (cached_has_bits & 0x00000400u) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       1, this->type(), output);
   }
 
-  // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 2;
+  // required int64 partition_id = 2;
+  if (cached_has_bits & 0x00000200u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->partition_id(), output);
+  }
+
+  // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 3;
   if (cached_has_bits & 0x00000001u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->_internal_request_vote_request(), output);
+      3, this->_internal_request_vote_request(), output);
   }
 
-  // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 3;
+  // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 4;
   if (cached_has_bits & 0x00000002u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->_internal_request_vote_response(), output);
+      4, this->_internal_request_vote_response(), output);
   }
 
-  // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 4;
+  // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 5;
   if (cached_has_bits & 0x00000004u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->_internal_append_entries_request(), output);
+      5, this->_internal_append_entries_request(), output);
   }
 
-  // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 5;
+  // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 6;
   if (cached_has_bits & 0x00000008u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->_internal_append_entries_response(), output);
+      6, this->_internal_append_entries_response(), output);
   }
 
-  // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 6;
+  // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 7;
   if (cached_has_bits & 0x00000010u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, this->_internal_client_put_message(), output);
+      7, this->_internal_client_put_message(), output);
   }
 
-  // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 7;
+  // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 8;
   if (cached_has_bits & 0x00000020u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      7, this->_internal_client_commit_message(), output);
+      8, this->_internal_client_commit_message(), output);
   }
 
-  // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 8;
+  // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 9;
   if (cached_has_bits & 0x00000040u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      8, this->_internal_server_send_message(), output);
+      9, this->_internal_server_send_message(), output);
   }
 
-  // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 9;
+  // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 10;
   if (cached_has_bits & 0x00000080u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      9, this->_internal_client_open_queue(), output);
+      10, this->_internal_client_open_queue(), output);
   }
 
-  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 10;
+  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
   if (cached_has_bits & 0x00000100u) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      10, this->_internal_consumer_disconnected(), output);
+      11, this->_internal_consumer_disconnected(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -4304,72 +4333,77 @@ void FlowMessage::SerializeWithCachedSizes(
 
   cached_has_bits = _has_bits_[0];
   // required .flowmq.FlowMessage.MessageType type = 1;
-  if (cached_has_bits & 0x00000200u) {
+  if (cached_has_bits & 0x00000400u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       1, this->type(), target);
   }
 
-  // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 2;
+  // required int64 partition_id = 2;
+  if (cached_has_bits & 0x00000200u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->partition_id(), target);
+  }
+
+  // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 3;
   if (cached_has_bits & 0x00000001u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        2, this->_internal_request_vote_request(), deterministic, target);
+        3, this->_internal_request_vote_request(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 3;
+  // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 4;
   if (cached_has_bits & 0x00000002u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        3, this->_internal_request_vote_response(), deterministic, target);
+        4, this->_internal_request_vote_response(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 4;
+  // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 5;
   if (cached_has_bits & 0x00000004u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        4, this->_internal_append_entries_request(), deterministic, target);
+        5, this->_internal_append_entries_request(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 5;
+  // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 6;
   if (cached_has_bits & 0x00000008u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        5, this->_internal_append_entries_response(), deterministic, target);
+        6, this->_internal_append_entries_response(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 6;
+  // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 7;
   if (cached_has_bits & 0x00000010u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        6, this->_internal_client_put_message(), deterministic, target);
+        7, this->_internal_client_put_message(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 7;
+  // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 8;
   if (cached_has_bits & 0x00000020u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        7, this->_internal_client_commit_message(), deterministic, target);
+        8, this->_internal_client_commit_message(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 8;
+  // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 9;
   if (cached_has_bits & 0x00000040u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        8, this->_internal_server_send_message(), deterministic, target);
+        9, this->_internal_server_send_message(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 9;
+  // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 10;
   if (cached_has_bits & 0x00000080u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        9, this->_internal_client_open_queue(), deterministic, target);
+        10, this->_internal_client_open_queue(), deterministic, target);
   }
 
-  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 10;
+  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
   if (cached_has_bits & 0x00000100u) {
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
-        10, this->_internal_consumer_disconnected(), deterministic, target);
+        11, this->_internal_consumer_disconnected(), deterministic, target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -4380,6 +4414,25 @@ void FlowMessage::SerializeWithCachedSizes(
   return target;
 }
 
+size_t FlowMessage::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:flowmq.FlowMessage)
+  size_t total_size = 0;
+
+  if (has_partition_id()) {
+    // required int64 partition_id = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->partition_id());
+  }
+
+  if (has_type()) {
+    // required .flowmq.FlowMessage.MessageType type = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
+  }
+
+  return total_size;
+}
 size_t FlowMessage::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:flowmq.FlowMessage)
   size_t total_size = 0;
@@ -4389,62 +4442,70 @@ size_t FlowMessage::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  // required .flowmq.FlowMessage.MessageType type = 1;
-  if (has_type()) {
+  if (((_has_bits_[0] & 0x00000600) ^ 0x00000600) == 0) {  // All required fields are present.
+    // required int64 partition_id = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->partition_id());
+
+    // required .flowmq.FlowMessage.MessageType type = 1;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
   }
   if (_has_bits_[0 / 32] & 255u) {
-    // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 2;
+    // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 3;
     if (has_request_vote_request()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
           *request_vote_request_);
     }
 
-    // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 3;
+    // optional .flowmq.FlowMessage.RequestVoteResponse request_vote_response = 4;
     if (has_request_vote_response()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
           *request_vote_response_);
     }
 
-    // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 4;
+    // optional .flowmq.FlowMessage.AppendEntriesRequest append_entries_request = 5;
     if (has_append_entries_request()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
           *append_entries_request_);
     }
 
-    // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 5;
+    // optional .flowmq.FlowMessage.AppendEntriesResponse append_entries_response = 6;
     if (has_append_entries_response()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
           *append_entries_response_);
     }
 
-    // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 6;
+    // optional .flowmq.FlowMessage.ClientPutMessage client_put_message = 7;
     if (has_client_put_message()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
           *client_put_message_);
     }
 
-    // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 7;
+    // optional .flowmq.FlowMessage.ClientCommitMessage client_commit_message = 8;
     if (has_client_commit_message()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
           *client_commit_message_);
     }
 
-    // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 8;
+    // optional .flowmq.FlowMessage.ServerSendMessage server_send_message = 9;
     if (has_server_send_message()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
           *server_send_message_);
     }
 
-    // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 9;
+    // optional .flowmq.FlowMessage.ClientOpenQueue client_open_queue = 10;
     if (has_client_open_queue()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSize(
@@ -4452,7 +4513,7 @@ size_t FlowMessage::ByteSizeLong() const {
     }
 
   }
-  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 10;
+  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
   if (has_consumer_disconnected()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::MessageSize(
@@ -4513,11 +4574,14 @@ void FlowMessage::MergeFrom(const FlowMessage& from) {
       mutable_client_open_queue()->::flowmq::FlowMessage_ClientOpenQueue::MergeFrom(from.client_open_queue());
     }
   }
-  if (cached_has_bits & 768u) {
+  if (cached_has_bits & 1792u) {
     if (cached_has_bits & 0x00000100u) {
       mutable_consumer_disconnected()->::flowmq::FlowMessage_ConsumerDisconnected::MergeFrom(from.consumer_disconnected());
     }
     if (cached_has_bits & 0x00000200u) {
+      partition_id_ = from.partition_id_;
+    }
+    if (cached_has_bits & 0x00000400u) {
       type_ = from.type_;
     }
     _has_bits_[0] |= cached_has_bits;
@@ -4539,7 +4603,7 @@ void FlowMessage::CopyFrom(const FlowMessage& from) {
 }
 
 bool FlowMessage::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000200) != 0x00000200) return false;
+  if ((_has_bits_[0] & 0x00000600) != 0x00000600) return false;
   if (has_request_vote_request()) {
     if (!this->request_vote_request_->IsInitialized()) return false;
   }
@@ -4585,6 +4649,7 @@ void FlowMessage::InternalSwap(FlowMessage* other) {
   swap(server_send_message_, other->server_send_message_);
   swap(client_open_queue_, other->client_open_queue_);
   swap(consumer_disconnected_, other->consumer_disconnected_);
+  swap(partition_id_, other->partition_id_);
   swap(type_, other->type_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);

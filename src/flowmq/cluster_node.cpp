@@ -2,6 +2,71 @@
 
 namespace flowmq{
 
+ClusterNode::ClusterNode(
+                const ClusterNodeConfig& config,
+                boost::asio::io_context& io_context, 
+                ClusterMaster* cluster_master,
+                std::unique_ptr<ClusterNodeStorageInterface> cluster_node_storage_p):
+    partition_id_(config.partition_id),
+    node_id_(config.node_id),
+    total_nodes_(config.total_nodes),
+    io_context_(io_context),
+    state_(CANDIDATE),
+    vote_timer_(io_context),
+    heartbeat_timer_(io_context),
+    stats_timer_(io_context),
+    cur_term_(0),
+    voted_for_(-1),
+    commit_index_(0),
+    last_applied_(0),
+    cluster_node_storage_p_(std::move(cluster_node_storage_p)),
+    message_queue_(),
+    cluster_master_(cluster_master)
+{
+    //initialize random seed
+
+    LOG_INFO << "setting random seed according to pid " << getpid() << '\n';
+    std::srand(getpid());
+
+    //initialize state
+    for(int i = 0; i < total_nodes_; ++i){
+        if(i == node_id_) continue;
+        next_index_[i] = 1;
+        matched_index_[i] = 0;
+    }
+
+    LogEntry entry;
+    entry.set_term(0);
+    entry.set_index(0);
+    entry.set_operation(0);
+    entry.set_message("");
+    log_entries_.push_back(std::move(entry));
+    //log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
+
+    LOG_INFO << "init: " << log_entries_.size() << ", " << log_entries_[0].term() << '\n';
+    check_if_previous_log_in_sync(0, 0);
+
+    //scheduler to check hearbeat and initiate vote periodically
+    start_vote_scheduler();
+    start_send_hearbeat();
+    start_statistics_scheduler();
+
+    // load persisted log entries
+    if(0 != cluster_node_storage_p_->load_log_entry_from_file(&log_entries_)){
+        LOG_INFO << "WARNING : Error loading log entries from storage\n";
+    }
+    for(size_t i = 1; i < log_entries_.size(); ++i){
+        commit_log_entry(i); //update the queue state, this should not trigger delivery to client
+    }
+    LogEntryMetaData metadata{0};
+    if(0 == cluster_node_storage_p_->load_metadata_from_file(&metadata)){
+        commit_index_ = metadata.last_committed;
+    }
+    LOG_INFO << "after loading data: commit index is : " << commit_index_ << ", log entry size: " << log_entries_.size() << '\n';
+
+}
+
+
 void ClusterNode::add_log_entry(const LogEntry entry){
     // this should always be run in io_context, client should not directly call this
 
@@ -37,7 +102,7 @@ void ClusterNode::start_send_hearbeat(){
             //msg.loadAppendEntriesRequest(AppendEntriesRequestType(
             //            {cur_term_, node_id_, last_log_index, last_log_term, {}, commit_index_}));
 
-            cluster_manager_.broad_cast(serialize_raft_message(msg));
+            cluster_master_->cluster_manager()->broad_cast(serialize_raft_message(msg));
             }
 
             start_send_hearbeat();
@@ -68,28 +133,28 @@ void ClusterNode::start_vote_scheduler(){
             voted_for_ = -1;
             votes_collected_ = 0; 
 
-            RaftMessage raft_msg;
-            int last_log_term = log_entries_.back().term();
-            int last_log_index = log_entries_.back().index();
-            RequestVoteRequestType req;
-            req.set_term(cur_term_);
-            req.set_candidate_id(node_id_);
-            req.set_last_log_index(last_log_index);
-            req.set_last_log_term(last_log_term);
-            raft_msg.loadVoteRequest(std::move(req));
-
-            //raft_msg.loadVoteRequest(RequestVoteRequestType({cur_term_, node_id_, last_log_index, last_log_term}));
-
             //set a random timer to send vote request so that all candidates will not send this request at the same time.
             auto timer = std::make_shared<boost::asio::deadline_timer>(io_context_);
             int delay = std::rand() % 1000 ;
             LOG_INFO << "random delay in start_vote_scheduler : " << delay << " miliseconds \n";
             timer -> expires_from_now(boost::posix_time::milliseconds(delay));
-            timer->async_wait([timer, this, raft_msg](boost::system::error_code const&){
+            timer->async_wait([timer, this](boost::system::error_code const&){
+
                     if(voted_for_ != -1) return; //already voted
+
+                    RaftMessage raft_msg;
+                    int last_log_term = log_entries_.back().term();
+                    int last_log_index = log_entries_.back().index();
+                    RequestVoteRequestType req;
+                    req.set_term(cur_term_);
+                    req.set_candidate_id(node_id_);
+                    req.set_last_log_index(last_log_index);
+                    req.set_last_log_term(last_log_term);
+                    raft_msg.loadVoteRequest(std::move(req));
+
                     voted_for_ = node_id_;
                     votes_collected_++; //vote for self
-                    cluster_manager_.broad_cast(serialize_raft_message(raft_msg));
+                    cluster_master_->cluster_manager()->broad_cast(serialize_raft_message(raft_msg));
                     });
             }
 
@@ -154,7 +219,7 @@ void ClusterNode::message_handler(const Message& msg){
                     msg.loadAppendEntriesResponse(std::move(resp));
 
                     //msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 0, -1}));
-                    cluster_manager_.write_message(req.leader_id(), serialize_raft_message(msg));
+                    cluster_master_->cluster_manager()->write_message(req.leader_id(), serialize_raft_message(msg));
                     return;
                 }
 
@@ -181,14 +246,16 @@ void ClusterNode::message_handler(const Message& msg){
                     msg.loadAppendEntriesResponse(std::move(resp));
 
                     //msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 0, -1}));
-                    cluster_manager_.write_message(req.leader_id(), serialize_raft_message(msg));
+                    cluster_master_->cluster_manager()->write_message(req.leader_id(), serialize_raft_message(msg));
                     return;
                 }
 
                 //update leader commit
                 if(commit_index_ < req.leader_commit() && req.leader_commit() < (int)log_entries_.size()){
                     commit_log_entries(commit_index_ + 1, req.leader_commit() + 1);
-                    store_log_entries_and_commit_index(commit_index_ + 1, req.leader_commit() + 1);
+                    cluster_node_storage_p_->store_log_entries_and_metadata(
+                            log_entries_, commit_index_ + 1, req.leader_commit() + 1,
+                            {commit_index_});
                     commit_index_ = req.leader_commit();
                 }
 
@@ -205,7 +272,7 @@ void ClusterNode::message_handler(const Message& msg){
                 msg.loadAppendEntriesResponse(std::move(resp));
 
                 //msg.loadAppendEntriesResponse(AppendEntriesResponseType({cur_term_, node_id_, 1, log_entries_.back().index}));
-                cluster_manager_.write_message(req.leader_id(), serialize_raft_message(msg));
+                cluster_master_->cluster_manager()->write_message(req.leader_id(), serialize_raft_message(msg));
                 return;
 
                 break;
@@ -239,7 +306,9 @@ void ClusterNode::message_handler(const Message& msg){
                         if(count_synced_nodes + 1 > total_nodes_ / 2){
                             LOG_INFO << "index " << resp.last_index_synced() << " is synced among majority nodes, will commit this index.\n";
                             commit_log_entries(commit_index_ + 1, resp.last_index_synced() + 1); // left close right open 
-                            store_log_entries_and_commit_index(commit_index_ + 1, resp.last_index_synced() + 1);
+                            cluster_node_storage_p_->store_log_entries_and_metadata(
+                                    log_entries_, commit_index_ + 1, resp.last_index_synced() + 1,
+                                    {commit_index_});
                             commit_index_ = std::max(commit_index_, resp.last_index_synced());
                         }
                         else{
@@ -288,7 +357,7 @@ void ClusterNode::message_handler(const Message& msg){
                     resp.set_vote_result_term_granted(0); // 0 is not granted
                     msg.loadVoteResult(std::move(resp));
 
-                    cluster_manager_.write_message(candidate_node_id, serialize_raft_message(msg));
+                    cluster_master_->cluster_manager()->write_message(candidate_node_id, serialize_raft_message(msg));
                     return;
                 }
 
@@ -308,7 +377,7 @@ void ClusterNode::message_handler(const Message& msg){
                     msg.loadVoteResult(std::move(resp));
 
                     //msg.loadVoteResult(RequestVoteResponseType({req.term, 1}));
-                    cluster_manager_.write_message(candidate_node_id, serialize_raft_message(msg));
+                    cluster_master_->cluster_manager()->write_message(candidate_node_id, serialize_raft_message(msg));
                 }
 
                 break;
@@ -420,7 +489,7 @@ void ClusterNode::trigger_entry_update(int follower_id){
         //        commit_index_
         //        });
 
-        cluster_manager_.write_message(follower_id, serialize_raft_message(msg));
+        cluster_master_->cluster_manager()->write_message(follower_id, serialize_raft_message(msg));
 
         //to slow things down and help debug
         //usleep(1000000);
@@ -444,25 +513,14 @@ void ClusterNode::clean_log_entries_out_of_sync(int index_to_remove){
     log_entries_.erase(log_entries_.begin() + index_to_remove, log_entries_.end());
 }
 
-Message ClusterNode::serialize_raft_message(const RaftMessage& raft_message){
+Message ClusterNode::serialize_raft_message(RaftMessage& raft_message){
+    raft_message.set_partition_id(partition_id_);
     Message msg;
     raft_message.serialize_to_message(&msg);
     return msg;
 }
 
-
-// ---------------- Message Queue Related Operations ----------------  
-
-// storage related
-void ClusterNode::store_log_entries_and_commit_index(int start_entry_index, int stop_entry_index){
-    assert(start_entry_index < stop_entry_index);
-
-    std::vector<LogEntry> temp_entries(log_entries_.begin() + start_entry_index, log_entries_.begin() + stop_entry_index);
-    LogEntryStorage::append_log_entry_to_file(storage_log_entry_filename_, temp_entries);
-    LogEntryMetaData metadata({stop_entry_index - 1});
-    MetadataStorage::save_metadata_to_file(storage_metadata_file_name_, metadata);
-}
-// commit log entries to message queue
+// apply committed log entries to message queue
 void ClusterNode::commit_log_entries(int start_entry_index, int stop_entry_index){
     while(start_entry_index < stop_entry_index){
         commit_log_entry(start_entry_index);
@@ -499,7 +557,7 @@ void ClusterNode::consumer_disconnected(int client_id){
 void ClusterNode::trigger_message_delivery(){
 
     LOG_INFO << "trying to deliver messages \n";
-    if(!client_manager_.has_consumers()) return;
+    if(!cluster_master_->client_manager()->has_consumers()) return;
     std::vector<MessageQueue::MessageId_t> id_temp;
     message_queue_.get_all_undelivered_messages(&id_temp);
 
@@ -511,7 +569,7 @@ void ClusterNode::trigger_message_delivery(){
         msg.loadServerSendMessageRequest(std::move(send));
         //msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_queue_.get_message(message_id)});
         LOG_INFO << "delivering message to client : " << msg.DebugString() << '\n';
-        int consumer_id = client_manager_.deliver_one_message_round_robin(serialize_raft_message(msg));
+        int consumer_id = cluster_master_->client_manager()->deliver_one_message_round_robin(serialize_raft_message(msg));
         if(consumer_id == -1){
             LOG_ERROR << "ERROR: unable to deliver message " << message_id << " to consumer!\n";
             return;
