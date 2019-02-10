@@ -48,6 +48,9 @@ namespace flowmq{
             else if(key == "client_port"){
                 client_port = value;
             }
+            else if(key == "partition_id"){
+                config.partitions_ids.push_back(std::stoll(value));
+            }
             else {
                 throw std::logic_error("Failured parsing Config file, unknown key name : " + key);
             }

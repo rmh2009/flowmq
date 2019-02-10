@@ -22,9 +22,11 @@ using AppendEntriesRequestType = FlowMessage_AppendEntriesRequest;
 using AppendEntriesResponseType = FlowMessage_AppendEntriesResponse;
 
 using ClientPutMessageType = FlowMessage_ClientPutMessage;
+using ClientPutMessageResponseType = FlowMessage_ClientPutMessageResponse;
 using ClientCommitMessageType = FlowMessage_ClientCommitMessage;
 using ServerSendMessageType = FlowMessage_ServerSendMessage;
 using ClientOpenQueueRequestType = FlowMessage_ClientOpenQueue;
+using ClientOpenQueueResponseType = FlowMessage_ClientOpenQueueResponse;
 using ConsumerDisconnectedType = FlowMessage_ConsumerDisconnected;
 
 // Wrapper class on top of the Protobuf class flowmq::FlowMessage. 
@@ -39,12 +41,17 @@ class RaftMessage {
             APPEND_ENTRIES_REQUEST  = FlowMessage::APPEND_ENTRIES_REQUEST ,
             APPEND_ENTRIES_RESPONSE = FlowMessage::APPEND_ENTRIES_RESPONSE,
             CLIENT_PUT_MESSAGE      = FlowMessage::CLIENT_PUT_MESSAGE     ,
+            CLIENT_PUT_MESSAGE_RESPONSE      = FlowMessage::CLIENT_PUT_MESSAGE_RESPONSE,
             CLIENT_COMMIT_MESSAGE   = FlowMessage::CLIENT_COMMIT_MESSAGE  ,
             SERVER_SEND_MESSAGE     = FlowMessage::SERVER_SEND_MESSAGE    ,
             CLIENT_OPEN_QUEUE       = FlowMessage::CLIENT_OPEN_QUEUE      ,
+            CLIENT_OPEN_QUEUE_RESPONSE    = FlowMessage::CLIENT_OPEN_QUEUE_RESPONSE,
             CONSUMER_DISCONNECTED   = FlowMessage::CONSUMER_DISCONNECTED  ,
             UNKNOWN                 = FlowMessage::UNKNOWN                
         };
+
+        static const FlowMessage::Status SUCCESS = FlowMessage_Status_SUCCESS;
+        static const FlowMessage::Status ERROR = FlowMessage_Status_ERROR;
 
         RaftMessage()
         {};
@@ -74,6 +81,11 @@ class RaftMessage {
             (*flow_message_.mutable_client_put_message()) = std::move(put);
         }
 
+        void loadClientPutMessageResponse(ClientPutMessageResponseType put_response){
+            flow_message_.set_type(FlowMessage::CLIENT_PUT_MESSAGE_RESPONSE);
+            (*flow_message_.mutable_client_put_message_response()) = std::move(put_response);
+        }
+
         void loadClientCommitMessageRequest(ClientCommitMessageType commit){
             flow_message_.set_type(FlowMessage::CLIENT_COMMIT_MESSAGE);
             (*flow_message_.mutable_client_commit_message()) = std::move(commit);
@@ -82,6 +94,11 @@ class RaftMessage {
         void loadClientOpenQueueRequest(ClientOpenQueueRequestType open){
             flow_message_.set_type(FlowMessage::CLIENT_OPEN_QUEUE);
             (*flow_message_.mutable_client_open_queue()) = std::move(open);
+        }
+        
+        void loadClientOpenQueueResponse(ClientOpenQueueResponseType open_response){
+            flow_message_.set_type(FlowMessage::CLIENT_OPEN_QUEUE_RESPONSE);
+            (*flow_message_.mutable_client_open_queue_response()) = std::move(open_response);
         }
 
         void loadServerSendMessageRequest(ServerSendMessageType send){
@@ -109,12 +126,20 @@ class RaftMessage {
             return flow_message_.client_put_message();
         }
 
+        const ClientPutMessageResponseType& get_put_message_response() const{
+            return flow_message_.client_put_message_response();
+        }
+
         const ClientCommitMessageType& get_commit_message_request() const{
             return flow_message_.client_commit_message();
         }
 
         const ClientOpenQueueRequestType get_open_queue_request() const{
             return flow_message_.client_open_queue();
+        }
+
+        const ClientOpenQueueResponseType get_open_queue_response() const{
+            return flow_message_.client_open_queue_response();
         }
 
         const ServerSendMessageType& get_server_send_essage() const{

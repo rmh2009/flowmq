@@ -16,6 +16,7 @@ ClusterNode::ClusterNode(
     heartbeat_timer_(io_context),
     stats_timer_(io_context),
     cur_term_(0),
+    cur_leader_(-1),
     voted_for_(-1),
     commit_index_(0),
     last_applied_(0),
@@ -171,7 +172,7 @@ void ClusterNode::start_statistics_scheduler(){
             LOG_INFO << "Printing statistics \n ___________________________________________________________________________\n\n";
 
             for(auto entry : log_entries_){
-            LOG_INFO << entry.index() << ',' << entry.operation() << ',' << entry.message() << "   ";
+            LOG_INFO << entry.index() << ',' << entry.operation() << ',' << entry.message() << "   \n";
             }
 
             LOG_INFO << "\ncommit_index : " << commit_index_ << '\n';
@@ -209,6 +210,7 @@ void ClusterNode::message_handler(const Message& msg){
                 //check if term is up-to-date, if not send back current term, leader should update its term.
                 if(req.term() < cur_term_){
                     LOG_INFO << "WARNING: Received expired heart beat from leader! sending back current term \n";
+                    cur_leader_ = -1;
 
                     RaftMessage msg;
                     AppendEntriesResponseType resp;
@@ -232,7 +234,7 @@ void ClusterNode::message_handler(const Message& msg){
                 //update last_heart_beat_received_
                 std::time(&last_heart_beat_received_);
                 cur_term_ = req.term();
-
+                cur_leader_ = req.leader_id();
 
                 //check if previous log in sync, if not return false
                 if(!check_if_previous_log_in_sync(req.prev_log_term(), req.prev_log_index())){
@@ -253,10 +255,10 @@ void ClusterNode::message_handler(const Message& msg){
                 //update leader commit
                 if(commit_index_ < req.leader_commit() && req.leader_commit() < (int)log_entries_.size()){
                     commit_log_entries(commit_index_ + 1, req.leader_commit() + 1);
-                    cluster_node_storage_p_->store_log_entries_and_metadata(
-                            log_entries_, commit_index_ + 1, req.leader_commit() + 1,
-                            {commit_index_});
                     commit_index_ = req.leader_commit();
+                    cluster_node_storage_p_->store_log_entries_and_metadata(
+                            log_entries_, commit_index_, req.leader_commit() + 1,
+                            {commit_index_});
                 }
 
                 //append logs from leader
@@ -306,10 +308,10 @@ void ClusterNode::message_handler(const Message& msg){
                         if(count_synced_nodes + 1 > total_nodes_ / 2){
                             LOG_INFO << "index " << resp.last_index_synced() << " is synced among majority nodes, will commit this index.\n";
                             commit_log_entries(commit_index_ + 1, resp.last_index_synced() + 1); // left close right open 
-                            cluster_node_storage_p_->store_log_entries_and_metadata(
-                                    log_entries_, commit_index_ + 1, resp.last_index_synced() + 1,
-                                    {commit_index_});
                             commit_index_ = std::max(commit_index_, resp.last_index_synced());
+                            cluster_node_storage_p_->store_log_entries_and_metadata(
+                                    log_entries_, commit_index_, resp.last_index_synced() + 1,
+                                    {commit_index_});
                         }
                         else{
                             LOG_INFO << "index " << resp.last_index_synced() << " is not synced among majority nodes yet, will not commit this index.\n";
@@ -429,6 +431,15 @@ void ClusterNode::message_handler(const Message& msg){
             {
                 if(state_ != LEADER){
                     LOG_ERROR << "ERROR! current node is not leader! only leader accepts open queue reqeust.\n";
+                    RaftMessage raft_msg;
+                    ClientOpenQueueResponseType resp;
+                    resp.set_status(RaftMessage::ERROR);
+                    *resp.mutable_error_message() = "Node is not leader.";
+                    auto leader_address = cluster_master_->get_address_for_node(cur_leader_);
+                    *resp.mutable_leader_ip() = leader_address.first;
+                    *resp.mutable_leader_port() = leader_address.second;
+                    raft_msg.loadClientOpenQueueResponse(std::move(resp));
+                    cluster_master_->client_manager()->deliver_one_message_round_robin(partition_id_, serialize_raft_message(raft_msg));
                     return;
                 }
 
@@ -569,7 +580,7 @@ void ClusterNode::trigger_message_delivery(){
         msg.loadServerSendMessageRequest(std::move(send));
         //msg.loadServerSendMessageRequest(ServerSendMessageType{message_id, message_queue_.get_message(message_id)});
         LOG_INFO << "delivering message to client : " << msg.DebugString() << '\n';
-        int consumer_id = cluster_master_->client_manager()->deliver_one_message_round_robin(serialize_raft_message(msg));
+        int consumer_id = cluster_master_->client_manager()->deliver_one_message_round_robin(partition_id_, serialize_raft_message(msg));
         if(consumer_id == -1){
             LOG_ERROR << "ERROR: unable to deliver message " << message_id << " to consumer!\n";
             return;

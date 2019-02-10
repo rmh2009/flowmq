@@ -86,7 +86,7 @@ int main(int argc, char* argv[]){
     {
         if (argc != 4)
         {
-            std::cerr << "Usage: chat_client <host> <port> <user_name>\n";
+            std::cerr << "Usage: chat_client <host> <port> <partition>\n";
             return 1;
         }
 
@@ -107,12 +107,12 @@ int main(int argc, char* argv[]){
 
         tcp::resolver resolver(io_context);
         auto endpoints = resolver.resolve(argv[1], argv[2]);
-        std::string user_name(argv[3]);
+        int partition_id = std::stoi(argv[3]);
         std::vector<int> message_ids; 
 
         // 1. test send and receive three messages
         auto client = get_new_client(io_context, endpoints, message_ids);
-        SimpleClient mqclient(0);
+        SimpleClient mqclient(partition_id);
         client -> start();
         std::cout << "client started \n";
 

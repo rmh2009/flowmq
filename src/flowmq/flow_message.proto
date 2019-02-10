@@ -28,11 +28,18 @@ message FlowMessage {
         SERVER_SEND_MESSAGE = 12;
         CLIENT_OPEN_QUEUE = 13;
         CONSUMER_DISCONNECTED = 14;
+        CLIENT_PUT_MESSAGE_RESPONSE = 15;
+        CLIENT_OPEN_QUEUE_RESPONSE = 16;
         UNKNOWN = 99;
     }
 
+    enum Status { 
+        SUCCESS = 0;
+        ERROR = 1;
+    }
+
     required MessageType type = 1;
-    required int64 partition_id = 2;
+    optional int64 partition_id = 2;
 
     message RequestVoteRequest{
 
@@ -63,9 +70,16 @@ message FlowMessage {
         required int32 last_index_synced = 4;
     }
 
-    //message for message queue client to put a message onto the queue or commit message in queue
+    // message queue related operations
     message ClientPutMessage{
         required string message = 1;
+        optional int64 message_id = 2;
+    }
+
+    message ClientPutMessageResponse{
+        required int64 message_id = 1;
+        required Status status = 2;
+        required string error_message = 3;
     }
 
     message ClientCommitMessage{
@@ -82,6 +96,15 @@ message FlowMessage {
         required string queue_name = 2;
     }
 
+    message ClientOpenQueueResponse{
+        required Status status = 1;
+        required string error_message = 2;
+        optional string leader_ip = 3;
+        optional string leader_port = 4;
+    }
+
+
+    // internal control messages
     message ConsumerDisconnected{
         required int32 client_id = 1;
     }
@@ -96,5 +119,7 @@ message FlowMessage {
     optional ServerSendMessage server_send_message = 9;
     optional ClientOpenQueue client_open_queue = 10;
     optional ConsumerDisconnected consumer_disconnected = 11;
+    optional ClientOpenQueueResponse client_open_queue_response = 12;
+    optional ClientPutMessageResponse client_put_message_response = 13;
 }
 

@@ -23,11 +23,11 @@ const bool logging_error_disabled__ = false;
 
 #define LOG_INFO  \
 if(flowmq::logging_info_disabled__){} else \
-std::cout << "INFO: "
+std::cout << __FILE__ << ' ' << __LINE__ << " INFO: "
 
 #define LOG_ERROR \
 if(flowmq::logging_error_disabled__){} else \
-std::cerr << "ERROR: " 
+std::cerr << __FILE__ << ' ' << __LINE__ << "ERROR: " 
 
 
 }

@@ -5,17 +5,20 @@
 #include <vector>
 #include <tuple>
 
+#include <flowmq/basic_types.h>
+
 namespace flowmq{
 
 struct ServerConfiguration{
 
+    // Tuple of <node_id, host_ip, server_port, client_port> representing the server host and ports 
     typedef std::tuple<int, std::string, std::string, std::string> ServerPoint;
 
     int current_node;
 
-    // Tuple of <node_id, host, server_port, client_port> representing the server host and ports 
     // for each node id.
     std::vector<ServerPoint> server_nodes;
+    std::vector<PartitionIdType> partitions_ids;
 
 };
 

@@ -9,6 +9,7 @@
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
 
+#include <flowmq/basic_types.h>
 #include <flowmq/message.hpp>
 #include <flowmq/session.hpp>
 
@@ -32,7 +33,7 @@ class ClientManagerInterface{
         virtual void register_disconnect_handler(const ClientDisconnectedHandler& handler) = 0;
 
         // Returns the client id the message was delivered to. Returns -1 on failure.
-        virtual int deliver_one_message_round_robin(Message msg) = 0;
+        virtual int deliver_one_message_round_robin(PartitionIdType partition_id, Message msg) = 0;
 
         virtual bool has_consumers() const = 0;
 
@@ -58,7 +59,7 @@ class ClientManager : public ClientManagerInterface{
         void register_disconnect_handler(const ClientDisconnectedHandler& handler) override;
 
         // Returns the client id the message was delivered to. Returns -1 on failure.
-        int deliver_one_message_round_robin(Message msg) override;
+        int deliver_one_message_round_robin(PartitionIdType partition_id, Message msg) override;
 
         bool has_consumers() const override;
 
@@ -71,8 +72,8 @@ class ClientManager : public ClientManagerInterface{
         tcp::acceptor acceptor_;
 
         std::map<int, SessionPtr> client_sessions_;
-        std::vector<int> consumer_client_id_array_;
-        int deliver_count_;
+        std::map<PartitionIdType, std::vector<int>> consumer_client_id_array_;
+        std::map<PartitionIdType, int> deliver_count_;
 
         ReadHandler handler_;
         ClientDisconnectedHandler client_disconnected_handler_;

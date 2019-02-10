@@ -35,12 +35,12 @@ int main(int argc, char* argv[]){
         if(argc > 2){
             config.current_node = atoi(argv[2]);
         }
-        int choice = config.current_node;
+        int cur_node_id = config.current_node;
 
         tcp::endpoint this_endpoint;
         std::vector<std::pair<int, tcp::resolver::results_type>> others;
         for(size_t i = 0; i < config.server_nodes.size(); ++i){
-            if(i == static_cast<size_t>(config.current_node)){
+            if(std::get<0>(config.server_nodes[i]) == config.current_node){
                 this_endpoint = tcp::endpoint(tcp::v4(), stoi(std::get<2>(config.server_nodes[i])));
             }
             else{
@@ -49,10 +49,7 @@ int main(int argc, char* argv[]){
                             std::get<2>(config.server_nodes[i]))});
             }
         }
-        //ClusterManager cluster(io_context, this_endpoint, others);
-        //cluster.start();
-        
-        auto client_facing_endpoint = tcp::endpoint(tcp::v4(), stoi(std::get<3>(config.server_nodes[choice])));
+        auto client_facing_endpoint = tcp::endpoint(tcp::v4(), stoi(std::get<3>(config.server_nodes[cur_node_id])));
 
         // construct network managers: cluster_manager and client_manager
         std::unique_ptr<ClusterManagerInterface> cluster_manager_p(new 
@@ -61,18 +58,23 @@ int main(int argc, char* argv[]){
                 ClientManager(io_context, client_facing_endpoint));
         
         // construct cluster_master
-        ClusterMaster master(std::move(cluster_manager_p), std::move(client_manager_p));
+        ClusterMaster master(std::move(cluster_manager_p), std::move(client_manager_p), config);
 
-        // construct cluster_node
-        std::unique_ptr<flowmq::ClusterNodeStorageInterface> storage_p(new flowmq::ClusterNodeStorage(0, choice));
+        assert(config.partitions_ids.size() > 0);
 
-        // {partition_id, node_id, total_nodes}
-        ClusterNodeConfig node_config({0, choice, static_cast<int>(config.server_nodes.size())}); 
-        std::unique_ptr<ClusterNode> node_p(new 
-                ClusterNode(node_config, io_context, &master, std::move(storage_p)));
+        for(auto partition_id : config.partitions_ids){
+        // add partition 0
+            // construct cluster_node
+            std::unique_ptr<flowmq::ClusterNodeStorageInterface> storage_p(new flowmq::ClusterNodeStorage(partition_id, cur_node_id));
 
-        // add cluster_node to cluster_master and start
-        master.add_cluster_node(node_config.partition_id, node_config.node_id, std::move(node_p));
+            // {partition_id, node_id, total_nodes}
+            ClusterNodeConfig node_config({partition_id, cur_node_id, static_cast<int>(config.server_nodes.size())}); 
+            std::unique_ptr<ClusterNode> node_p(new 
+                    ClusterNode(node_config, io_context, &master, std::move(storage_p)));
+
+            // add cluster_node to cluster_master and start
+            master.add_cluster_node(node_config.partition_id, node_config.node_id, std::move(node_p));
+        }
 
         // run the context
         io_context.run();

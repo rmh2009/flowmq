@@ -144,6 +144,7 @@ class ClusterNode{
         boost::asio::deadline_timer stats_timer_;
 
         int cur_term_;
+        int cur_leader_;
         time_t last_heart_beat_received_;
         int votes_collected_;
         int voted_for_; // -1 means did not vote yet
@@ -165,82 +166,6 @@ class ClusterNode{
         ClusterMaster* cluster_master_;
 
 };
-
-
-// ---------------------- Implementation ---------------------------
-
-//template<class... ARGS>
-//    ClusterNode::ClusterNode(const tcp::endpoint& client_facing_endpoint, 
-//            int node_id, 
-//            int total_nodes, 
-//            boost::asio::io_context& io_context, 
-//            std::unique_ptr<ClusterNodeStorageInterface> cluster_node_storage_p,
-//            ARGS&&... args):
-//        node_id_(node_id),
-//        total_nodes_(total_nodes),
-//        io_context_(io_context),
-//        state_(CANDIDATE),
-//        vote_timer_(io_context),
-//        heartbeat_timer_(io_context),
-//        stats_timer_(io_context),
-//        cur_term_(0),
-//        voted_for_(-1),
-//        commit_index_(0),
-//        last_applied_(0),
-//        cluster_node_storage_p_(std::move(cluster_node_storage_p)),
-//        message_queue_()
-//{
-//    //initialize random seed
-//
-//    LOG_INFO << "setting random seed according to pid " << getpid() << '\n';
-//    std::srand(getpid());
-//
-//    //initialize state
-//    for(int i = 0; i < total_nodes; ++i){
-//        if(i == node_id) continue;
-//        next_index_[i] = 1;
-//        matched_index_[i] = 0;
-//    }
-//
-//    LogEntry entry;
-//    entry.set_term(0);
-//    entry.set_index(0);
-//    entry.set_operation(0);
-//    entry.set_message("");
-//    log_entries_.push_back(std::move(entry));
-//    //log_entries_.push_back(LogEntry{0, 0, 0, 0, ""});
-//
-//    LOG_INFO << "init: " << log_entries_.size() << ", " << log_entries_[0].term() << '\n';
-//    check_if_previous_log_in_sync(0, 0);
-//
-//    //scheduler to check hearbeat and initiate vote periodically
-//    start_vote_scheduler();
-//    start_send_hearbeat();
-//    start_statistics_scheduler();
-//
-//    // load persisted log entries
-//    if(0 != cluster_node_storage_p_->load_log_entry_from_file(&log_entries_)){
-//        LOG_INFO << "WARNING : Error loading log entries from storage\n";
-//    }
-//    for(size_t i = 1; i < log_entries_.size(); ++i){
-//        commit_log_entry(i); //update the queue state, this should not trigger delivery to client
-//    }
-//    LogEntryMetaData metadata{0};
-//    if(0 == cluster_node_storage_p_->load_metadata_from_file(&metadata)){
-//        commit_index_ = metadata.last_committed;
-//    }
-//    LOG_INFO << "after loading data: commit index is : " << commit_index_ << ", log entry size: " << log_entries_.size() << '\n';
-//
-//    // start cluster
-//    //cluster_manager_.register_handler(std::bind(&ClusterNode::message_handler, this, std::placeholders::_1));
-//    //cluster_manager_.start();
-//
-//    // start client manager
-//    //client_manager_.register_handler(std::bind(&ClusterNode::message_handler, this, std::placeholders::_1));
-//    //client_manager_.register_disconnect_handler(std::bind(&ClusterNode::consumer_disconnected, this, std::placeholders::_1));
-//    //client_manager_.start();
-//
-//}
 
 // Takes a container of entries, the API of C should be similar to std::vector.
 // This works for protobuf::RepeatedPtrField<> as well.

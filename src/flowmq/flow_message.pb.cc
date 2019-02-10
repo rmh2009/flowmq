@@ -23,7 +23,9 @@ namespace protobuf_flow_5fmessage_2eproto {
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_AppendEntriesResponse;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientCommitMessage;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientOpenQueue;
+extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientOpenQueueResponse;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientPutMessage;
+extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientPutMessageResponse;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ConsumerDisconnected;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_RequestVoteRequest;
 extern PROTOBUF_INTERNAL_EXPORT_protobuf_flow_5fmessage_2eproto ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_RequestVoteResponse;
@@ -62,6 +64,11 @@ class FlowMessage_ClientPutMessageDefaultTypeInternal {
   ::google::protobuf::internal::ExplicitlyConstructed<FlowMessage_ClientPutMessage>
       _instance;
 } _FlowMessage_ClientPutMessage_default_instance_;
+class FlowMessage_ClientPutMessageResponseDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<FlowMessage_ClientPutMessageResponse>
+      _instance;
+} _FlowMessage_ClientPutMessageResponse_default_instance_;
 class FlowMessage_ClientCommitMessageDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<FlowMessage_ClientCommitMessage>
@@ -77,6 +84,11 @@ class FlowMessage_ClientOpenQueueDefaultTypeInternal {
   ::google::protobuf::internal::ExplicitlyConstructed<FlowMessage_ClientOpenQueue>
       _instance;
 } _FlowMessage_ClientOpenQueue_default_instance_;
+class FlowMessage_ClientOpenQueueResponseDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<FlowMessage_ClientOpenQueueResponse>
+      _instance;
+} _FlowMessage_ClientOpenQueueResponse_default_instance_;
 class FlowMessage_ConsumerDisconnectedDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<FlowMessage_ConsumerDisconnected>
@@ -174,6 +186,20 @@ static void InitDefaultsFlowMessage_ClientPutMessage() {
 ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientPutMessage =
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsFlowMessage_ClientPutMessage}, {}};
 
+static void InitDefaultsFlowMessage_ClientPutMessageResponse() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::flowmq::_FlowMessage_ClientPutMessageResponse_default_instance_;
+    new (ptr) ::flowmq::FlowMessage_ClientPutMessageResponse();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::flowmq::FlowMessage_ClientPutMessageResponse::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientPutMessageResponse =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsFlowMessage_ClientPutMessageResponse}, {}};
+
 static void InitDefaultsFlowMessage_ClientCommitMessage() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -216,6 +242,20 @@ static void InitDefaultsFlowMessage_ClientOpenQueue() {
 ::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientOpenQueue =
     {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsFlowMessage_ClientOpenQueue}, {}};
 
+static void InitDefaultsFlowMessage_ClientOpenQueueResponse() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::flowmq::_FlowMessage_ClientOpenQueueResponse_default_instance_;
+    new (ptr) ::flowmq::FlowMessage_ClientOpenQueueResponse();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::flowmq::FlowMessage_ClientOpenQueueResponse::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_FlowMessage_ClientOpenQueueResponse =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsFlowMessage_ClientOpenQueueResponse}, {}};
+
 static void InitDefaultsFlowMessage_ConsumerDisconnected() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
@@ -241,8 +281,8 @@ static void InitDefaultsFlowMessage() {
   ::flowmq::FlowMessage::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<9> scc_info_FlowMessage =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 9, InitDefaultsFlowMessage}, {
+::google::protobuf::internal::SCCInfo<11> scc_info_FlowMessage =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 11, InitDefaultsFlowMessage}, {
       &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_RequestVoteRequest.base,
       &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_RequestVoteResponse.base,
       &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_AppendEntriesRequest.base,
@@ -251,7 +291,9 @@ static void InitDefaultsFlowMessage() {
       &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientCommitMessage.base,
       &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ServerSendMessage.base,
       &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientOpenQueue.base,
-      &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ConsumerDisconnected.base,}};
+      &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ConsumerDisconnected.base,
+      &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientOpenQueueResponse.base,
+      &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientPutMessageResponse.base,}};
 
 void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_LogEntry.base);
@@ -260,15 +302,17 @@ void InitDefaults() {
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_AppendEntriesRequest.base);
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_AppendEntriesResponse.base);
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_ClientPutMessage.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_ClientPutMessageResponse.base);
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_ClientCommitMessage.base);
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_ServerSendMessage.base);
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_ClientOpenQueue.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_ClientOpenQueueResponse.base);
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage_ConsumerDisconnected.base);
   ::google::protobuf::internal::InitSCC(&scc_info_FlowMessage.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[11];
-const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[2];
+::google::protobuf::Metadata file_level_metadata[13];
+const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[3];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::LogEntry, _has_bits_),
@@ -344,6 +388,19 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientPutMessage, message_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientPutMessage, message_id_),
+  0,
+  1,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientPutMessageResponse, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientPutMessageResponse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientPutMessageResponse, message_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientPutMessageResponse, status_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientPutMessageResponse, error_message_),
+  1,
+  2,
   0,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientCommitMessage, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientCommitMessage, _internal_metadata_),
@@ -370,6 +427,19 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientOpenQueue, queue_name_),
   1,
   0,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientOpenQueueResponse, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientOpenQueueResponse, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientOpenQueueResponse, status_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientOpenQueueResponse, error_message_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientOpenQueueResponse, leader_ip_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ClientOpenQueueResponse, leader_port_),
+  3,
+  0,
+  1,
+  2,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ConsumerDisconnected, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage_ConsumerDisconnected, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -393,8 +463,10 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, server_send_message_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, client_open_queue_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, consumer_disconnected_),
-  10,
-  9,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, client_open_queue_response_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::flowmq::FlowMessage, client_put_message_response_),
+  12,
+  11,
   0,
   1,
   2,
@@ -404,6 +476,8 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   6,
   7,
   8,
+  9,
+  10,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, 10, sizeof(::flowmq::LogEntry)},
@@ -411,12 +485,14 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROT
   { 28, 35, sizeof(::flowmq::FlowMessage_RequestVoteResponse)},
   { 37, 48, sizeof(::flowmq::FlowMessage_AppendEntriesRequest)},
   { 54, 63, sizeof(::flowmq::FlowMessage_AppendEntriesResponse)},
-  { 67, 73, sizeof(::flowmq::FlowMessage_ClientPutMessage)},
-  { 74, 80, sizeof(::flowmq::FlowMessage_ClientCommitMessage)},
-  { 81, 88, sizeof(::flowmq::FlowMessage_ServerSendMessage)},
-  { 90, 97, sizeof(::flowmq::FlowMessage_ClientOpenQueue)},
-  { 99, 105, sizeof(::flowmq::FlowMessage_ConsumerDisconnected)},
-  { 106, 122, sizeof(::flowmq::FlowMessage)},
+  { 67, 74, sizeof(::flowmq::FlowMessage_ClientPutMessage)},
+  { 76, 84, sizeof(::flowmq::FlowMessage_ClientPutMessageResponse)},
+  { 87, 93, sizeof(::flowmq::FlowMessage_ClientCommitMessage)},
+  { 94, 101, sizeof(::flowmq::FlowMessage_ServerSendMessage)},
+  { 103, 110, sizeof(::flowmq::FlowMessage_ClientOpenQueue)},
+  { 112, 121, sizeof(::flowmq::FlowMessage_ClientOpenQueueResponse)},
+  { 125, 131, sizeof(::flowmq::FlowMessage_ConsumerDisconnected)},
+  { 132, 150, sizeof(::flowmq::FlowMessage)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -426,9 +502,11 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_AppendEntriesRequest_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_AppendEntriesResponse_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_ClientPutMessage_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_ClientPutMessageResponse_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_ClientCommitMessage_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_ServerSendMessage_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_ClientOpenQueue_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_ClientOpenQueueResponse_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_ConsumerDisconnected_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&::flowmq::_FlowMessage_default_instance_),
 };
@@ -448,7 +526,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 11);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 13);
 }
 
 void AddDescriptorsImpl() {
@@ -458,9 +536,9 @@ void AddDescriptorsImpl() {
       "y\022\r\n\005index\030\001 \002(\005\022\014\n\004term\030\002 \002(\005\022\022\n\nmessag"
       "e_id\030\003 \002(\005\022\021\n\toperation\030\004 \002(\005\022\017\n\007message"
       "\030\005 \002(\t\" \n\tOPERATION\022\007\n\003ADD\020\000\022\n\n\006COMMIT\020\001"
-      "\"\216\r\n\013FlowMessage\022-\n\004type\030\001 \002(\0162\037.flowmq."
+      "\"\243\021\n\013FlowMessage\022-\n\004type\030\001 \002(\0162\037.flowmq."
       "FlowMessage.MessageType\022\024\n\014partition_id\030"
-      "\002 \002(\003\022D\n\024request_vote_request\030\003 \001(\0132&.fl"
+      "\002 \001(\003\022D\n\024request_vote_request\030\003 \001(\0132&.fl"
       "owmq.FlowMessage.RequestVoteRequest\022F\n\025r"
       "equest_vote_response\030\004 \001(\0132\'.flowmq.Flow"
       "Message.RequestVoteResponse\022H\n\026append_en"
@@ -476,34 +554,47 @@ void AddDescriptorsImpl() {
       "ueue\030\n \001(\0132#.flowmq.FlowMessage.ClientOp"
       "enQueue\022G\n\025consumer_disconnected\030\013 \001(\0132("
       ".flowmq.FlowMessage.ConsumerDisconnected"
-      "\032g\n\022RequestVoteRequest\022\014\n\004term\030\001 \002(\005\022\024\n\014"
-      "candidate_id\030\002 \002(\005\022\026\n\016last_log_index\030\003 \002"
-      "(\005\022\025\n\rlast_log_term\030\004 \002(\005\032E\n\023RequestVote"
-      "Response\022\014\n\004term\030\001 \002(\005\022 \n\030vote_result_te"
-      "rm_granted\030\002 \002(\005\032\240\001\n\024AppendEntriesReques"
-      "t\022\014\n\004term\030\001 \002(\005\022\021\n\tleader_id\030\002 \002(\005\022\026\n\016pr"
-      "ev_log_index\030\003 \002(\005\022\025\n\rprev_log_term\030\004 \002("
-      "\005\022!\n\007entries\030\005 \003(\0132\020.flowmq.LogEntry\022\025\n\r"
-      "leader_commit\030\006 \002(\005\032t\n\025AppendEntriesResp"
-      "onse\022\014\n\004term\030\001 \002(\005\022\023\n\013follower_id\030\002 \002(\005\022"
-      "\035\n\025append_result_success\030\003 \002(\005\022\031\n\021last_i"
-      "ndex_synced\030\004 \002(\005\032#\n\020ClientPutMessage\022\017\n"
-      "\007message\030\001 \002(\t\032)\n\023ClientCommitMessage\022\022\n"
-      "\nmessage_id\030\001 \002(\003\0328\n\021ServerSendMessage\022\022"
-      "\n\nmessage_id\030\001 \002(\003\022\017\n\007message\030\002 \002(\t\0328\n\017C"
-      "lientOpenQueue\022\021\n\topen_mode\030\001 \002(\005\022\022\n\nque"
-      "ue_name\030\002 \002(\t\032)\n\024ConsumerDisconnected\022\021\n"
-      "\tclient_id\030\001 \002(\005\"\206\002\n\013MessageType\022\030\n\024REQU"
-      "EST_VOTE_REQUEST\020\000\022\031\n\025REQUEST_VOTE_RESPO"
-      "NSE\020\001\022\032\n\026APPEND_ENTRIES_REQUEST\020\002\022\033\n\027APP"
-      "END_ENTRIES_RESPONSE\020\003\022\026\n\022CLIENT_PUT_MES"
-      "SAGE\020\n\022\031\n\025CLIENT_COMMIT_MESSAGE\020\013\022\027\n\023SER"
-      "VER_SEND_MESSAGE\020\014\022\025\n\021CLIENT_OPEN_QUEUE\020"
-      "\r\022\031\n\025CONSUMER_DISCONNECTED\020\016\022\013\n\007UNKNOWN\020"
-      "c"
+      "\022O\n\032client_open_queue_response\030\014 \001(\0132+.f"
+      "lowmq.FlowMessage.ClientOpenQueueRespons"
+      "e\022Q\n\033client_put_message_response\030\r \001(\0132,"
+      ".flowmq.FlowMessage.ClientPutMessageResp"
+      "onse\032g\n\022RequestVoteRequest\022\014\n\004term\030\001 \002(\005"
+      "\022\024\n\014candidate_id\030\002 \002(\005\022\026\n\016last_log_index"
+      "\030\003 \002(\005\022\025\n\rlast_log_term\030\004 \002(\005\032E\n\023Request"
+      "VoteResponse\022\014\n\004term\030\001 \002(\005\022 \n\030vote_resul"
+      "t_term_granted\030\002 \002(\005\032\240\001\n\024AppendEntriesRe"
+      "quest\022\014\n\004term\030\001 \002(\005\022\021\n\tleader_id\030\002 \002(\005\022\026"
+      "\n\016prev_log_index\030\003 \002(\005\022\025\n\rprev_log_term\030"
+      "\004 \002(\005\022!\n\007entries\030\005 \003(\0132\020.flowmq.LogEntry"
+      "\022\025\n\rleader_commit\030\006 \002(\005\032t\n\025AppendEntries"
+      "Response\022\014\n\004term\030\001 \002(\005\022\023\n\013follower_id\030\002 "
+      "\002(\005\022\035\n\025append_result_success\030\003 \002(\005\022\031\n\021la"
+      "st_index_synced\030\004 \002(\005\0327\n\020ClientPutMessag"
+      "e\022\017\n\007message\030\001 \002(\t\022\022\n\nmessage_id\030\002 \001(\003\032q"
+      "\n\030ClientPutMessageResponse\022\022\n\nmessage_id"
+      "\030\001 \002(\003\022*\n\006status\030\002 \002(\0162\032.flowmq.FlowMess"
+      "age.Status\022\025\n\rerror_message\030\003 \002(\t\032)\n\023Cli"
+      "entCommitMessage\022\022\n\nmessage_id\030\001 \002(\003\0328\n\021"
+      "ServerSendMessage\022\022\n\nmessage_id\030\001 \002(\003\022\017\n"
+      "\007message\030\002 \002(\t\0328\n\017ClientOpenQueue\022\021\n\tope"
+      "n_mode\030\001 \002(\005\022\022\n\nqueue_name\030\002 \002(\t\032\204\001\n\027Cli"
+      "entOpenQueueResponse\022*\n\006status\030\001 \002(\0162\032.f"
+      "lowmq.FlowMessage.Status\022\025\n\rerror_messag"
+      "e\030\002 \002(\t\022\021\n\tleader_ip\030\003 \001(\t\022\023\n\013leader_por"
+      "t\030\004 \001(\t\032)\n\024ConsumerDisconnected\022\021\n\tclien"
+      "t_id\030\001 \002(\005\"\307\002\n\013MessageType\022\030\n\024REQUEST_VO"
+      "TE_REQUEST\020\000\022\031\n\025REQUEST_VOTE_RESPONSE\020\001\022"
+      "\032\n\026APPEND_ENTRIES_REQUEST\020\002\022\033\n\027APPEND_EN"
+      "TRIES_RESPONSE\020\003\022\026\n\022CLIENT_PUT_MESSAGE\020\n"
+      "\022\031\n\025CLIENT_COMMIT_MESSAGE\020\013\022\027\n\023SERVER_SE"
+      "ND_MESSAGE\020\014\022\025\n\021CLIENT_OPEN_QUEUE\020\r\022\031\n\025C"
+      "ONSUMER_DISCONNECTED\020\016\022\037\n\033CLIENT_PUT_MES"
+      "SAGE_RESPONSE\020\017\022\036\n\032CLIENT_OPEN_QUEUE_RES"
+      "PONSE\020\020\022\013\n\007UNKNOWN\020c\" \n\006Status\022\013\n\007SUCCES"
+      "S\020\000\022\t\n\005ERROR\020\001"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 1841);
+      descriptor, 2374);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "flow_message.proto", &protobuf_RegisterTypes);
 }
@@ -556,6 +647,8 @@ bool FlowMessage_MessageType_IsValid(int value) {
     case 12:
     case 13:
     case 14:
+    case 15:
+    case 16:
     case 99:
       return true;
     default:
@@ -573,10 +666,33 @@ const FlowMessage_MessageType FlowMessage::CLIENT_COMMIT_MESSAGE;
 const FlowMessage_MessageType FlowMessage::SERVER_SEND_MESSAGE;
 const FlowMessage_MessageType FlowMessage::CLIENT_OPEN_QUEUE;
 const FlowMessage_MessageType FlowMessage::CONSUMER_DISCONNECTED;
+const FlowMessage_MessageType FlowMessage::CLIENT_PUT_MESSAGE_RESPONSE;
+const FlowMessage_MessageType FlowMessage::CLIENT_OPEN_QUEUE_RESPONSE;
 const FlowMessage_MessageType FlowMessage::UNKNOWN;
 const FlowMessage_MessageType FlowMessage::MessageType_MIN;
 const FlowMessage_MessageType FlowMessage::MessageType_MAX;
 const int FlowMessage::MessageType_ARRAYSIZE;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+const ::google::protobuf::EnumDescriptor* FlowMessage_Status_descriptor() {
+  protobuf_flow_5fmessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_flow_5fmessage_2eproto::file_level_enum_descriptors[2];
+}
+bool FlowMessage_Status_IsValid(int value) {
+  switch (value) {
+    case 0:
+    case 1:
+      return true;
+    default:
+      return false;
+  }
+}
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const FlowMessage_Status FlowMessage::SUCCESS;
+const FlowMessage_Status FlowMessage::ERROR;
+const FlowMessage_Status FlowMessage::Status_MIN;
+const FlowMessage_Status FlowMessage::Status_MAX;
+const int FlowMessage::Status_ARRAYSIZE;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 // ===================================================================
@@ -2555,6 +2671,7 @@ void FlowMessage_ClientPutMessage::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int FlowMessage_ClientPutMessage::kMessageFieldNumber;
+const int FlowMessage_ClientPutMessage::kMessageIdFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 FlowMessage_ClientPutMessage::FlowMessage_ClientPutMessage()
@@ -2573,11 +2690,13 @@ FlowMessage_ClientPutMessage::FlowMessage_ClientPutMessage(const FlowMessage_Cli
   if (from.has_message()) {
     message_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.message_);
   }
+  message_id_ = from.message_id_;
   // @@protoc_insertion_point(copy_constructor:flowmq.FlowMessage.ClientPutMessage)
 }
 
 void FlowMessage_ClientPutMessage::SharedCtor() {
   message_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  message_id_ = GOOGLE_LONGLONG(0);
 }
 
 FlowMessage_ClientPutMessage::~FlowMessage_ClientPutMessage() {
@@ -2613,6 +2732,7 @@ void FlowMessage_ClientPutMessage::Clear() {
   if (cached_has_bits & 0x00000001u) {
     message_.ClearNonDefaultToEmptyNoArena();
   }
+  message_id_ = GOOGLE_LONGLONG(0);
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -2637,6 +2757,20 @@ bool FlowMessage_ClientPutMessage::MergePartialFromCodedStream(
             this->message().data(), static_cast<int>(this->message().length()),
             ::google::protobuf::internal::WireFormat::PARSE,
             "flowmq.FlowMessage.ClientPutMessage.message");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional int64 message_id = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+          set_has_message_id();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &message_id_)));
         } else {
           goto handle_unusual;
         }
@@ -2680,6 +2814,11 @@ void FlowMessage_ClientPutMessage::SerializeWithCachedSizes(
       1, this->message(), output);
   }
 
+  // optional int64 message_id = 2;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->message_id(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -2706,6 +2845,11 @@ void FlowMessage_ClientPutMessage::SerializeWithCachedSizes(
         1, this->message(), target);
   }
 
+  // optional int64 message_id = 2;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->message_id(), target);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
@@ -2729,6 +2873,13 @@ size_t FlowMessage_ClientPutMessage::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->message());
   }
+  // optional int64 message_id = 2;
+  if (has_message_id()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->message_id());
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -2756,9 +2907,16 @@ void FlowMessage_ClientPutMessage::MergeFrom(const FlowMessage_ClientPutMessage&
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  if (from.has_message()) {
-    set_has_message();
-    message_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.message_);
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 3u) {
+    if (cached_has_bits & 0x00000001u) {
+      set_has_message();
+      message_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.message_);
+    }
+    if (cached_has_bits & 0x00000002u) {
+      message_id_ = from.message_id_;
+    }
+    _has_bits_[0] |= cached_has_bits;
   }
 }
 
@@ -2789,11 +2947,381 @@ void FlowMessage_ClientPutMessage::InternalSwap(FlowMessage_ClientPutMessage* ot
   using std::swap;
   message_.Swap(&other->message_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
+  swap(message_id_, other->message_id_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
 ::google::protobuf::Metadata FlowMessage_ClientPutMessage::GetMetadata() const {
+  protobuf_flow_5fmessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_flow_5fmessage_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void FlowMessage_ClientPutMessageResponse::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int FlowMessage_ClientPutMessageResponse::kMessageIdFieldNumber;
+const int FlowMessage_ClientPutMessageResponse::kStatusFieldNumber;
+const int FlowMessage_ClientPutMessageResponse::kErrorMessageFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+FlowMessage_ClientPutMessageResponse::FlowMessage_ClientPutMessageResponse()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientPutMessageResponse.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:flowmq.FlowMessage.ClientPutMessageResponse)
+}
+FlowMessage_ClientPutMessageResponse::FlowMessage_ClientPutMessageResponse(const FlowMessage_ClientPutMessageResponse& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  error_message_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_error_message()) {
+    error_message_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.error_message_);
+  }
+  ::memcpy(&message_id_, &from.message_id_,
+    static_cast<size_t>(reinterpret_cast<char*>(&status_) -
+    reinterpret_cast<char*>(&message_id_)) + sizeof(status_));
+  // @@protoc_insertion_point(copy_constructor:flowmq.FlowMessage.ClientPutMessageResponse)
+}
+
+void FlowMessage_ClientPutMessageResponse::SharedCtor() {
+  error_message_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&message_id_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&status_) -
+      reinterpret_cast<char*>(&message_id_)) + sizeof(status_));
+}
+
+FlowMessage_ClientPutMessageResponse::~FlowMessage_ClientPutMessageResponse() {
+  // @@protoc_insertion_point(destructor:flowmq.FlowMessage.ClientPutMessageResponse)
+  SharedDtor();
+}
+
+void FlowMessage_ClientPutMessageResponse::SharedDtor() {
+  error_message_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void FlowMessage_ClientPutMessageResponse::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* FlowMessage_ClientPutMessageResponse::descriptor() {
+  ::protobuf_flow_5fmessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_flow_5fmessage_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const FlowMessage_ClientPutMessageResponse& FlowMessage_ClientPutMessageResponse::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientPutMessageResponse.base);
+  return *internal_default_instance();
+}
+
+
+void FlowMessage_ClientPutMessageResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 0x00000001u) {
+    error_message_.ClearNonDefaultToEmptyNoArena();
+  }
+  if (cached_has_bits & 6u) {
+    ::memset(&message_id_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&status_) -
+        reinterpret_cast<char*>(&message_id_)) + sizeof(status_));
+  }
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool FlowMessage_ClientPutMessageResponse::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int64 message_id = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+          set_has_message_id();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
+                 input, &message_id_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required .flowmq.FlowMessage.Status status = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::flowmq::FlowMessage_Status_IsValid(value)) {
+            set_status(static_cast< ::flowmq::FlowMessage_Status >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(
+                2, static_cast< ::google::protobuf::uint64>(value));
+          }
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required string error_message = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_error_message()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->error_message().data(), static_cast<int>(this->error_message().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "flowmq.FlowMessage.ClientPutMessageResponse.error_message");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:flowmq.FlowMessage.ClientPutMessageResponse)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:flowmq.FlowMessage.ClientPutMessageResponse)
+  return false;
+#undef DO_
+}
+
+void FlowMessage_ClientPutMessageResponse::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required int64 message_id = 1;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(1, this->message_id(), output);
+  }
+
+  // required .flowmq.FlowMessage.Status status = 2;
+  if (cached_has_bits & 0x00000004u) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      2, this->status(), output);
+  }
+
+  // required string error_message = 3;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->error_message().data(), static_cast<int>(this->error_message().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientPutMessageResponse.error_message");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->error_message(), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:flowmq.FlowMessage.ClientPutMessageResponse)
+}
+
+::google::protobuf::uint8* FlowMessage_ClientPutMessageResponse::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required int64 message_id = 1;
+  if (cached_has_bits & 0x00000002u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(1, this->message_id(), target);
+  }
+
+  // required .flowmq.FlowMessage.Status status = 2;
+  if (cached_has_bits & 0x00000004u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      2, this->status(), target);
+  }
+
+  // required string error_message = 3;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->error_message().data(), static_cast<int>(this->error_message().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientPutMessageResponse.error_message");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->error_message(), target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:flowmq.FlowMessage.ClientPutMessageResponse)
+  return target;
+}
+
+size_t FlowMessage_ClientPutMessageResponse::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  size_t total_size = 0;
+
+  if (has_error_message()) {
+    // required string error_message = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->error_message());
+  }
+
+  if (has_message_id()) {
+    // required int64 message_id = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->message_id());
+  }
+
+  if (has_status()) {
+    // required .flowmq.FlowMessage.Status status = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->status());
+  }
+
+  return total_size;
+}
+size_t FlowMessage_ClientPutMessageResponse::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  if (((_has_bits_[0] & 0x00000007) ^ 0x00000007) == 0) {  // All required fields are present.
+    // required string error_message = 3;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->error_message());
+
+    // required int64 message_id = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
+        this->message_id());
+
+    // required .flowmq.FlowMessage.Status status = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->status());
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void FlowMessage_ClientPutMessageResponse::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  GOOGLE_DCHECK_NE(&from, this);
+  const FlowMessage_ClientPutMessageResponse* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const FlowMessage_ClientPutMessageResponse>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:flowmq.FlowMessage.ClientPutMessageResponse)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:flowmq.FlowMessage.ClientPutMessageResponse)
+    MergeFrom(*source);
+  }
+}
+
+void FlowMessage_ClientPutMessageResponse::MergeFrom(const FlowMessage_ClientPutMessageResponse& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 7u) {
+    if (cached_has_bits & 0x00000001u) {
+      set_has_error_message();
+      error_message_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.error_message_);
+    }
+    if (cached_has_bits & 0x00000002u) {
+      message_id_ = from.message_id_;
+    }
+    if (cached_has_bits & 0x00000004u) {
+      status_ = from.status_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+}
+
+void FlowMessage_ClientPutMessageResponse::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void FlowMessage_ClientPutMessageResponse::CopyFrom(const FlowMessage_ClientPutMessageResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:flowmq.FlowMessage.ClientPutMessageResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool FlowMessage_ClientPutMessageResponse::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  return true;
+}
+
+void FlowMessage_ClientPutMessageResponse::Swap(FlowMessage_ClientPutMessageResponse* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void FlowMessage_ClientPutMessageResponse::InternalSwap(FlowMessage_ClientPutMessageResponse* other) {
+  using std::swap;
+  error_message_.Swap(&other->error_message_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  swap(message_id_, other->message_id_);
+  swap(status_, other->status_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata FlowMessage_ClientPutMessageResponse::GetMetadata() const {
   protobuf_flow_5fmessage_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_flow_5fmessage_2eproto::file_level_metadata[kIndexInFileMessages];
 }
@@ -3657,6 +4185,450 @@ void FlowMessage_ClientOpenQueue::InternalSwap(FlowMessage_ClientOpenQueue* othe
 
 // ===================================================================
 
+void FlowMessage_ClientOpenQueueResponse::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int FlowMessage_ClientOpenQueueResponse::kStatusFieldNumber;
+const int FlowMessage_ClientOpenQueueResponse::kErrorMessageFieldNumber;
+const int FlowMessage_ClientOpenQueueResponse::kLeaderIpFieldNumber;
+const int FlowMessage_ClientOpenQueueResponse::kLeaderPortFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+FlowMessage_ClientOpenQueueResponse::FlowMessage_ClientOpenQueueResponse()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientOpenQueueResponse.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:flowmq.FlowMessage.ClientOpenQueueResponse)
+}
+FlowMessage_ClientOpenQueueResponse::FlowMessage_ClientOpenQueueResponse(const FlowMessage_ClientOpenQueueResponse& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  error_message_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_error_message()) {
+    error_message_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.error_message_);
+  }
+  leader_ip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_leader_ip()) {
+    leader_ip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.leader_ip_);
+  }
+  leader_port_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_leader_port()) {
+    leader_port_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.leader_port_);
+  }
+  status_ = from.status_;
+  // @@protoc_insertion_point(copy_constructor:flowmq.FlowMessage.ClientOpenQueueResponse)
+}
+
+void FlowMessage_ClientOpenQueueResponse::SharedCtor() {
+  error_message_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  leader_ip_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  leader_port_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  status_ = 0;
+}
+
+FlowMessage_ClientOpenQueueResponse::~FlowMessage_ClientOpenQueueResponse() {
+  // @@protoc_insertion_point(destructor:flowmq.FlowMessage.ClientOpenQueueResponse)
+  SharedDtor();
+}
+
+void FlowMessage_ClientOpenQueueResponse::SharedDtor() {
+  error_message_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  leader_ip_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  leader_port_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void FlowMessage_ClientOpenQueueResponse::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* FlowMessage_ClientOpenQueueResponse::descriptor() {
+  ::protobuf_flow_5fmessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_flow_5fmessage_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const FlowMessage_ClientOpenQueueResponse& FlowMessage_ClientOpenQueueResponse::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_flow_5fmessage_2eproto::scc_info_FlowMessage_ClientOpenQueueResponse.base);
+  return *internal_default_instance();
+}
+
+
+void FlowMessage_ClientOpenQueueResponse::Clear() {
+// @@protoc_insertion_point(message_clear_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  if (cached_has_bits & 7u) {
+    if (cached_has_bits & 0x00000001u) {
+      error_message_.ClearNonDefaultToEmptyNoArena();
+    }
+    if (cached_has_bits & 0x00000002u) {
+      leader_ip_.ClearNonDefaultToEmptyNoArena();
+    }
+    if (cached_has_bits & 0x00000004u) {
+      leader_port_.ClearNonDefaultToEmptyNoArena();
+    }
+  }
+  status_ = 0;
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool FlowMessage_ClientOpenQueueResponse::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required .flowmq.FlowMessage.Status status = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(8u /* 8 & 0xFF */)) {
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::flowmq::FlowMessage_Status_IsValid(value)) {
+            set_status(static_cast< ::flowmq::FlowMessage_Status >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(
+                1, static_cast< ::google::protobuf::uint64>(value));
+          }
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // required string error_message = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_error_message()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->error_message().data(), static_cast<int>(this->error_message().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "flowmq.FlowMessage.ClientOpenQueueResponse.error_message");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional string leader_ip = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_leader_ip()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->leader_ip().data(), static_cast<int>(this->leader_ip().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional string leader_port = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_leader_port()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->leader_port().data(), static_cast<int>(this->leader_port().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "flowmq.FlowMessage.ClientOpenQueueResponse.leader_port");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:flowmq.FlowMessage.ClientOpenQueueResponse)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:flowmq.FlowMessage.ClientOpenQueueResponse)
+  return false;
+#undef DO_
+}
+
+void FlowMessage_ClientOpenQueueResponse::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required .flowmq.FlowMessage.Status status = 1;
+  if (cached_has_bits & 0x00000008u) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      1, this->status(), output);
+  }
+
+  // required string error_message = 2;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->error_message().data(), static_cast<int>(this->error_message().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientOpenQueueResponse.error_message");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      2, this->error_message(), output);
+  }
+
+  // optional string leader_ip = 3;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->leader_ip().data(), static_cast<int>(this->leader_ip().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->leader_ip(), output);
+  }
+
+  // optional string leader_port = 4;
+  if (cached_has_bits & 0x00000004u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->leader_port().data(), static_cast<int>(this->leader_port().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientOpenQueueResponse.leader_port");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      4, this->leader_port(), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:flowmq.FlowMessage.ClientOpenQueueResponse)
+}
+
+::google::protobuf::uint8* FlowMessage_ClientOpenQueueResponse::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = _has_bits_[0];
+  // required .flowmq.FlowMessage.Status status = 1;
+  if (cached_has_bits & 0x00000008u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      1, this->status(), target);
+  }
+
+  // required string error_message = 2;
+  if (cached_has_bits & 0x00000001u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->error_message().data(), static_cast<int>(this->error_message().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientOpenQueueResponse.error_message");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        2, this->error_message(), target);
+  }
+
+  // optional string leader_ip = 3;
+  if (cached_has_bits & 0x00000002u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->leader_ip().data(), static_cast<int>(this->leader_ip().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->leader_ip(), target);
+  }
+
+  // optional string leader_port = 4;
+  if (cached_has_bits & 0x00000004u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->leader_port().data(), static_cast<int>(this->leader_port().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "flowmq.FlowMessage.ClientOpenQueueResponse.leader_port");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        4, this->leader_port(), target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:flowmq.FlowMessage.ClientOpenQueueResponse)
+  return target;
+}
+
+size_t FlowMessage_ClientOpenQueueResponse::RequiredFieldsByteSizeFallback() const {
+// @@protoc_insertion_point(required_fields_byte_size_fallback_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  size_t total_size = 0;
+
+  if (has_error_message()) {
+    // required string error_message = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->error_message());
+  }
+
+  if (has_status()) {
+    // required .flowmq.FlowMessage.Status status = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->status());
+  }
+
+  return total_size;
+}
+size_t FlowMessage_ClientOpenQueueResponse::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  if (((_has_bits_[0] & 0x00000009) ^ 0x00000009) == 0) {  // All required fields are present.
+    // required string error_message = 2;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->error_message());
+
+    // required .flowmq.FlowMessage.Status status = 1;
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::EnumSize(this->status());
+
+  } else {
+    total_size += RequiredFieldsByteSizeFallback();
+  }
+  if (_has_bits_[0 / 32] & 6u) {
+    // optional string leader_ip = 3;
+    if (has_leader_ip()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->leader_ip());
+    }
+
+    // optional string leader_port = 4;
+    if (has_leader_port()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->leader_port());
+    }
+
+  }
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void FlowMessage_ClientOpenQueueResponse::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  GOOGLE_DCHECK_NE(&from, this);
+  const FlowMessage_ClientOpenQueueResponse* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const FlowMessage_ClientOpenQueueResponse>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:flowmq.FlowMessage.ClientOpenQueueResponse)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:flowmq.FlowMessage.ClientOpenQueueResponse)
+    MergeFrom(*source);
+  }
+}
+
+void FlowMessage_ClientOpenQueueResponse::MergeFrom(const FlowMessage_ClientOpenQueueResponse& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  cached_has_bits = from._has_bits_[0];
+  if (cached_has_bits & 15u) {
+    if (cached_has_bits & 0x00000001u) {
+      set_has_error_message();
+      error_message_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.error_message_);
+    }
+    if (cached_has_bits & 0x00000002u) {
+      set_has_leader_ip();
+      leader_ip_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.leader_ip_);
+    }
+    if (cached_has_bits & 0x00000004u) {
+      set_has_leader_port();
+      leader_port_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.leader_port_);
+    }
+    if (cached_has_bits & 0x00000008u) {
+      status_ = from.status_;
+    }
+    _has_bits_[0] |= cached_has_bits;
+  }
+}
+
+void FlowMessage_ClientOpenQueueResponse::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void FlowMessage_ClientOpenQueueResponse::CopyFrom(const FlowMessage_ClientOpenQueueResponse& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:flowmq.FlowMessage.ClientOpenQueueResponse)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool FlowMessage_ClientOpenQueueResponse::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000009) != 0x00000009) return false;
+  return true;
+}
+
+void FlowMessage_ClientOpenQueueResponse::Swap(FlowMessage_ClientOpenQueueResponse* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void FlowMessage_ClientOpenQueueResponse::InternalSwap(FlowMessage_ClientOpenQueueResponse* other) {
+  using std::swap;
+  error_message_.Swap(&other->error_message_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  leader_ip_.Swap(&other->leader_ip_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  leader_port_.Swap(&other->leader_port_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  swap(status_, other->status_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata FlowMessage_ClientOpenQueueResponse::GetMetadata() const {
+  protobuf_flow_5fmessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_flow_5fmessage_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
 void FlowMessage_ConsumerDisconnected::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -3904,6 +4876,10 @@ void FlowMessage::InitAsDefaultInstance() {
       ::flowmq::FlowMessage_ClientOpenQueue::internal_default_instance());
   ::flowmq::_FlowMessage_default_instance_._instance.get_mutable()->consumer_disconnected_ = const_cast< ::flowmq::FlowMessage_ConsumerDisconnected*>(
       ::flowmq::FlowMessage_ConsumerDisconnected::internal_default_instance());
+  ::flowmq::_FlowMessage_default_instance_._instance.get_mutable()->client_open_queue_response_ = const_cast< ::flowmq::FlowMessage_ClientOpenQueueResponse*>(
+      ::flowmq::FlowMessage_ClientOpenQueueResponse::internal_default_instance());
+  ::flowmq::_FlowMessage_default_instance_._instance.get_mutable()->client_put_message_response_ = const_cast< ::flowmq::FlowMessage_ClientPutMessageResponse*>(
+      ::flowmq::FlowMessage_ClientPutMessageResponse::internal_default_instance());
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int FlowMessage::kTypeFieldNumber;
@@ -3917,6 +4893,8 @@ const int FlowMessage::kClientCommitMessageFieldNumber;
 const int FlowMessage::kServerSendMessageFieldNumber;
 const int FlowMessage::kClientOpenQueueFieldNumber;
 const int FlowMessage::kConsumerDisconnectedFieldNumber;
+const int FlowMessage::kClientOpenQueueResponseFieldNumber;
+const int FlowMessage::kClientPutMessageResponseFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 FlowMessage::FlowMessage()
@@ -3976,6 +4954,16 @@ FlowMessage::FlowMessage(const FlowMessage& from)
   } else {
     consumer_disconnected_ = NULL;
   }
+  if (from.has_client_open_queue_response()) {
+    client_open_queue_response_ = new ::flowmq::FlowMessage_ClientOpenQueueResponse(*from.client_open_queue_response_);
+  } else {
+    client_open_queue_response_ = NULL;
+  }
+  if (from.has_client_put_message_response()) {
+    client_put_message_response_ = new ::flowmq::FlowMessage_ClientPutMessageResponse(*from.client_put_message_response_);
+  } else {
+    client_put_message_response_ = NULL;
+  }
   ::memcpy(&partition_id_, &from.partition_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&type_) -
     reinterpret_cast<char*>(&partition_id_)) + sizeof(type_));
@@ -4003,6 +4991,8 @@ void FlowMessage::SharedDtor() {
   if (this != internal_default_instance()) delete server_send_message_;
   if (this != internal_default_instance()) delete client_open_queue_;
   if (this != internal_default_instance()) delete consumer_disconnected_;
+  if (this != internal_default_instance()) delete client_open_queue_response_;
+  if (this != internal_default_instance()) delete client_put_message_response_;
 }
 
 void FlowMessage::SetCachedSize(int size) const {
@@ -4060,11 +5050,21 @@ void FlowMessage::Clear() {
       client_open_queue_->Clear();
     }
   }
-  if (cached_has_bits & 0x00000100u) {
-    GOOGLE_DCHECK(consumer_disconnected_ != NULL);
-    consumer_disconnected_->Clear();
+  if (cached_has_bits & 1792u) {
+    if (cached_has_bits & 0x00000100u) {
+      GOOGLE_DCHECK(consumer_disconnected_ != NULL);
+      consumer_disconnected_->Clear();
+    }
+    if (cached_has_bits & 0x00000200u) {
+      GOOGLE_DCHECK(client_open_queue_response_ != NULL);
+      client_open_queue_response_->Clear();
+    }
+    if (cached_has_bits & 0x00000400u) {
+      GOOGLE_DCHECK(client_put_message_response_ != NULL);
+      client_put_message_response_->Clear();
+    }
   }
-  if (cached_has_bits & 1536u) {
+  if (cached_has_bits & 6144u) {
     ::memset(&partition_id_, 0, static_cast<size_t>(
         reinterpret_cast<char*>(&type_) -
         reinterpret_cast<char*>(&partition_id_)) + sizeof(type_));
@@ -4103,7 +5103,7 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
-      // required int64 partition_id = 2;
+      // optional int64 partition_id = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
@@ -4225,6 +5225,30 @@ bool FlowMessage::MergePartialFromCodedStream(
         break;
       }
 
+      // optional .flowmq.FlowMessage.ClientOpenQueueResponse client_open_queue_response = 12;
+      case 12: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(98u /* 98 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_client_open_queue_response()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .flowmq.FlowMessage.ClientPutMessageResponse client_put_message_response = 13;
+      case 13: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(106u /* 106 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
+               input, mutable_client_put_message_response()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -4253,13 +5277,13 @@ void FlowMessage::SerializeWithCachedSizes(
 
   cached_has_bits = _has_bits_[0];
   // required .flowmq.FlowMessage.MessageType type = 1;
-  if (cached_has_bits & 0x00000400u) {
+  if (cached_has_bits & 0x00001000u) {
     ::google::protobuf::internal::WireFormatLite::WriteEnum(
       1, this->type(), output);
   }
 
-  // required int64 partition_id = 2;
-  if (cached_has_bits & 0x00000200u) {
+  // optional int64 partition_id = 2;
+  if (cached_has_bits & 0x00000800u) {
     ::google::protobuf::internal::WireFormatLite::WriteInt64(2, this->partition_id(), output);
   }
 
@@ -4317,6 +5341,18 @@ void FlowMessage::SerializeWithCachedSizes(
       11, this->_internal_consumer_disconnected(), output);
   }
 
+  // optional .flowmq.FlowMessage.ClientOpenQueueResponse client_open_queue_response = 12;
+  if (cached_has_bits & 0x00000200u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      12, this->_internal_client_open_queue_response(), output);
+  }
+
+  // optional .flowmq.FlowMessage.ClientPutMessageResponse client_put_message_response = 13;
+  if (cached_has_bits & 0x00000400u) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      13, this->_internal_client_put_message_response(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -4333,13 +5369,13 @@ void FlowMessage::SerializeWithCachedSizes(
 
   cached_has_bits = _has_bits_[0];
   // required .flowmq.FlowMessage.MessageType type = 1;
-  if (cached_has_bits & 0x00000400u) {
+  if (cached_has_bits & 0x00001000u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       1, this->type(), target);
   }
 
-  // required int64 partition_id = 2;
-  if (cached_has_bits & 0x00000200u) {
+  // optional int64 partition_id = 2;
+  if (cached_has_bits & 0x00000800u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(2, this->partition_id(), target);
   }
 
@@ -4406,6 +5442,20 @@ void FlowMessage::SerializeWithCachedSizes(
         11, this->_internal_consumer_disconnected(), deterministic, target);
   }
 
+  // optional .flowmq.FlowMessage.ClientOpenQueueResponse client_open_queue_response = 12;
+  if (cached_has_bits & 0x00000200u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        12, this->_internal_client_open_queue_response(), deterministic, target);
+  }
+
+  // optional .flowmq.FlowMessage.ClientPutMessageResponse client_put_message_response = 13;
+  if (cached_has_bits & 0x00000400u) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageToArray(
+        13, this->_internal_client_put_message_response(), deterministic, target);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
@@ -4414,25 +5464,6 @@ void FlowMessage::SerializeWithCachedSizes(
   return target;
 }
 
-size_t FlowMessage::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:flowmq.FlowMessage)
-  size_t total_size = 0;
-
-  if (has_partition_id()) {
-    // required int64 partition_id = 2;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->partition_id());
-  }
-
-  if (has_type()) {
-    // required .flowmq.FlowMessage.MessageType type = 1;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
-  }
-
-  return total_size;
-}
 size_t FlowMessage::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:flowmq.FlowMessage)
   size_t total_size = 0;
@@ -4442,18 +5473,10 @@ size_t FlowMessage::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  if (((_has_bits_[0] & 0x00000600) ^ 0x00000600) == 0) {  // All required fields are present.
-    // required int64 partition_id = 2;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int64Size(
-        this->partition_id());
-
-    // required .flowmq.FlowMessage.MessageType type = 1;
+  // required .flowmq.FlowMessage.MessageType type = 1;
+  if (has_type()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::EnumSize(this->type());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
   }
   if (_has_bits_[0 / 32] & 255u) {
     // optional .flowmq.FlowMessage.RequestVoteRequest request_vote_request = 3;
@@ -4513,13 +5536,36 @@ size_t FlowMessage::ByteSizeLong() const {
     }
 
   }
-  // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
-  if (has_consumer_disconnected()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::MessageSize(
-        *consumer_disconnected_);
-  }
+  if (_has_bits_[8 / 32] & 3840u) {
+    // optional .flowmq.FlowMessage.ConsumerDisconnected consumer_disconnected = 11;
+    if (has_consumer_disconnected()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSize(
+          *consumer_disconnected_);
+    }
 
+    // optional .flowmq.FlowMessage.ClientOpenQueueResponse client_open_queue_response = 12;
+    if (has_client_open_queue_response()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSize(
+          *client_open_queue_response_);
+    }
+
+    // optional .flowmq.FlowMessage.ClientPutMessageResponse client_put_message_response = 13;
+    if (has_client_put_message_response()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSize(
+          *client_put_message_response_);
+    }
+
+    // optional int64 partition_id = 2;
+    if (has_partition_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int64Size(
+          this->partition_id());
+    }
+
+  }
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -4574,14 +5620,20 @@ void FlowMessage::MergeFrom(const FlowMessage& from) {
       mutable_client_open_queue()->::flowmq::FlowMessage_ClientOpenQueue::MergeFrom(from.client_open_queue());
     }
   }
-  if (cached_has_bits & 1792u) {
+  if (cached_has_bits & 7936u) {
     if (cached_has_bits & 0x00000100u) {
       mutable_consumer_disconnected()->::flowmq::FlowMessage_ConsumerDisconnected::MergeFrom(from.consumer_disconnected());
     }
     if (cached_has_bits & 0x00000200u) {
-      partition_id_ = from.partition_id_;
+      mutable_client_open_queue_response()->::flowmq::FlowMessage_ClientOpenQueueResponse::MergeFrom(from.client_open_queue_response());
     }
     if (cached_has_bits & 0x00000400u) {
+      mutable_client_put_message_response()->::flowmq::FlowMessage_ClientPutMessageResponse::MergeFrom(from.client_put_message_response());
+    }
+    if (cached_has_bits & 0x00000800u) {
+      partition_id_ = from.partition_id_;
+    }
+    if (cached_has_bits & 0x00001000u) {
       type_ = from.type_;
     }
     _has_bits_[0] |= cached_has_bits;
@@ -4603,7 +5655,7 @@ void FlowMessage::CopyFrom(const FlowMessage& from) {
 }
 
 bool FlowMessage::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000600) != 0x00000600) return false;
+  if ((_has_bits_[0] & 0x00001000) != 0x00001000) return false;
   if (has_request_vote_request()) {
     if (!this->request_vote_request_->IsInitialized()) return false;
   }
@@ -4631,6 +5683,12 @@ bool FlowMessage::IsInitialized() const {
   if (has_consumer_disconnected()) {
     if (!this->consumer_disconnected_->IsInitialized()) return false;
   }
+  if (has_client_open_queue_response()) {
+    if (!this->client_open_queue_response_->IsInitialized()) return false;
+  }
+  if (has_client_put_message_response()) {
+    if (!this->client_put_message_response_->IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -4649,6 +5707,8 @@ void FlowMessage::InternalSwap(FlowMessage* other) {
   swap(server_send_message_, other->server_send_message_);
   swap(client_open_queue_, other->client_open_queue_);
   swap(consumer_disconnected_, other->consumer_disconnected_);
+  swap(client_open_queue_response_, other->client_open_queue_response_);
+  swap(client_put_message_response_, other->client_put_message_response_);
   swap(partition_id_, other->partition_id_);
   swap(type_, other->type_);
   swap(_has_bits_[0], other->_has_bits_[0]);
@@ -4683,6 +5743,9 @@ template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_AppendEntrie
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_ClientPutMessage* Arena::CreateMaybeMessage< ::flowmq::FlowMessage_ClientPutMessage >(Arena* arena) {
   return Arena::CreateInternal< ::flowmq::FlowMessage_ClientPutMessage >(arena);
 }
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_ClientPutMessageResponse* Arena::CreateMaybeMessage< ::flowmq::FlowMessage_ClientPutMessageResponse >(Arena* arena) {
+  return Arena::CreateInternal< ::flowmq::FlowMessage_ClientPutMessageResponse >(arena);
+}
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_ClientCommitMessage* Arena::CreateMaybeMessage< ::flowmq::FlowMessage_ClientCommitMessage >(Arena* arena) {
   return Arena::CreateInternal< ::flowmq::FlowMessage_ClientCommitMessage >(arena);
 }
@@ -4691,6 +5754,9 @@ template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_ServerSendMe
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_ClientOpenQueue* Arena::CreateMaybeMessage< ::flowmq::FlowMessage_ClientOpenQueue >(Arena* arena) {
   return Arena::CreateInternal< ::flowmq::FlowMessage_ClientOpenQueue >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_ClientOpenQueueResponse* Arena::CreateMaybeMessage< ::flowmq::FlowMessage_ClientOpenQueueResponse >(Arena* arena) {
+  return Arena::CreateInternal< ::flowmq::FlowMessage_ClientOpenQueueResponse >(arena);
 }
 template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::flowmq::FlowMessage_ConsumerDisconnected* Arena::CreateMaybeMessage< ::flowmq::FlowMessage_ConsumerDisconnected >(Arena* arena) {
   return Arena::CreateInternal< ::flowmq::FlowMessage_ConsumerDisconnected >(arena);

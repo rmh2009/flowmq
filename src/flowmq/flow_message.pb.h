@@ -39,7 +39,7 @@ namespace protobuf_flow_5fmessage_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[11];
+  static const ::google::protobuf::internal::ParseTable schema[13];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -62,9 +62,15 @@ extern FlowMessage_ClientCommitMessageDefaultTypeInternal _FlowMessage_ClientCom
 class FlowMessage_ClientOpenQueue;
 class FlowMessage_ClientOpenQueueDefaultTypeInternal;
 extern FlowMessage_ClientOpenQueueDefaultTypeInternal _FlowMessage_ClientOpenQueue_default_instance_;
+class FlowMessage_ClientOpenQueueResponse;
+class FlowMessage_ClientOpenQueueResponseDefaultTypeInternal;
+extern FlowMessage_ClientOpenQueueResponseDefaultTypeInternal _FlowMessage_ClientOpenQueueResponse_default_instance_;
 class FlowMessage_ClientPutMessage;
 class FlowMessage_ClientPutMessageDefaultTypeInternal;
 extern FlowMessage_ClientPutMessageDefaultTypeInternal _FlowMessage_ClientPutMessage_default_instance_;
+class FlowMessage_ClientPutMessageResponse;
+class FlowMessage_ClientPutMessageResponseDefaultTypeInternal;
+extern FlowMessage_ClientPutMessageResponseDefaultTypeInternal _FlowMessage_ClientPutMessageResponse_default_instance_;
 class FlowMessage_ConsumerDisconnected;
 class FlowMessage_ConsumerDisconnectedDefaultTypeInternal;
 extern FlowMessage_ConsumerDisconnectedDefaultTypeInternal _FlowMessage_ConsumerDisconnected_default_instance_;
@@ -88,7 +94,9 @@ template<> ::flowmq::FlowMessage_AppendEntriesRequest* Arena::CreateMaybeMessage
 template<> ::flowmq::FlowMessage_AppendEntriesResponse* Arena::CreateMaybeMessage<::flowmq::FlowMessage_AppendEntriesResponse>(Arena*);
 template<> ::flowmq::FlowMessage_ClientCommitMessage* Arena::CreateMaybeMessage<::flowmq::FlowMessage_ClientCommitMessage>(Arena*);
 template<> ::flowmq::FlowMessage_ClientOpenQueue* Arena::CreateMaybeMessage<::flowmq::FlowMessage_ClientOpenQueue>(Arena*);
+template<> ::flowmq::FlowMessage_ClientOpenQueueResponse* Arena::CreateMaybeMessage<::flowmq::FlowMessage_ClientOpenQueueResponse>(Arena*);
 template<> ::flowmq::FlowMessage_ClientPutMessage* Arena::CreateMaybeMessage<::flowmq::FlowMessage_ClientPutMessage>(Arena*);
+template<> ::flowmq::FlowMessage_ClientPutMessageResponse* Arena::CreateMaybeMessage<::flowmq::FlowMessage_ClientPutMessageResponse>(Arena*);
 template<> ::flowmq::FlowMessage_ConsumerDisconnected* Arena::CreateMaybeMessage<::flowmq::FlowMessage_ConsumerDisconnected>(Arena*);
 template<> ::flowmq::FlowMessage_RequestVoteRequest* Arena::CreateMaybeMessage<::flowmq::FlowMessage_RequestVoteRequest>(Arena*);
 template<> ::flowmq::FlowMessage_RequestVoteResponse* Arena::CreateMaybeMessage<::flowmq::FlowMessage_RequestVoteResponse>(Arena*);
@@ -127,6 +135,8 @@ enum FlowMessage_MessageType {
   FlowMessage_MessageType_SERVER_SEND_MESSAGE = 12,
   FlowMessage_MessageType_CLIENT_OPEN_QUEUE = 13,
   FlowMessage_MessageType_CONSUMER_DISCONNECTED = 14,
+  FlowMessage_MessageType_CLIENT_PUT_MESSAGE_RESPONSE = 15,
+  FlowMessage_MessageType_CLIENT_OPEN_QUEUE_RESPONSE = 16,
   FlowMessage_MessageType_UNKNOWN = 99
 };
 bool FlowMessage_MessageType_IsValid(int value);
@@ -143,6 +153,25 @@ inline bool FlowMessage_MessageType_Parse(
     const ::std::string& name, FlowMessage_MessageType* value) {
   return ::google::protobuf::internal::ParseNamedEnum<FlowMessage_MessageType>(
     FlowMessage_MessageType_descriptor(), name, value);
+}
+enum FlowMessage_Status {
+  FlowMessage_Status_SUCCESS = 0,
+  FlowMessage_Status_ERROR = 1
+};
+bool FlowMessage_Status_IsValid(int value);
+const FlowMessage_Status FlowMessage_Status_Status_MIN = FlowMessage_Status_SUCCESS;
+const FlowMessage_Status FlowMessage_Status_Status_MAX = FlowMessage_Status_ERROR;
+const int FlowMessage_Status_Status_ARRAYSIZE = FlowMessage_Status_Status_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* FlowMessage_Status_descriptor();
+inline const ::std::string& FlowMessage_Status_Name(FlowMessage_Status value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    FlowMessage_Status_descriptor(), value);
+}
+inline bool FlowMessage_Status_Parse(
+    const ::std::string& name, FlowMessage_Status* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<FlowMessage_Status>(
+    FlowMessage_Status_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -1037,15 +1066,170 @@ class FlowMessage_ClientPutMessage : public ::google::protobuf::Message /* @@pro
   ::std::string* release_message();
   void set_allocated_message(::std::string* message);
 
+  // optional int64 message_id = 2;
+  bool has_message_id() const;
+  void clear_message_id();
+  static const int kMessageIdFieldNumber = 2;
+  ::google::protobuf::int64 message_id() const;
+  void set_message_id(::google::protobuf::int64 value);
+
   // @@protoc_insertion_point(class_scope:flowmq.FlowMessage.ClientPutMessage)
  private:
   void set_has_message();
   void clear_has_message();
+  void set_has_message_id();
+  void clear_has_message_id();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   ::google::protobuf::internal::ArenaStringPtr message_;
+  ::google::protobuf::int64 message_id_;
+  friend struct ::protobuf_flow_5fmessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class FlowMessage_ClientPutMessageResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:flowmq.FlowMessage.ClientPutMessageResponse) */ {
+ public:
+  FlowMessage_ClientPutMessageResponse();
+  virtual ~FlowMessage_ClientPutMessageResponse();
+
+  FlowMessage_ClientPutMessageResponse(const FlowMessage_ClientPutMessageResponse& from);
+
+  inline FlowMessage_ClientPutMessageResponse& operator=(const FlowMessage_ClientPutMessageResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  FlowMessage_ClientPutMessageResponse(FlowMessage_ClientPutMessageResponse&& from) noexcept
+    : FlowMessage_ClientPutMessageResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline FlowMessage_ClientPutMessageResponse& operator=(FlowMessage_ClientPutMessageResponse&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const FlowMessage_ClientPutMessageResponse& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const FlowMessage_ClientPutMessageResponse* internal_default_instance() {
+    return reinterpret_cast<const FlowMessage_ClientPutMessageResponse*>(
+               &_FlowMessage_ClientPutMessageResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    6;
+
+  void Swap(FlowMessage_ClientPutMessageResponse* other);
+  friend void swap(FlowMessage_ClientPutMessageResponse& a, FlowMessage_ClientPutMessageResponse& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline FlowMessage_ClientPutMessageResponse* New() const final {
+    return CreateMaybeMessage<FlowMessage_ClientPutMessageResponse>(NULL);
+  }
+
+  FlowMessage_ClientPutMessageResponse* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<FlowMessage_ClientPutMessageResponse>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const FlowMessage_ClientPutMessageResponse& from);
+  void MergeFrom(const FlowMessage_ClientPutMessageResponse& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FlowMessage_ClientPutMessageResponse* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string error_message = 3;
+  bool has_error_message() const;
+  void clear_error_message();
+  static const int kErrorMessageFieldNumber = 3;
+  const ::std::string& error_message() const;
+  void set_error_message(const ::std::string& value);
+  #if LANG_CXX11
+  void set_error_message(::std::string&& value);
+  #endif
+  void set_error_message(const char* value);
+  void set_error_message(const char* value, size_t size);
+  ::std::string* mutable_error_message();
+  ::std::string* release_error_message();
+  void set_allocated_error_message(::std::string* error_message);
+
+  // required int64 message_id = 1;
+  bool has_message_id() const;
+  void clear_message_id();
+  static const int kMessageIdFieldNumber = 1;
+  ::google::protobuf::int64 message_id() const;
+  void set_message_id(::google::protobuf::int64 value);
+
+  // required .flowmq.FlowMessage.Status status = 2;
+  bool has_status() const;
+  void clear_status();
+  static const int kStatusFieldNumber = 2;
+  ::flowmq::FlowMessage_Status status() const;
+  void set_status(::flowmq::FlowMessage_Status value);
+
+  // @@protoc_insertion_point(class_scope:flowmq.FlowMessage.ClientPutMessageResponse)
+ private:
+  void set_has_message_id();
+  void clear_has_message_id();
+  void set_has_status();
+  void clear_has_status();
+  void set_has_error_message();
+  void clear_has_error_message();
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  ::google::protobuf::internal::ArenaStringPtr error_message_;
+  ::google::protobuf::int64 message_id_;
+  int status_;
   friend struct ::protobuf_flow_5fmessage_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -1092,7 +1276,7 @@ class FlowMessage_ClientCommitMessage : public ::google::protobuf::Message /* @@
                &_FlowMessage_ClientCommitMessage_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    6;
+    7;
 
   void Swap(FlowMessage_ClientCommitMessage* other);
   friend void swap(FlowMessage_ClientCommitMessage& a, FlowMessage_ClientCommitMessage& b) {
@@ -1206,7 +1390,7 @@ class FlowMessage_ServerSendMessage : public ::google::protobuf::Message /* @@pr
                &_FlowMessage_ServerSendMessage_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    7;
+    8;
 
   void Swap(FlowMessage_ServerSendMessage* other);
   friend void swap(FlowMessage_ServerSendMessage& a, FlowMessage_ServerSendMessage& b) {
@@ -1341,7 +1525,7 @@ class FlowMessage_ClientOpenQueue : public ::google::protobuf::Message /* @@prot
                &_FlowMessage_ClientOpenQueue_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    8;
+    9;
 
   void Swap(FlowMessage_ClientOpenQueue* other);
   friend void swap(FlowMessage_ClientOpenQueue& a, FlowMessage_ClientOpenQueue& b) {
@@ -1434,6 +1618,177 @@ class FlowMessage_ClientOpenQueue : public ::google::protobuf::Message /* @@prot
 };
 // -------------------------------------------------------------------
 
+class FlowMessage_ClientOpenQueueResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:flowmq.FlowMessage.ClientOpenQueueResponse) */ {
+ public:
+  FlowMessage_ClientOpenQueueResponse();
+  virtual ~FlowMessage_ClientOpenQueueResponse();
+
+  FlowMessage_ClientOpenQueueResponse(const FlowMessage_ClientOpenQueueResponse& from);
+
+  inline FlowMessage_ClientOpenQueueResponse& operator=(const FlowMessage_ClientOpenQueueResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  FlowMessage_ClientOpenQueueResponse(FlowMessage_ClientOpenQueueResponse&& from) noexcept
+    : FlowMessage_ClientOpenQueueResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline FlowMessage_ClientOpenQueueResponse& operator=(FlowMessage_ClientOpenQueueResponse&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const FlowMessage_ClientOpenQueueResponse& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const FlowMessage_ClientOpenQueueResponse* internal_default_instance() {
+    return reinterpret_cast<const FlowMessage_ClientOpenQueueResponse*>(
+               &_FlowMessage_ClientOpenQueueResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    10;
+
+  void Swap(FlowMessage_ClientOpenQueueResponse* other);
+  friend void swap(FlowMessage_ClientOpenQueueResponse& a, FlowMessage_ClientOpenQueueResponse& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline FlowMessage_ClientOpenQueueResponse* New() const final {
+    return CreateMaybeMessage<FlowMessage_ClientOpenQueueResponse>(NULL);
+  }
+
+  FlowMessage_ClientOpenQueueResponse* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<FlowMessage_ClientOpenQueueResponse>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const FlowMessage_ClientOpenQueueResponse& from);
+  void MergeFrom(const FlowMessage_ClientOpenQueueResponse& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FlowMessage_ClientOpenQueueResponse* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string error_message = 2;
+  bool has_error_message() const;
+  void clear_error_message();
+  static const int kErrorMessageFieldNumber = 2;
+  const ::std::string& error_message() const;
+  void set_error_message(const ::std::string& value);
+  #if LANG_CXX11
+  void set_error_message(::std::string&& value);
+  #endif
+  void set_error_message(const char* value);
+  void set_error_message(const char* value, size_t size);
+  ::std::string* mutable_error_message();
+  ::std::string* release_error_message();
+  void set_allocated_error_message(::std::string* error_message);
+
+  // optional string leader_ip = 3;
+  bool has_leader_ip() const;
+  void clear_leader_ip();
+  static const int kLeaderIpFieldNumber = 3;
+  const ::std::string& leader_ip() const;
+  void set_leader_ip(const ::std::string& value);
+  #if LANG_CXX11
+  void set_leader_ip(::std::string&& value);
+  #endif
+  void set_leader_ip(const char* value);
+  void set_leader_ip(const char* value, size_t size);
+  ::std::string* mutable_leader_ip();
+  ::std::string* release_leader_ip();
+  void set_allocated_leader_ip(::std::string* leader_ip);
+
+  // optional string leader_port = 4;
+  bool has_leader_port() const;
+  void clear_leader_port();
+  static const int kLeaderPortFieldNumber = 4;
+  const ::std::string& leader_port() const;
+  void set_leader_port(const ::std::string& value);
+  #if LANG_CXX11
+  void set_leader_port(::std::string&& value);
+  #endif
+  void set_leader_port(const char* value);
+  void set_leader_port(const char* value, size_t size);
+  ::std::string* mutable_leader_port();
+  ::std::string* release_leader_port();
+  void set_allocated_leader_port(::std::string* leader_port);
+
+  // required .flowmq.FlowMessage.Status status = 1;
+  bool has_status() const;
+  void clear_status();
+  static const int kStatusFieldNumber = 1;
+  ::flowmq::FlowMessage_Status status() const;
+  void set_status(::flowmq::FlowMessage_Status value);
+
+  // @@protoc_insertion_point(class_scope:flowmq.FlowMessage.ClientOpenQueueResponse)
+ private:
+  void set_has_status();
+  void clear_has_status();
+  void set_has_error_message();
+  void clear_has_error_message();
+  void set_has_leader_ip();
+  void clear_has_leader_ip();
+  void set_has_leader_port();
+  void clear_has_leader_port();
+
+  // helper for ByteSizeLong()
+  size_t RequiredFieldsByteSizeFallback() const;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  ::google::protobuf::internal::ArenaStringPtr error_message_;
+  ::google::protobuf::internal::ArenaStringPtr leader_ip_;
+  ::google::protobuf::internal::ArenaStringPtr leader_port_;
+  int status_;
+  friend struct ::protobuf_flow_5fmessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class FlowMessage_ConsumerDisconnected : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:flowmq.FlowMessage.ConsumerDisconnected) */ {
  public:
   FlowMessage_ConsumerDisconnected();
@@ -1476,7 +1831,7 @@ class FlowMessage_ConsumerDisconnected : public ::google::protobuf::Message /* @
                &_FlowMessage_ConsumerDisconnected_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    9;
+    11;
 
   void Swap(FlowMessage_ConsumerDisconnected* other);
   friend void swap(FlowMessage_ConsumerDisconnected& a, FlowMessage_ConsumerDisconnected& b) {
@@ -1590,7 +1945,7 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_FlowMessage_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    10;
+    12;
 
   void Swap(FlowMessage* other);
   friend void swap(FlowMessage& a, FlowMessage& b) {
@@ -1645,9 +2000,11 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   typedef FlowMessage_AppendEntriesRequest AppendEntriesRequest;
   typedef FlowMessage_AppendEntriesResponse AppendEntriesResponse;
   typedef FlowMessage_ClientPutMessage ClientPutMessage;
+  typedef FlowMessage_ClientPutMessageResponse ClientPutMessageResponse;
   typedef FlowMessage_ClientCommitMessage ClientCommitMessage;
   typedef FlowMessage_ServerSendMessage ServerSendMessage;
   typedef FlowMessage_ClientOpenQueue ClientOpenQueue;
+  typedef FlowMessage_ClientOpenQueueResponse ClientOpenQueueResponse;
   typedef FlowMessage_ConsumerDisconnected ConsumerDisconnected;
 
   typedef FlowMessage_MessageType MessageType;
@@ -1669,6 +2026,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
     FlowMessage_MessageType_CLIENT_OPEN_QUEUE;
   static const MessageType CONSUMER_DISCONNECTED =
     FlowMessage_MessageType_CONSUMER_DISCONNECTED;
+  static const MessageType CLIENT_PUT_MESSAGE_RESPONSE =
+    FlowMessage_MessageType_CLIENT_PUT_MESSAGE_RESPONSE;
+  static const MessageType CLIENT_OPEN_QUEUE_RESPONSE =
+    FlowMessage_MessageType_CLIENT_OPEN_QUEUE_RESPONSE;
   static const MessageType UNKNOWN =
     FlowMessage_MessageType_UNKNOWN;
   static inline bool MessageType_IsValid(int value) {
@@ -1690,6 +2051,32 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   static inline bool MessageType_Parse(const ::std::string& name,
       MessageType* value) {
     return FlowMessage_MessageType_Parse(name, value);
+  }
+
+  typedef FlowMessage_Status Status;
+  static const Status SUCCESS =
+    FlowMessage_Status_SUCCESS;
+  static const Status ERROR =
+    FlowMessage_Status_ERROR;
+  static inline bool Status_IsValid(int value) {
+    return FlowMessage_Status_IsValid(value);
+  }
+  static const Status Status_MIN =
+    FlowMessage_Status_Status_MIN;
+  static const Status Status_MAX =
+    FlowMessage_Status_Status_MAX;
+  static const int Status_ARRAYSIZE =
+    FlowMessage_Status_Status_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  Status_descriptor() {
+    return FlowMessage_Status_descriptor();
+  }
+  static inline const ::std::string& Status_Name(Status value) {
+    return FlowMessage_Status_Name(value);
+  }
+  static inline bool Status_Parse(const ::std::string& name,
+      Status* value) {
+    return FlowMessage_Status_Parse(name, value);
   }
 
   // accessors -------------------------------------------------------
@@ -1802,7 +2189,31 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ConsumerDisconnected* mutable_consumer_disconnected();
   void set_allocated_consumer_disconnected(::flowmq::FlowMessage_ConsumerDisconnected* consumer_disconnected);
 
-  // required int64 partition_id = 2;
+  // optional .flowmq.FlowMessage.ClientOpenQueueResponse client_open_queue_response = 12;
+  bool has_client_open_queue_response() const;
+  void clear_client_open_queue_response();
+  static const int kClientOpenQueueResponseFieldNumber = 12;
+  private:
+  const ::flowmq::FlowMessage_ClientOpenQueueResponse& _internal_client_open_queue_response() const;
+  public:
+  const ::flowmq::FlowMessage_ClientOpenQueueResponse& client_open_queue_response() const;
+  ::flowmq::FlowMessage_ClientOpenQueueResponse* release_client_open_queue_response();
+  ::flowmq::FlowMessage_ClientOpenQueueResponse* mutable_client_open_queue_response();
+  void set_allocated_client_open_queue_response(::flowmq::FlowMessage_ClientOpenQueueResponse* client_open_queue_response);
+
+  // optional .flowmq.FlowMessage.ClientPutMessageResponse client_put_message_response = 13;
+  bool has_client_put_message_response() const;
+  void clear_client_put_message_response();
+  static const int kClientPutMessageResponseFieldNumber = 13;
+  private:
+  const ::flowmq::FlowMessage_ClientPutMessageResponse& _internal_client_put_message_response() const;
+  public:
+  const ::flowmq::FlowMessage_ClientPutMessageResponse& client_put_message_response() const;
+  ::flowmq::FlowMessage_ClientPutMessageResponse* release_client_put_message_response();
+  ::flowmq::FlowMessage_ClientPutMessageResponse* mutable_client_put_message_response();
+  void set_allocated_client_put_message_response(::flowmq::FlowMessage_ClientPutMessageResponse* client_put_message_response);
+
+  // optional int64 partition_id = 2;
   bool has_partition_id() const;
   void clear_partition_id();
   static const int kPartitionIdFieldNumber = 2;
@@ -1840,9 +2251,10 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   void clear_has_client_open_queue();
   void set_has_consumer_disconnected();
   void clear_has_consumer_disconnected();
-
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
+  void set_has_client_open_queue_response();
+  void clear_has_client_open_queue_response();
+  void set_has_client_put_message_response();
+  void clear_has_client_put_message_response();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
@@ -1856,6 +2268,8 @@ class FlowMessage : public ::google::protobuf::Message /* @@protoc_insertion_poi
   ::flowmq::FlowMessage_ServerSendMessage* server_send_message_;
   ::flowmq::FlowMessage_ClientOpenQueue* client_open_queue_;
   ::flowmq::FlowMessage_ConsumerDisconnected* consumer_disconnected_;
+  ::flowmq::FlowMessage_ClientOpenQueueResponse* client_open_queue_response_;
+  ::flowmq::FlowMessage_ClientPutMessageResponse* client_put_message_response_;
   ::google::protobuf::int64 partition_id_;
   int type_;
   friend struct ::protobuf_flow_5fmessage_2eproto::TableStruct;
@@ -2509,6 +2923,149 @@ inline void FlowMessage_ClientPutMessage::set_allocated_message(::std::string* m
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.ClientPutMessage.message)
 }
 
+// optional int64 message_id = 2;
+inline bool FlowMessage_ClientPutMessage::has_message_id() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void FlowMessage_ClientPutMessage::set_has_message_id() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void FlowMessage_ClientPutMessage::clear_has_message_id() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void FlowMessage_ClientPutMessage::clear_message_id() {
+  message_id_ = GOOGLE_LONGLONG(0);
+  clear_has_message_id();
+}
+inline ::google::protobuf::int64 FlowMessage_ClientPutMessage::message_id() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientPutMessage.message_id)
+  return message_id_;
+}
+inline void FlowMessage_ClientPutMessage::set_message_id(::google::protobuf::int64 value) {
+  set_has_message_id();
+  message_id_ = value;
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientPutMessage.message_id)
+}
+
+// -------------------------------------------------------------------
+
+// FlowMessage_ClientPutMessageResponse
+
+// required int64 message_id = 1;
+inline bool FlowMessage_ClientPutMessageResponse::has_message_id() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void FlowMessage_ClientPutMessageResponse::set_has_message_id() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void FlowMessage_ClientPutMessageResponse::clear_has_message_id() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void FlowMessage_ClientPutMessageResponse::clear_message_id() {
+  message_id_ = GOOGLE_LONGLONG(0);
+  clear_has_message_id();
+}
+inline ::google::protobuf::int64 FlowMessage_ClientPutMessageResponse::message_id() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientPutMessageResponse.message_id)
+  return message_id_;
+}
+inline void FlowMessage_ClientPutMessageResponse::set_message_id(::google::protobuf::int64 value) {
+  set_has_message_id();
+  message_id_ = value;
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientPutMessageResponse.message_id)
+}
+
+// required .flowmq.FlowMessage.Status status = 2;
+inline bool FlowMessage_ClientPutMessageResponse::has_status() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void FlowMessage_ClientPutMessageResponse::set_has_status() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void FlowMessage_ClientPutMessageResponse::clear_has_status() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void FlowMessage_ClientPutMessageResponse::clear_status() {
+  status_ = 0;
+  clear_has_status();
+}
+inline ::flowmq::FlowMessage_Status FlowMessage_ClientPutMessageResponse::status() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientPutMessageResponse.status)
+  return static_cast< ::flowmq::FlowMessage_Status >(status_);
+}
+inline void FlowMessage_ClientPutMessageResponse::set_status(::flowmq::FlowMessage_Status value) {
+  assert(::flowmq::FlowMessage_Status_IsValid(value));
+  set_has_status();
+  status_ = value;
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientPutMessageResponse.status)
+}
+
+// required string error_message = 3;
+inline bool FlowMessage_ClientPutMessageResponse::has_error_message() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void FlowMessage_ClientPutMessageResponse::set_has_error_message() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void FlowMessage_ClientPutMessageResponse::clear_has_error_message() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void FlowMessage_ClientPutMessageResponse::clear_error_message() {
+  error_message_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_error_message();
+}
+inline const ::std::string& FlowMessage_ClientPutMessageResponse::error_message() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+  return error_message_.GetNoArena();
+}
+inline void FlowMessage_ClientPutMessageResponse::set_error_message(const ::std::string& value) {
+  set_has_error_message();
+  error_message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+}
+#if LANG_CXX11
+inline void FlowMessage_ClientPutMessageResponse::set_error_message(::std::string&& value) {
+  set_has_error_message();
+  error_message_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+}
+#endif
+inline void FlowMessage_ClientPutMessageResponse::set_error_message(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_error_message();
+  error_message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+}
+inline void FlowMessage_ClientPutMessageResponse::set_error_message(const char* value, size_t size) {
+  set_has_error_message();
+  error_message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+}
+inline ::std::string* FlowMessage_ClientPutMessageResponse::mutable_error_message() {
+  set_has_error_message();
+  // @@protoc_insertion_point(field_mutable:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+  return error_message_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* FlowMessage_ClientPutMessageResponse::release_error_message() {
+  // @@protoc_insertion_point(field_release:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+  if (!has_error_message()) {
+    return NULL;
+  }
+  clear_has_error_message();
+  return error_message_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void FlowMessage_ClientPutMessageResponse::set_allocated_error_message(::std::string* error_message) {
+  if (error_message != NULL) {
+    set_has_error_message();
+  } else {
+    clear_has_error_message();
+  }
+  error_message_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), error_message);
+  // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.ClientPutMessageResponse.error_message)
+}
+
 // -------------------------------------------------------------------
 
 // FlowMessage_ClientCommitMessage
@@ -2727,6 +3284,233 @@ inline void FlowMessage_ClientOpenQueue::set_allocated_queue_name(::std::string*
 
 // -------------------------------------------------------------------
 
+// FlowMessage_ClientOpenQueueResponse
+
+// required .flowmq.FlowMessage.Status status = 1;
+inline bool FlowMessage_ClientOpenQueueResponse::has_status() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_has_status() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_has_status() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_status() {
+  status_ = 0;
+  clear_has_status();
+}
+inline ::flowmq::FlowMessage_Status FlowMessage_ClientOpenQueueResponse::status() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientOpenQueueResponse.status)
+  return static_cast< ::flowmq::FlowMessage_Status >(status_);
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_status(::flowmq::FlowMessage_Status value) {
+  assert(::flowmq::FlowMessage_Status_IsValid(value));
+  set_has_status();
+  status_ = value;
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientOpenQueueResponse.status)
+}
+
+// required string error_message = 2;
+inline bool FlowMessage_ClientOpenQueueResponse::has_error_message() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_has_error_message() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_has_error_message() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_error_message() {
+  error_message_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_error_message();
+}
+inline const ::std::string& FlowMessage_ClientOpenQueueResponse::error_message() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+  return error_message_.GetNoArena();
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_error_message(const ::std::string& value) {
+  set_has_error_message();
+  error_message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+}
+#if LANG_CXX11
+inline void FlowMessage_ClientOpenQueueResponse::set_error_message(::std::string&& value) {
+  set_has_error_message();
+  error_message_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+}
+#endif
+inline void FlowMessage_ClientOpenQueueResponse::set_error_message(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_error_message();
+  error_message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_error_message(const char* value, size_t size) {
+  set_has_error_message();
+  error_message_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+}
+inline ::std::string* FlowMessage_ClientOpenQueueResponse::mutable_error_message() {
+  set_has_error_message();
+  // @@protoc_insertion_point(field_mutable:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+  return error_message_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* FlowMessage_ClientOpenQueueResponse::release_error_message() {
+  // @@protoc_insertion_point(field_release:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+  if (!has_error_message()) {
+    return NULL;
+  }
+  clear_has_error_message();
+  return error_message_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_allocated_error_message(::std::string* error_message) {
+  if (error_message != NULL) {
+    set_has_error_message();
+  } else {
+    clear_has_error_message();
+  }
+  error_message_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), error_message);
+  // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.ClientOpenQueueResponse.error_message)
+}
+
+// optional string leader_ip = 3;
+inline bool FlowMessage_ClientOpenQueueResponse::has_leader_ip() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_has_leader_ip() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_has_leader_ip() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_leader_ip() {
+  leader_ip_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_leader_ip();
+}
+inline const ::std::string& FlowMessage_ClientOpenQueueResponse::leader_ip() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+  return leader_ip_.GetNoArena();
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_ip(const ::std::string& value) {
+  set_has_leader_ip();
+  leader_ip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+}
+#if LANG_CXX11
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_ip(::std::string&& value) {
+  set_has_leader_ip();
+  leader_ip_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+}
+#endif
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_ip(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_leader_ip();
+  leader_ip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_ip(const char* value, size_t size) {
+  set_has_leader_ip();
+  leader_ip_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+}
+inline ::std::string* FlowMessage_ClientOpenQueueResponse::mutable_leader_ip() {
+  set_has_leader_ip();
+  // @@protoc_insertion_point(field_mutable:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+  return leader_ip_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* FlowMessage_ClientOpenQueueResponse::release_leader_ip() {
+  // @@protoc_insertion_point(field_release:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+  if (!has_leader_ip()) {
+    return NULL;
+  }
+  clear_has_leader_ip();
+  return leader_ip_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_allocated_leader_ip(::std::string* leader_ip) {
+  if (leader_ip != NULL) {
+    set_has_leader_ip();
+  } else {
+    clear_has_leader_ip();
+  }
+  leader_ip_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), leader_ip);
+  // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.ClientOpenQueueResponse.leader_ip)
+}
+
+// optional string leader_port = 4;
+inline bool FlowMessage_ClientOpenQueueResponse::has_leader_port() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_has_leader_port() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_has_leader_port() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void FlowMessage_ClientOpenQueueResponse::clear_leader_port() {
+  leader_port_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_leader_port();
+}
+inline const ::std::string& FlowMessage_ClientOpenQueueResponse::leader_port() const {
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+  return leader_port_.GetNoArena();
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_port(const ::std::string& value) {
+  set_has_leader_port();
+  leader_port_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+}
+#if LANG_CXX11
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_port(::std::string&& value) {
+  set_has_leader_port();
+  leader_port_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+}
+#endif
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_port(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_leader_port();
+  leader_port_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_leader_port(const char* value, size_t size) {
+  set_has_leader_port();
+  leader_port_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+}
+inline ::std::string* FlowMessage_ClientOpenQueueResponse::mutable_leader_port() {
+  set_has_leader_port();
+  // @@protoc_insertion_point(field_mutable:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+  return leader_port_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* FlowMessage_ClientOpenQueueResponse::release_leader_port() {
+  // @@protoc_insertion_point(field_release:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+  if (!has_leader_port()) {
+    return NULL;
+  }
+  clear_has_leader_port();
+  return leader_port_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void FlowMessage_ClientOpenQueueResponse::set_allocated_leader_port(::std::string* leader_port) {
+  if (leader_port != NULL) {
+    set_has_leader_port();
+  } else {
+    clear_has_leader_port();
+  }
+  leader_port_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), leader_port);
+  // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.ClientOpenQueueResponse.leader_port)
+}
+
+// -------------------------------------------------------------------
+
 // FlowMessage_ConsumerDisconnected
 
 // required int32 client_id = 1;
@@ -2759,13 +3543,13 @@ inline void FlowMessage_ConsumerDisconnected::set_client_id(::google::protobuf::
 
 // required .flowmq.FlowMessage.MessageType type = 1;
 inline bool FlowMessage::has_type() const {
-  return (_has_bits_[0] & 0x00000400u) != 0;
+  return (_has_bits_[0] & 0x00001000u) != 0;
 }
 inline void FlowMessage::set_has_type() {
-  _has_bits_[0] |= 0x00000400u;
+  _has_bits_[0] |= 0x00001000u;
 }
 inline void FlowMessage::clear_has_type() {
-  _has_bits_[0] &= ~0x00000400u;
+  _has_bits_[0] &= ~0x00001000u;
 }
 inline void FlowMessage::clear_type() {
   type_ = 0;
@@ -2782,15 +3566,15 @@ inline void FlowMessage::set_type(::flowmq::FlowMessage_MessageType value) {
   // @@protoc_insertion_point(field_set:flowmq.FlowMessage.type)
 }
 
-// required int64 partition_id = 2;
+// optional int64 partition_id = 2;
 inline bool FlowMessage::has_partition_id() const {
-  return (_has_bits_[0] & 0x00000200u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void FlowMessage::set_has_partition_id() {
-  _has_bits_[0] |= 0x00000200u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void FlowMessage::clear_has_partition_id() {
-  _has_bits_[0] &= ~0x00000200u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void FlowMessage::clear_partition_id() {
   partition_id_ = GOOGLE_LONGLONG(0);
@@ -3328,9 +4112,129 @@ inline void FlowMessage::set_allocated_consumer_disconnected(::flowmq::FlowMessa
   // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.consumer_disconnected)
 }
 
+// optional .flowmq.FlowMessage.ClientOpenQueueResponse client_open_queue_response = 12;
+inline bool FlowMessage::has_client_open_queue_response() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void FlowMessage::set_has_client_open_queue_response() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void FlowMessage::clear_has_client_open_queue_response() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void FlowMessage::clear_client_open_queue_response() {
+  if (client_open_queue_response_ != NULL) client_open_queue_response_->Clear();
+  clear_has_client_open_queue_response();
+}
+inline const ::flowmq::FlowMessage_ClientOpenQueueResponse& FlowMessage::_internal_client_open_queue_response() const {
+  return *client_open_queue_response_;
+}
+inline const ::flowmq::FlowMessage_ClientOpenQueueResponse& FlowMessage::client_open_queue_response() const {
+  const ::flowmq::FlowMessage_ClientOpenQueueResponse* p = client_open_queue_response_;
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.client_open_queue_response)
+  return p != NULL ? *p : *reinterpret_cast<const ::flowmq::FlowMessage_ClientOpenQueueResponse*>(
+      &::flowmq::_FlowMessage_ClientOpenQueueResponse_default_instance_);
+}
+inline ::flowmq::FlowMessage_ClientOpenQueueResponse* FlowMessage::release_client_open_queue_response() {
+  // @@protoc_insertion_point(field_release:flowmq.FlowMessage.client_open_queue_response)
+  clear_has_client_open_queue_response();
+  ::flowmq::FlowMessage_ClientOpenQueueResponse* temp = client_open_queue_response_;
+  client_open_queue_response_ = NULL;
+  return temp;
+}
+inline ::flowmq::FlowMessage_ClientOpenQueueResponse* FlowMessage::mutable_client_open_queue_response() {
+  set_has_client_open_queue_response();
+  if (client_open_queue_response_ == NULL) {
+    auto* p = CreateMaybeMessage<::flowmq::FlowMessage_ClientOpenQueueResponse>(GetArenaNoVirtual());
+    client_open_queue_response_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:flowmq.FlowMessage.client_open_queue_response)
+  return client_open_queue_response_;
+}
+inline void FlowMessage::set_allocated_client_open_queue_response(::flowmq::FlowMessage_ClientOpenQueueResponse* client_open_queue_response) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete client_open_queue_response_;
+  }
+  if (client_open_queue_response) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      client_open_queue_response = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, client_open_queue_response, submessage_arena);
+    }
+    set_has_client_open_queue_response();
+  } else {
+    clear_has_client_open_queue_response();
+  }
+  client_open_queue_response_ = client_open_queue_response;
+  // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.client_open_queue_response)
+}
+
+// optional .flowmq.FlowMessage.ClientPutMessageResponse client_put_message_response = 13;
+inline bool FlowMessage::has_client_put_message_response() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void FlowMessage::set_has_client_put_message_response() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void FlowMessage::clear_has_client_put_message_response() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void FlowMessage::clear_client_put_message_response() {
+  if (client_put_message_response_ != NULL) client_put_message_response_->Clear();
+  clear_has_client_put_message_response();
+}
+inline const ::flowmq::FlowMessage_ClientPutMessageResponse& FlowMessage::_internal_client_put_message_response() const {
+  return *client_put_message_response_;
+}
+inline const ::flowmq::FlowMessage_ClientPutMessageResponse& FlowMessage::client_put_message_response() const {
+  const ::flowmq::FlowMessage_ClientPutMessageResponse* p = client_put_message_response_;
+  // @@protoc_insertion_point(field_get:flowmq.FlowMessage.client_put_message_response)
+  return p != NULL ? *p : *reinterpret_cast<const ::flowmq::FlowMessage_ClientPutMessageResponse*>(
+      &::flowmq::_FlowMessage_ClientPutMessageResponse_default_instance_);
+}
+inline ::flowmq::FlowMessage_ClientPutMessageResponse* FlowMessage::release_client_put_message_response() {
+  // @@protoc_insertion_point(field_release:flowmq.FlowMessage.client_put_message_response)
+  clear_has_client_put_message_response();
+  ::flowmq::FlowMessage_ClientPutMessageResponse* temp = client_put_message_response_;
+  client_put_message_response_ = NULL;
+  return temp;
+}
+inline ::flowmq::FlowMessage_ClientPutMessageResponse* FlowMessage::mutable_client_put_message_response() {
+  set_has_client_put_message_response();
+  if (client_put_message_response_ == NULL) {
+    auto* p = CreateMaybeMessage<::flowmq::FlowMessage_ClientPutMessageResponse>(GetArenaNoVirtual());
+    client_put_message_response_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:flowmq.FlowMessage.client_put_message_response)
+  return client_put_message_response_;
+}
+inline void FlowMessage::set_allocated_client_put_message_response(::flowmq::FlowMessage_ClientPutMessageResponse* client_put_message_response) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete client_put_message_response_;
+  }
+  if (client_put_message_response) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      client_put_message_response = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, client_put_message_response, submessage_arena);
+    }
+    set_has_client_put_message_response();
+  } else {
+    clear_has_client_put_message_response();
+  }
+  client_put_message_response_ = client_put_message_response;
+  // @@protoc_insertion_point(field_set_allocated:flowmq.FlowMessage.client_put_message_response)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -3368,6 +4272,11 @@ template <> struct is_proto_enum< ::flowmq::FlowMessage_MessageType> : ::std::tr
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::flowmq::FlowMessage_MessageType>() {
   return ::flowmq::FlowMessage_MessageType_descriptor();
+}
+template <> struct is_proto_enum< ::flowmq::FlowMessage_Status> : ::std::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::flowmq::FlowMessage_Status>() {
+  return ::flowmq::FlowMessage_Status_descriptor();
 }
 
 }  // namespace protobuf
