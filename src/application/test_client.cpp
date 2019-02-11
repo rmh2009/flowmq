@@ -51,7 +51,7 @@ int main(int argc, char* argv[]){
         std::string line;
 
         client.open_queue_sync("test_queue", 0);
-        sleep_some_time();
+        sleep_some_time(3);
 
         // consume all pending messages for a clean start
         for(auto id : message_ids){
@@ -61,11 +61,11 @@ int main(int argc, char* argv[]){
 
         // start test
         std::cout << "sending messages to queue \n";
-        client.send_message("test1");
-        client.send_message("test2");
-        client.send_message("test3");
-        sleep_some_time();
-        if(message_ids.size() != 3){
+        for(int i = 0; i < 100; ++i){
+            client.send_message(std::string("test") + std::to_string(i));
+        }
+        sleep_some_time(3);
+        if(message_ids.size() != 100){
             std::cout <<"ERROR! did not receive all messages\n";
             return 1;
         }
@@ -83,14 +83,16 @@ int main(int argc, char* argv[]){
         std::cout << "client restarted \n";
         sleep_some_time(1);
 
-        if(message_ids.size() != 2){
+        if(message_ids.size() != 99){
             std::cout <<"ERROR! did not receive all messages, existing messages received " << message_ids.size()  << "\n";
             return 1;
         }
         //commit the remaining ones
-        client.commit_message(message_ids[0]);
-        client.commit_message(message_ids[1]);
-        sleep_some_time();
+        for(auto id : message_ids){
+            std::cout << "committing " << id << '\n';
+            client.commit_message(id);
+        }
+        sleep_some_time(3);
         client.stop();
 
         message_ids.clear();
@@ -98,7 +100,7 @@ int main(int argc, char* argv[]){
         // 3. Restart, test that we receive none
         client.start();
         client.open_queue_sync("test_queue", 0);
-        sleep_some_time(1);
+        sleep_some_time(3);
 
         if(message_ids.size() != 0){
             std::cout <<"ERROR! commit failed! received messages after committing all previous messages\n";

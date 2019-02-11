@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
+#include <chrono>
 
 namespace flowmq{
 
@@ -60,6 +61,16 @@ class Logger {
             return logger;
         }
 
+        static std::string get_time()
+        {
+            auto now = std::chrono::system_clock::now();
+
+            auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+            time_t raw_time = std::chrono::system_clock::to_time_t(now);
+            std::string time_str = ctime( &raw_time );
+            return time_str.substr(0, time_str.size() - 1 ) + ':' + std::to_string(ms.count());
+        }
+
         // returns the guarded output
         LoggerOutput get_output(){
             if(!file_is_set_) return LoggerOutput(std::cout, mutex_);
@@ -93,15 +104,15 @@ const bool logging_error_disabled__ = false;
 
 #define LOG_DEBUG  \
     if(flowmq::logging_debug_disabled__){} else \
-flowmq::Logger::get_logger().get_output() << "\nthread " << std::this_thread::get_id() << ' ' << __FILE__ << ' ' << __LINE__ << " DEBUG: "
+flowmq::Logger::get_logger().get_output() << "\n" << flowmq::Logger::get_time() << " thread " << std::this_thread::get_id() << ' ' << __FILE__ << ' ' << __LINE__ << " DEBUG: "
 
 #define LOG_INFO  \
     if(flowmq::logging_info_disabled__){} else \
-flowmq::Logger::get_logger().get_output() << "\nthread " << std::this_thread::get_id() << ' ' << __FILE__ << ' ' << __LINE__ << " INFO: "
+flowmq::Logger::get_logger().get_output() << "\n" << flowmq::Logger::get_time() << " thread " << std::this_thread::get_id() << ' ' << __FILE__ << ' ' << __LINE__ << " INFO: "
 
 #define LOG_ERROR \
     if(flowmq::logging_error_disabled__){} else \
-flowmq::Logger::get_logger().get_output() << "\nthread " << std::this_thread::get_id() << ' ' <<__FILE__ << ' ' << __LINE__ << " ERROR: " 
+flowmq::Logger::get_logger().get_output() << "\n" << flowmq::Logger::get_time() << " thread " << std::this_thread::get_id() << ' ' <<__FILE__ << ' ' << __LINE__ << " ERROR: " 
 
 
 }

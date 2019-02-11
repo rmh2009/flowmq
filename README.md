@@ -35,7 +35,7 @@ External library dependencies:
 - Protobuf
 - Google Test 
 
-## Install Dependencies
+## BUILD 
 
 On mac, boost and protobuf can be installed using brew 
 
@@ -56,7 +56,7 @@ and build it using CMake:
 
 https://github.com/google/googletest
 
-## Build
+### Build
 
 This repo uses CMAKE for building the library and test binaries. 
 If Boost and Protobuf are installed in nonstandard 
@@ -76,11 +76,91 @@ Use compiler flag "FLOWMQ_LOG_FULL" to enable full logging, use
 flag "FLOWMQ_LOG_NONE" to suppress all internal logging. If neither 
 is set the default behavior would only log error messages.
 
-## Test 
+### Test 
 
 run unit tests
 ```
 make test
 ```
+
+## Tutorial
+
+### Start servers 
+
+build/node.config is an exampe config file that can be used to start 
+a local cluster. By default this specifies 5 cluster nodes.
+
+Each node specifies a inter cluster port and a client facing port. 
+Client can only connect to the client facing port to send and receive 
+messages. The simple client API provided below handles the redirection 
+to the correct leader.
+
+This config file also specifies several partitions to be started in this cluster. 
+Partitions are completely separated, each partition has its own leader. 
+By default each partition also runs on its own thread, it can also be 
+easily changed so that one thread can handle multiple partitions.
+
+```
+# start node 0
+build/flowmq_node node.config 0
+# start node 1
+build/flowmq_node node.config 0
+# start other nodes ...
+```
+
+Upon start the cluster nodes will start voting and have a leader selected 
+for each partition. Leader will start syncing data to other followers, 
+    and is also responsible for communicating with client.
+
+### Client API
+
+A simple client API is provided for interacting with the queue cluster. 
+
+```
+// start a client
+#include <flowmq_client/simple_client.hpp>
+
+tcp::resolver resolver(io_context);
+auto endpoints = resolver.resolve("localhost", "9001"); 
+int partition_id = 0; // this is configured in the config file
+flowmq::SimpleClient client(partition_id, io_context, endpoints);
+
+// start the io_context to run 
+std::thread t([&io_context](){  
+        io_context.run(); 
+        });
+```
+
+```
+
+// messages are consumed asyncrhonously, so register a handler first before 
+// opening a queue.
+std::vector<int> message_ids; 
+client.register_handler([&message_ids](std::string msg, int message_id){
+        LOG_INFO << "Got message " << msg;
+        message_ids.push_back(message_id);
+        });
+
+// open a queue (queue name and mode are not supported yet, this will just open the partition_id)
+// This is a blocking call, will redirect to the correct leader.
+client.open_queue_sync("test_queue", 0);
+```
+
+```
+// consume all received messages
+// commit is also non-blocking.
+for(auto id : message_ids){
+    client.commit_message(id);
+}
+
+```
+
+### Integration Test 
+
+A integration test file is available in the build directory after installation
+```
+build/flowmq_integration_test localhost 9003 0
+```
+Where 9003 is the client port of any cluster node, 0 specifies the partition to test.
 
 
