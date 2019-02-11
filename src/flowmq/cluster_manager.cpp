@@ -72,7 +72,7 @@ void ClusterManager::connect(int endpoint_id){
                     });
 
             session -> register_disconnect_handler([this, endpoint_id](){
-                    LOG_INFO << "Remote session closed, exiting ..." ;
+                    LOG_INFO << "Remote session closed, exiting now, retry in 2 seconds" ;
                     auto timer = std::make_shared<boost::asio::deadline_timer>(io_context_);
                     timer -> expires_from_now(boost::posix_time::seconds(2));
                     timer -> async_wait([timer, endpoint_id, this](boost::system::error_code const&){

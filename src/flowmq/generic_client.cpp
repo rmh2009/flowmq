@@ -15,6 +15,10 @@ void GenericClient::start(){
     connect(io_context_, endpoints_);
 }
 
+void GenericClient::reset_endpoint(const tcp::resolver::results_type& endpoints){
+    endpoints_ = endpoints;
+}
+
 void GenericClient::write_message(Message msg){
     session_ -> write_message(std::move(msg));
 }

@@ -22,6 +22,8 @@ class GenericClient
 
         void start();
 
+        void reset_endpoint(const tcp::resolver::results_type& endpoints);
+
         void write_message(Message msg);
         ~GenericClient();
 

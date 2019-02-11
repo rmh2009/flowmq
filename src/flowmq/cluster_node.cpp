@@ -442,10 +442,18 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg){
                     *resp.mutable_leader_ip() = leader_address.first;
                     *resp.mutable_leader_port() = leader_address.second;
                     raft_msg.loadClientOpenQueueResponse(std::move(resp));
+                    // TODO this only works when one client is opening in the queue in retrying sync mode.
+                    // we need client id or request id in the message to support request/respnose style communication.
                     cluster_master_->client_manager()->deliver_one_message_round_robin(partition_id_, serialize_raft_message(raft_msg));
                     return;
                 }
-
+                RaftMessage raft_msg;
+                ClientOpenQueueResponseType resp;
+                resp.set_status(RaftMessage::SUCCESS);
+                *resp.mutable_error_message() = "";
+                raft_msg.loadClientOpenQueueResponse(std::move(resp));
+                cluster_master_->client_manager()->deliver_one_message_round_robin(partition_id_, serialize_raft_message(raft_msg));
+ 
                 trigger_message_delivery();
                 break;
             }
