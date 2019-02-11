@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <list>
 #include <functional>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -36,6 +37,7 @@ int main(int argc, char* argv[]){
             config.current_node = atoi(argv[2]);
         }
         int cur_node_id = config.current_node;
+        FLOWMQ_OUTPUT_FILE("flowmq_log_" + std::to_string(cur_node_id) + ".log");
 
         tcp::endpoint this_endpoint;
         std::vector<std::pair<int, tcp::resolver::results_type>> others;
@@ -62,6 +64,7 @@ int main(int argc, char* argv[]){
 
         assert(config.partitions_ids.size() > 0);
 
+        std::list<boost::asio::io_context> node_contexts;
         for(auto partition_id : config.partitions_ids){
         // add partition 0
             // construct cluster_node
@@ -69,15 +72,23 @@ int main(int argc, char* argv[]){
 
             // {partition_id, node_id, total_nodes}
             ClusterNodeConfig node_config({partition_id, cur_node_id, static_cast<int>(config.server_nodes.size())}); 
+            node_contexts.emplace_back();
             std::unique_ptr<ClusterNode> node_p(new 
-                    ClusterNode(node_config, io_context, &master, std::move(storage_p)));
+                    ClusterNode(node_config, node_contexts.back(), &master, std::move(storage_p)));
 
             // add cluster_node to cluster_master and start
             master.add_cluster_node(node_config.partition_id, node_config.node_id, std::move(node_p));
         }
 
         // run the context
+        std::list<std::thread> threads;
+        for(auto& context : node_contexts){
+            threads.emplace_back([&](){context.run();});
+        }
         io_context.run();
+        for(auto& t : threads){
+            t.join();
+        }
     }
     catch (std::exception& e)
     {

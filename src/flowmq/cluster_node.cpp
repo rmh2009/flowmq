@@ -54,7 +54,7 @@ ClusterNode::ClusterNode(
 
     // load persisted log entries
     if(0 != cluster_node_storage_p_->load_log_entry_from_file(&log_entries_)){
-        LOG_INFO << "WARNING : Error loading log entries from storage\n";
+        LOG_ERROR << "error loading log entries from storage\n";
     }
     for(size_t i = 1; i < log_entries_.size(); ++i){
         commit_log_entry(i); //update the queue state, this should not trigger delivery to client
@@ -82,13 +82,13 @@ void ClusterNode::add_log_entry(const LogEntry entry){
 //this will send heart beats to all followers if current state is leader
 void ClusterNode::start_send_hearbeat(){
 
-    LOG_INFO << "sending heartbeat (if leader) ... ... \n";
 
     heartbeat_timer_.expires_from_now(boost::posix_time::seconds(HEARTBEAT_EXPIRE_SECONDS));
     heartbeat_timer_.async_wait([this](boost::system::error_code ){
 
             if(state_ == LEADER){
-            LOG_INFO << " *************** node " << node_id_ << " : I'm the leader, sending heartbeat now! *************\n";
+            LOG_INFO << "node " << node_id_ << " : I'm the leader for partition "
+            << partition_id_ << " , sending heartbeat now.";
             RaftMessage msg;
             int last_log_term = log_entries_.back().term();
             int last_log_index = log_entries_.back().index();
@@ -114,7 +114,7 @@ void ClusterNode::start_send_hearbeat(){
 //this will send vote request if current state is candidate
 void ClusterNode::start_vote_scheduler(){
 
-    LOG_INFO << "checking hearbeat ... \n";
+    LOG_INFO << "checking hearbeat from leader ... \n";
     //check repeatedly
     vote_timer_.expires_from_now(boost::posix_time::seconds(HEARTBEAT_CHECK_INTERVAL));
     vote_timer_.async_wait([this](boost::system::error_code ){
@@ -166,30 +166,28 @@ void ClusterNode::start_vote_scheduler(){
 
 // statistics scheduler
 void ClusterNode::start_statistics_scheduler(){
-    stats_timer_.expires_from_now(boost::posix_time::seconds(5));
+    stats_timer_.expires_from_now(boost::posix_time::seconds(STATS_INTERVAL));
     stats_timer_.async_wait([this](boost::system::error_code ){
 
-            LOG_INFO << "Printing statistics \n ___________________________________________________________________________\n\n";
+            std::stringstream ss;
 
+            ss << "\n_________________ Printing statistics for partition " << partition_id_ 
+            <<  " ______________________\n";
+
+            // printing entries
             for(auto entry : log_entries_){
-            LOG_INFO << entry.index() << ',' << entry.operation() << ',' << entry.message() << "   \n";
+            LOG_DEBUG << entry.index() << ',' << entry.operation() << ',' << entry.message();
             }
 
-            LOG_INFO << "\ncommit_index : " << commit_index_ << '\n';
+            ss << "commit_index : " << commit_index_ << '\n';
 
-            LOG_INFO << "\nundelivered_messages : \n";
             std::vector<MessageQueue::MessageId_t> ids;
             message_queue_.get_all_undelivered_messages(&ids);
-            for(auto id : ids) {
-            LOG_INFO << id << ", ";
-            }
+            ss << "number of undelivered_messages : " << ids.size() << '\n';
 
-            //LOG_INFO << "\ncommitted messages : \n";
-            //for(auto id :committed_messages_){
-            //LOG_INFO << id << ", ";
-            //}
+            ss << "___________________________________________________________________________\n";
 
-            LOG_INFO << "\n ___________________________________________________________________________\n";
+            LOG_INFO << ss.str();
             start_statistics_scheduler();
 
     });
@@ -206,7 +204,7 @@ void ClusterNode::message_handler(const Message& msg){
     
 void ClusterNode::local_message_handler(RaftMessage raft_msg){
 
-    LOG_INFO << "#] " << raft_msg.DebugString() << '\n';
+    LOG_DEBUG << "#] " << raft_msg.DebugString() << '\n';
 
     switch(raft_msg.type()){
         case RaftMessage::APPEND_ENTRIES_REQUEST: 
@@ -311,7 +309,7 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg){
                             if(index.second >= resp.last_index_synced()) count_synced_nodes++;
                         }
                         if(count_synced_nodes + 1 > total_nodes_ / 2){
-                            LOG_INFO << "index " << resp.last_index_synced() << " is synced among majority nodes, will commit this index.\n";
+                            LOG_DEBUG << "index " << resp.last_index_synced() << " is synced among majority nodes, will commit this index.\n";
                             commit_log_entries(commit_index_ + 1, resp.last_index_synced() + 1); // left close right open 
                             commit_index_ = std::max(commit_index_, resp.last_index_synced());
                             cluster_node_storage_p_->store_log_entries_and_metadata(
@@ -319,7 +317,7 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg){
                                     {commit_index_});
                         }
                         else{
-                            LOG_INFO << "index " << resp.last_index_synced() << " is not synced among majority nodes yet, will not commit this index.\n";
+                            LOG_DEBUG << "index " << resp.last_index_synced() << " is not synced among majority nodes yet, will not commit this index.\n";
                         }
                     }
 
@@ -328,7 +326,7 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg){
                 }
                 else if (resp.term() > cur_term_){
                     //failed due to expired term
-                    LOG_INFO << "Updating current term to " << resp.term() << '\n';
+                    LOG_DEBUG << "Updating current term to " << resp.term() << '\n';
                     cur_term_ = resp.term();
                 }
                 else{
@@ -377,7 +375,7 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg){
                 if(state_ == CANDIDATE || state_ == FOLLOWER){
                     RaftMessage msg;
                     voted_for_ = candidate_node_id;
-                    LOG_INFO << "voting for " << candidate_node_id << '\n';
+                    LOG_DEBUG << "voting for " << candidate_node_id << '\n';
                     RequestVoteResponseType resp;
                     resp.set_term(request_term);
                     resp.set_vote_result_term_granted(1); // 1 is granted
@@ -574,9 +572,14 @@ void ClusterNode::consumer_disconnected(int client_id){
 }
 
 // fetch undelivered messages and send to consumers (if any exists)
+// noop if state is not LEADER.
 void ClusterNode::trigger_message_delivery(){
 
-    LOG_INFO << "trying to deliver messages \n";
+    if(state_ != LEADER){
+        LOG_DEBUG << "skipping message delivery since this is not leader";
+        return;
+    }
+    LOG_DEBUG << "trying to deliver messages \n";
     if(!cluster_master_->client_manager()->has_consumers()) return;
     std::vector<MessageQueue::MessageId_t> id_temp;
     message_queue_.get_all_undelivered_messages(&id_temp);

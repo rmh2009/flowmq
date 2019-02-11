@@ -55,6 +55,7 @@ class ClusterNode{
 
         const int HEARTBEAT_EXPIRE_SECONDS = 3; // if no heartbeat received in these seconds, will start new vote
         const int HEARTBEAT_CHECK_INTERVAL = 5; // schedule interval to check heartbeats
+        const int STATS_INTERVAL = 10; // schedule interval to print stats
 
         enum State {
             LEADER = 0, 

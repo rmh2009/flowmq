@@ -67,7 +67,7 @@ void ClusterManager::connect(int endpoint_id){
 
             auto session = std::make_shared<Session>(std::move(*socket));
             session -> register_handler([](const Message& msg){
-                    LOG_INFO << "Warning Not supposed to get incoming message from this session! messag:" 
+                    LOG_ERROR << "Not supposed to get incoming message from this session! messag:" 
                     << std::string(msg.body(), msg.body_length()) << '\n';
                     });
 
@@ -87,7 +87,7 @@ void ClusterManager::connect(int endpoint_id){
             else{
 
                 std::time_t result = std::time(nullptr);
-                LOG_INFO << result << " ERROR endpoint not up, retrying ...\n";
+                LOG_INFO << result << "endpoint down, retrying ...\n";
                 auto timer = std::make_shared<boost::asio::deadline_timer>(io_context_);
                 timer -> expires_from_now(boost::posix_time::seconds(2));
                 timer -> async_wait([timer, endpoint_id, this](boost::system::error_code const&){
@@ -104,20 +104,19 @@ void ClusterManager::accept_new_connection(){
 
             if(!error){
 
-            LOG_INFO << "got new connection! current connections including this is " 
+            LOG_DEBUG << "got new connection! current connections including this is " 
             << incoming_sessions_.size() + 1 << '\n';
 
             auto new_session = std::make_shared<Session>(std::move(socket));
 
             new_session -> register_handler([this](const Message& msg){
-                    //LOG_INFO << "#] " << std::string(msg.body(), msg.body_length()) << '\n';
                     handler_(msg);
                     });
 
             int id = incoming_sessions_count_++;
 
             new_session -> register_disconnect_handler([this, id](){
-                    LOG_INFO << "Removing session " << id << " from chat room!\n";
+                    LOG_INFO << "Removing session " << id << " from cluster !\n";
                     auto to_remove = incoming_sessions_.find(id);
                     if(to_remove != incoming_sessions_.end()){
                     incoming_sessions_.erase(incoming_sessions_.find(id));
@@ -132,7 +131,7 @@ void ClusterManager::accept_new_connection(){
 
             }
             else{
-                LOG_INFO << "ERROR: error while accepting new connection : " << error << '\n';
+                LOG_ERROR << "error while accepting new connection : " << error << '\n';
             }
 
             accept_new_connection();

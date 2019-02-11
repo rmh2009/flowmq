@@ -26,7 +26,7 @@ int MessageQueue::commit_message(MessageId_t message_id){
 
     committed_messages_.insert(message_id);
     undelivered_messages_.erase(message_id); //this is necessary for followers as the trigger_message_delivery() is only run in the leader.
-    std ::cout << "message " << message_id << " consumed!\n";
+    LOG_INFO << "message " << message_id << " consumed!";
 
     return 0;
 }
@@ -47,7 +47,7 @@ int MessageQueue::deliver_message_to_client_id(MessageId_t message_id, ClientId_
     undelivered_messages_.erase(message_id);
     consumer_id_delivered_messages_[client_id].insert(message_id);
     message_id_to_consumer_[message_id] = client_id;
-    LOG_ERROR << "Delivered message " << message_id << " to consumer " << client_id << '\n';
+    LOG_INFO << "Delivered message " << message_id << " to consumer " << client_id << '\n';
 
     return 0;
 }

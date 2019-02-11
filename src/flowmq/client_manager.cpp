@@ -37,7 +37,7 @@ int ClientManager::deliver_one_message_round_robin(PartitionIdType partition_id,
     if(consumer_client_id_array_.count(partition_id) == 0) return 1;
 
     if(consumer_client_id_array_[partition_id].size() == 0) {
-        LOG_INFO << "ERROR! client_manager.cpp no active client not found!\n";
+        LOG_ERROR << "ERROR! client_manager.cpp no active client not found!\n";
         return -1;
     }
 
@@ -73,7 +73,7 @@ void ClientManager::accept_new_connection(){
 
 
             new_session -> register_disconnect_handler([this, id](){
-                    LOG_INFO << "Removing session " << id << " from client manager!\n";
+                    LOG_DEBUG << "Removing session " << id << " from client manager!\n";
 
                     std::unique_lock<std::mutex> lock(mutex_);
                     auto to_remove = client_sessions_.find(id);
@@ -81,7 +81,7 @@ void ClientManager::accept_new_connection(){
                     client_sessions_.erase(client_sessions_.find(id));
                     }
                     else{
-                    LOG_INFO << "Session " << id << " already removed!\n";
+                    LOG_DEBUG << "Session " << id << " already removed!\n";
                     }
 
                     // remove disconnected client from all partition listening queues
@@ -91,7 +91,7 @@ void ClientManager::accept_new_connection(){
                       p.second.erase(to_remove_from_array);
                       }
                       else{
-                      LOG_INFO << "Session " << id << " does not exist in consumer id array!\n";
+                      LOG_DEBUG << "Session " << id << " does not exist in consumer id array!\n";
                       }
                     }
 
@@ -104,7 +104,7 @@ void ClientManager::accept_new_connection(){
 
             }
             else{
-                LOG_INFO << "ERROR: error while accepting new connection : " << error << '\n';
+                LOG_ERROR << "error while accepting new connection : " << error << '\n';
             }
 
             accept_new_connection();
