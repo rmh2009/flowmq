@@ -11,7 +11,7 @@ add_executable(flowmq_integration_test ${TEST_CLIENT_SRCS})
 target_link_libraries(flowmq_integration_test 
     ${Protobuf_LIBRARY}
     ${Boost_LIBRARIES}
-    libflowmq
+    libflowmqclient
     )
 
 set (FLOWMQ_CLIENT app_mq_client.cpp)
