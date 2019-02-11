@@ -19,11 +19,10 @@ Key features supported at present stage:
 - Support for message delivery to multiple consumers based on round-robin.
 - Support message consumption from consumer. 
 - Strong consensus guarantee based on Raft Algorithm.
+- Support for multiple message partitions.
 
 More features to be implemented:
-- Support for multiple message queues.
-- Support for partitioning within a message queue.
-- Improve multithread performance
+- Support for queue name level abstraction
 - Benchmark tools
 
 The implementation uses boost Asio library for network communication and async executions. 
