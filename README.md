@@ -116,8 +116,9 @@ for each partition. Leader will start syncing data to other followers,
 
 A simple client API is provided for interacting with the queue cluster. 
 
+
+Start a client.
 ```
-// start a client
 #include <flowmq_client/simple_client.hpp>
 
 tcp::resolver resolver(io_context);
@@ -131,8 +132,8 @@ std::thread t([&io_context](){
         });
 ```
 
+Register handler for receiving messages.
 ```
-
 // messages are consumed asyncrhonously, so register a handler first before 
 // opening a queue.
 std::vector<int> message_ids; 
@@ -146,9 +147,17 @@ client.register_handler([&message_ids](std::string msg, int message_id){
 client.open_queue_sync("test_queue", 0);
 ```
 
+Send message, this is a non-blocking API.
+```
+client.send_message(std::string("test") + std::to_string(i));
+```
+
+Commit a consumed message, this also non-blocking. A committed message will not
+be delivered to any other clients. If a message is not committed by current client, 
+when current client disconnects, it will be redelivered to other clients 
+for consumption. 
 ```
 // consume all received messages
-// commit is also non-blocking.
 for(auto id : message_ids){
     client.commit_message(id);
 }
