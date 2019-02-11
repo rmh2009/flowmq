@@ -115,7 +115,7 @@ for each partition. Leader will start syncing data to other followers,
 ### Client API
 
 A simple client API is provided for interacting with the queue cluster. 
-
+(You can also reference the integration test *application/test_client.cpp* for example uses)
 
 Start a client.
 ```
@@ -166,7 +166,8 @@ for(auto id : message_ids){
 
 ### Integration Test 
 
-A integration test file is available in the build directory after installation
+A integration test file is available at application/test_client.cpp. 
+It is installed to the build directory after the 'make install' command:
 ```
 build/flowmq_integration_test localhost 9003 0
 ```
