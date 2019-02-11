@@ -173,4 +173,8 @@ build/flowmq_integration_test localhost 9003 0
 ```
 Where 9003 is the client port of any cluster node, 0 specifies the partition to test.
 
+## Design Doc and Future Plan
+
+TBD
+
 
