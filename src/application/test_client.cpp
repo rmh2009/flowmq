@@ -59,35 +59,39 @@ int main(int argc, char* argv[]){
         }
         message_ids.clear();
 
-        // start test
-        std::cout << "sending messages to queue \n";
-        for(int i = 0; i < 100; ++i){
+        // 1. start test
+        int test_count = 1000;
+        std::cout << "sending " << test_count << " messages to queue \n";
+        for(int i = 0; i < test_count; ++i){
+            std::cout << "sent " << i << '\n';
             client.send_message(std::string("test") + std::to_string(i));
         }
-        sleep_some_time(3);
-        if(message_ids.size() != 100){
+        sleep_some_time(10);
+        if(message_ids.size() != (size_t)test_count){
             std::cout <<"ERROR! did not receive all messages\n";
             return 1;
         }
 
-        // commit one of them
+        // 2. commit one of them
         client.commit_message(message_ids[0]);
         sleep_some_time();
         client.stop();
         std::cout << "client stopped \n";
         message_ids.clear();
 
-        // 2. restart, test that we receive only two messages
+        // 3. restart, test that we receive the rest of the messages.
         client.start();
         client.open_queue_sync("test_queue", 0);
         std::cout << "client restarted \n";
         sleep_some_time(1);
 
-        if(message_ids.size() != 99){
-            std::cout <<"ERROR! did not receive all messages, existing messages received " << message_ids.size()  << "\n";
+        size_t expected_messages = (size_t)test_count - 1; 
+        if(message_ids.size() != expected_messages ){
+            std::cout <<"ERROR! Number of messages receive does not match, messages received " << message_ids.size()
+                << " Expecting " << expected_messages << "\n";
             return 1;
         }
-        //commit the remaining ones
+        // 4.commit the remaining ones
         for(auto id : message_ids){
             std::cout << "committing " << id << '\n';
             client.commit_message(id);
@@ -97,7 +101,7 @@ int main(int argc, char* argv[]){
 
         message_ids.clear();
 
-        // 3. Restart, test that we receive none
+        // 5. Restart, test that we receive none
         client.start();
         client.open_queue_sync("test_queue", 0);
         sleep_some_time(3);

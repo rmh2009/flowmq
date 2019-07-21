@@ -2,6 +2,10 @@
 
 namespace flowmq{
 
+namespace {
+    const int MAX_PENDING_APPEND =  2;
+}
+
 ClusterNode::ClusterNode(
                 const ClusterNodeConfig& config,
                 boost::asio::io_context& io_context, 
@@ -104,6 +108,10 @@ void ClusterNode::start_send_hearbeat(){
             //            {cur_term_, node_id_, last_log_index, last_log_term, {}, commit_index_}));
 
             cluster_master_->cluster_manager()->broad_cast(serialize_raft_message(msg));
+            for(int i = 0; i < total_nodes_; ++i) {
+                if (i == node_id_) continue;
+                pending_append_reqs_[i]++;
+            }
             }
 
             start_send_hearbeat();
@@ -288,6 +296,7 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg){
 
                 int follower_id = resp.follower_id();
                 int last_index_synced = resp.last_index_synced();
+                pending_append_reqs_[follower_id] = std::max(0, pending_append_reqs_[follower_id] - 1);
 
                 if(resp.append_result_success()){
                     //received success!
@@ -511,7 +520,10 @@ void ClusterNode::trigger_entry_update(int follower_id){
         //        commit_index_
         //        });
 
-        cluster_master_->cluster_manager()->write_message(follower_id, serialize_raft_message(msg));
+        if(pending_append_reqs_[follower_id] < MAX_PENDING_APPEND) {
+            cluster_master_->cluster_manager()->write_message(follower_id, serialize_raft_message(msg));
+            pending_append_reqs_[follower_id]++;
+        }
 
         //to slow things down and help debug
         //usleep(1000000);

@@ -162,6 +162,10 @@ class ClusterNode{
         std::map<int, int> next_index_; //map from node id to next index
         std::map<int, int> matched_index_; // map from node id to last matched index
 
+        // state for pending append request. Do not send a append request if the number
+        // of pending requests exceeds certain value.
+        std::map<int, int> pending_append_reqs_; // amp from node_id to pending append req.
+
         // persistence of log entries to disk
         std::unique_ptr<ClusterNodeStorageInterface> cluster_node_storage_p_;
 

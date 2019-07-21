@@ -50,7 +50,6 @@ void ClusterMaster::client_disconnected(int client_id){
     for(auto& p : nodes_){
         p.second->consumer_disconnected(client_id);
     }
-
 }
 
 // TODO since this could be invoked by multiple cluster_nodes, 

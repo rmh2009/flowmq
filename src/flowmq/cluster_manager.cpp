@@ -138,7 +138,4 @@ void ClusterManager::accept_new_connection(){
 
     });
 }
-
-
-
 }

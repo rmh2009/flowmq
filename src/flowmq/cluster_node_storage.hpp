@@ -41,6 +41,29 @@ class ClusterNodeStorage : public ClusterNodeStorageInterface {
 
 };
 
+// Mock storage that does not really store anything.
+class ClusterNodeStorageMock : public ClusterNodeStorageInterface {
+    public:
+
+        ClusterNodeStorageMock(int partition_id, int node_id):partition_id_(partition_id), node_id_(node_id) {
+        }
+
+        int  load_log_entry_from_file(std::vector<LogEntry>*) override { return 0; }
+        int  load_metadata_from_file(LogEntryMetaData*) override { return 0; }
+
+        void store_log_entries_and_metadata(const std::vector<LogEntry>&, 
+                int, 
+                int,
+                const LogEntryMetaData&) override {
+            return;
+        }
+
+    private:
+        int partition_id_;
+        int node_id_;
+
+};
+
 
 
 } // namespace flowmq
