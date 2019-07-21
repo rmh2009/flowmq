@@ -68,8 +68,7 @@ int main(int argc, char* argv[]){
         for(auto partition_id : config.partitions_ids){
         // add partition 0
             // construct cluster_node
-            // TODO testing the system performance bottleneck using mock storage.
-            std::unique_ptr<flowmq::ClusterNodeStorageInterface> storage_p(new flowmq::ClusterNodeStorageMock(partition_id, cur_node_id));
+            std::unique_ptr<flowmq::ClusterNodeStorageInterface> storage_p(new flowmq::ClusterNodeStorage(partition_id, cur_node_id));
 
             // {partition_id, node_id, total_nodes}
             ClusterNodeConfig node_config({partition_id, cur_node_id, static_cast<int>(config.server_nodes.size())}); 

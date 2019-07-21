@@ -34,10 +34,19 @@ class ClusterNodeStorage : public ClusterNodeStorageInterface {
                 int start_entry_index, 
                 int stop_entry_index,
                 const LogEntryMetaData& metadata) override;
+        virtual ~ClusterNodeStorage();
 
     private:
+        void consume_and_store_messages();
+
         std::string storage_log_entry_filename_;
         std::string storage_metadata_file_name_;
+        std::vector<LogEntry> log_entry_buffers_;
+        LogEntryMetaData metadata_buffer_;
+        std::mutex mutex_;
+        // used to cancel the writing thread.
+        bool cancelled_;
+        std::thread thread_;
 
 };
 
