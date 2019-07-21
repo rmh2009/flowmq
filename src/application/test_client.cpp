@@ -2,6 +2,7 @@
 #include <functional>
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
+#include <chrono>
 
 #include <flowmq/generic_client.hpp>
 #include <flowmq/message.hpp>
@@ -34,7 +35,6 @@ int main(int argc, char* argv[]){
         int partition_id = std::stoi(argv[3]);
         std::vector<int> message_ids; 
 
-        // 1. test send and receive three messages
         flowmq::SimpleClient client(partition_id, io_context, endpoints);
 
         std::thread t([&io_context](){  
@@ -47,8 +47,6 @@ int main(int argc, char* argv[]){
                 });
         client.start();
         std::cout << "client started \n";
-
-        std::string line;
 
         client.open_queue_sync("test_queue", 0);
         sleep_some_time(3);

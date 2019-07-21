@@ -22,4 +22,12 @@ target_link_libraries(flowmq_client
     libflowmq
     )
 
-install(TARGETS flowmq_node flowmq_integration_test flowmq_client DESTINATION ${PROJECT_SOURCE_DIR}/build)
+set (FLOWMQ_BENCHMARK_SRCS benchmark_test.cpp)
+add_executable(flowmq_benchmark_test ${FLOWMQ_BENCHMARK_SRCS})
+target_link_libraries(flowmq_benchmark_test
+    ${Protobuf_LIBRARY}
+    ${Boost_LIBRARIES}
+    libflowmqclient
+    )
+
+install(TARGETS flowmq_node flowmq_integration_test flowmq_client flowmq_benchmark_test DESTINATION ${PROJECT_SOURCE_DIR}/build)
