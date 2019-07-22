@@ -48,7 +48,9 @@ int main(int argc, char* argv[]){
             end_time = std::chrono::system_clock::now();
         
         client.register_handler([&](std::string, int message_id){
-                //LOG_INFO << "Got message " << msg;
+                if (message_ids.size() % 100 == 0 ) {
+                  std::cout << "Got message " << message_ids.size() << '\n';
+                }
                 message_ids.push_back(message_id);
                 if(message_ids.size() == (size_t)test_count){
                 end_time = std::chrono::system_clock::now();

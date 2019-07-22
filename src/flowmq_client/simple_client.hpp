@@ -95,7 +95,7 @@ class SimpleClient{
         void stats(){
             stats_timer_.expires_from_now(boost::posix_time::seconds(5));
             stats_timer_.async_wait([this](boost::system::error_code ){
-                    std::cout << "stats ... \n";
+                    LOG_INFO << "stats ... \n";
                     // place holder
                     // also keeps the io_context alive
                     if(!stopped_)stats();
@@ -103,7 +103,7 @@ class SimpleClient{
         }
 
         void handle_message(const Message& msg){
-            std::cout << "Received message : " << RaftMessage::deserialize_from_message(msg).DebugString() << '\n';
+            LOG_INFO << "Received message : " << RaftMessage::deserialize_from_message(msg).DebugString() << '\n';
             RaftMessage raft_msg = RaftMessage::deserialize(std::string(msg.body(), msg.body_length()));
 
             if(raft_msg.type() == RaftMessage::CLIENT_OPEN_QUEUE_RESPONSE){
