@@ -20,7 +20,6 @@ namespace flowmq{
 // Manages connection with message queue client on the server side. 
 // This class is mainly used in the cluster_node manager.
 class ClientManagerInterface{
-
     public:
         using ReadHandler = std::function<void(const Message&)>;
         using ClientDisconnectedHandler = std::function<void(int client_id)>;
@@ -64,7 +63,6 @@ class ClientManager : public ClientManagerInterface{
         bool has_consumers() const override;
 
     private:
-
         void accept_new_connection();
 
         void handle_message(const Message& msg, int client_id);

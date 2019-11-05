@@ -9,9 +9,7 @@ namespace flowmq{
 // Mainly used as a buffer when reading and writing 
 // from asio socket.
 // To reduce copying, this class is move only.
-
 class Message{
-
     public:
         Message():
             body_length_(0)

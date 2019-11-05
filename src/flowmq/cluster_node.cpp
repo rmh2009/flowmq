@@ -515,11 +515,7 @@ void ClusterNode::trigger_entry_update(int follower_id){
         req.set_leader_commit(commit_index_);
         msg.loadAppendEntriesRequest(std::move(req));
 
-        //msg.loadAppendEntriesRequest(AppendEntriesRequestType{
-        //        cur_term_, node_id_, prev_index, prev_term, std::vector<LogEntry>{log_entries_[index_to_send]},
-        //        commit_index_
-        //        });
-
+        // TODO: reset MAX_PENDING_APPEND when peer is disconnected or gradually reduce it over time.
         if(pending_append_reqs_[follower_id] < MAX_PENDING_APPEND) {
             cluster_master_->cluster_manager()->write_message(follower_id, serialize_raft_message(msg));
             pending_append_reqs_[follower_id]++;

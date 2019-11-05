@@ -103,13 +103,40 @@ easily changed so that one thread can handle multiple partitions.
 # start node 0
 build/flowmq_node node.config 0
 # start node 1
-build/flowmq_node node.config 0
+build/flowmq_node node.config 1
 # start other nodes ...
 ```
 
 Upon start the cluster nodes will start voting and have a leader selected 
 for each partition. Leader will start syncing data to other followers, 
     and is also responsible for communicating with client.
+
+### Quick Starting Server and Run Integration Test / Benchmark Test
+
+Use the runner.sh script to run start a 5 node cluster using the default config
+under build/ directory. This will also run integration tests after the servers
+are up. The servers will keep running after the tests, they can be killed all
+at once using Ctrl-C command.
+
+```
+./runner.sh
+```
+
+To start servers and run the benchmark test, run
+```
+./runner.sh benchmark
+```
+
+### Manual Integration Test 
+
+A integration test file is available at application/test_client.cpp. 
+It is installed to the build directory after the 'make install' command. To run
+this test manually, make sure all servers are up, then invoke:
+```
+build/flowmq_integration_test localhost <port> 0
+```
+Where <port> is the client facing port of any cluster node, such as 9003, 0
+specifies the partition to test.
 
 ### Client API
 
@@ -162,15 +189,6 @@ for(auto id : message_ids){
 }
 
 ```
-
-### Integration Test 
-
-A integration test file is available at application/test_client.cpp. 
-It is installed to the build directory after the 'make install' command:
-```
-build/flowmq_integration_test localhost 9003 0
-```
-Where 9003 is the client port of any cluster node, 0 specifies the partition to test.
 
 ## Design Doc and Future Plan
 

@@ -21,10 +21,8 @@ class ClusterNodeStorageInterface {
         virtual ~ClusterNodeStorageInterface(){};
 };
 
-
 class ClusterNodeStorage : public ClusterNodeStorageInterface {
     public:
-
         ClusterNodeStorage(int partition_id, int node_id);
 
         int  load_log_entry_from_file(std::vector<LogEntry>* entries) override;
@@ -53,7 +51,6 @@ class ClusterNodeStorage : public ClusterNodeStorageInterface {
 // Mock storage that does not really store anything.
 class ClusterNodeStorageMock : public ClusterNodeStorageInterface {
     public:
-
         ClusterNodeStorageMock(int partition_id, int node_id):partition_id_(partition_id), node_id_(node_id) {
         }
 
@@ -72,7 +69,5 @@ class ClusterNodeStorageMock : public ClusterNodeStorageInterface {
         int node_id_;
 
 };
-
-
 
 } // namespace flowmq

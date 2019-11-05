@@ -75,9 +75,6 @@ class ClusterManager : public ClusterManagerInterface{
         std::map<int, tcp::resolver::results_type> endpoint_id_map_;
         std::map<int, SessionPtr> outgoing_sessions_;
         ReadHandler handler_;
-
 };
 
 } // namespace flowmq
-
-

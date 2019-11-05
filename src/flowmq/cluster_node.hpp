@@ -50,9 +50,7 @@ struct ClusterNodeConfig{
 };
 
 class ClusterNode{
-
     public:
-
         const int HEARTBEAT_EXPIRE_SECONDS = 3; // if no heartbeat received in these seconds, will start new vote
         const int HEARTBEAT_CHECK_INTERVAL = 5; // schedule interval to check heartbeats
         const int STATS_INTERVAL = 10; // schedule interval to print stats
@@ -86,7 +84,6 @@ class ClusterNode{
         void consumer_disconnected(int client_id);
 
     private:
-
         // handles deserialized message, this is run in the 
         // io_context of the current node_cluster instance.
         void local_message_handler(RaftMessage msg);
@@ -124,12 +121,10 @@ class ClusterNode{
         Message serialize_raft_message(RaftMessage& raft_message);
 
         // ---------------- Persisting state of the log entries
-
         // store log entry state to disk
         void store_log_entries_and_commit_index(int start_entry_index, int stop_entry_index);
 
         // ---------------- Message Queue Related Operations ----------------  
-         
         // apply committed log entries to message queue
         void commit_log_entries(int start_entry_index, int stop_entry_index);
         // either put a new message or commit a delivered message
@@ -139,7 +134,6 @@ class ClusterNode{
         void trigger_message_delivery();
 
         // ---------------- Internal Variables -----------------------------------
-
         PartitionIdType partition_id_;
         int node_id_;
         int total_nodes_;
@@ -200,8 +194,4 @@ void ClusterNode::append_log_entries(int last_log_index, const C& new_entries){
     }
 }
 
-
-
 } // namespace flowmq
-
-

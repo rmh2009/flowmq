@@ -14,7 +14,6 @@ class ClusterNode;
 // and several cluster nodes.
 class ClusterMaster{
     public:
-
         // will start the cluster_manager and client_manager upon construction
         ClusterMaster(
                 std::unique_ptr<ClusterManagerInterface> cluster_manager_p, 

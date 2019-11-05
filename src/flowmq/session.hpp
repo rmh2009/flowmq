@@ -20,12 +20,9 @@ namespace flowmq{
 // disconnected handler once. There is no API to 
 // reopen this session inplace. Whoever owns the disconnected session
 // should consider reopening another new session to replace it.
-//
 class Session : public std::enable_shared_from_this<Session>
 {
-
     public:
-
         enum Status {
             CONNECTED = 0, 
             DISCONNECTED = 1, // disconnected state
@@ -69,11 +66,8 @@ class Session : public std::enable_shared_from_this<Session>
         }
 
     private:
-
         void read_header();
-
         void read_body();
-
         void disconneted();
 
         tcp::socket socket_;
@@ -81,13 +75,6 @@ class Session : public std::enable_shared_from_this<Session>
         ReadHandler msg_handler_;
         std::function<void()> disconnected_handler_;
         Status status_;
-
 };
 
-
-
 } // namespace flowmq
-
-
-
-

@@ -94,10 +94,8 @@ void ClusterManager::connect(int endpoint_id){
                         connect(endpoint_id);
                         });                    
             }
-
     });
 }
-
 
 void ClusterManager::accept_new_connection(){
     acceptor_.async_accept([this](boost::system::error_code error, tcp::socket socket){

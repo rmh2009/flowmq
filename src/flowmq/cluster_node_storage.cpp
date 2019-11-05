@@ -68,6 +68,3 @@ void ClusterNodeStorage::consume_and_store_messages() {
 
 } // namespace flowmq
 
-
-
-
