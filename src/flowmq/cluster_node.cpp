@@ -68,9 +68,7 @@ ClusterNode::ClusterNode(
         commit_index_ = metadata.last_committed;
     }
     LOG_INFO << "after loading data: commit index is : " << commit_index_ << ", log entry size: " << log_entries_.size() << '\n';
-
 }
-
 
 void ClusterNode::add_log_entry(const LogEntry entry){
     // this should always be run in io_context, client should not directly call this
@@ -79,17 +77,13 @@ void ClusterNode::add_log_entry(const LogEntry entry){
     for(auto& endpoint : next_index_){ //get endpoints from next_index_ map
         trigger_entry_update(endpoint.first);
     }
-
 }
-
 
 //this will send heart beats to all followers if current state is leader
 void ClusterNode::start_send_hearbeat(){
-
-
     heartbeat_timer_.expires_from_now(boost::posix_time::seconds(HEARTBEAT_EXPIRE_SECONDS));
-    heartbeat_timer_.async_wait([this](boost::system::error_code ){
 
+    heartbeat_timer_.async_wait([this](boost::system::error_code ){
             if(state_ == LEADER){
             LOG_INFO << "node " << node_id_ << " : I'm the leader for partition "
             << partition_id_ << " , sending heartbeat now.";
@@ -113,9 +107,7 @@ void ClusterNode::start_send_hearbeat(){
                 pending_append_reqs_[i]++;
             }
             }
-
             start_send_hearbeat();
-
     });
 }
 
@@ -178,7 +170,6 @@ void ClusterNode::start_statistics_scheduler(){
     stats_timer_.async_wait([this](boost::system::error_code ){
 
             std::stringstream ss;
-
             ss << "\n_________________ Printing statistics for partition " << partition_id_ 
             <<  " ______________________\n";
 
@@ -192,14 +183,11 @@ void ClusterNode::start_statistics_scheduler(){
             std::vector<MessageQueue::MessageId_t> ids;
             message_queue_.get_all_undelivered_messages(&ids);
             ss << "number of undelivered_messages : " << ids.size() << '\n';
-
             ss << "___________________________________________________________________________\n";
 
             LOG_INFO << ss.str();
             start_statistics_scheduler();
-
     });
-
 }
 
 // handles all incoming messages from the cluster

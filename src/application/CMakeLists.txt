@@ -1,4 +1,4 @@
-set (NODE_SRCS app_cluster_node.cpp)
+set (NODE_SRCS cluster_node.cpp)
 add_executable(flowmq_node ${NODE_SRCS})
 target_link_libraries(flowmq_node 
     libflowmq
@@ -6,7 +6,7 @@ target_link_libraries(flowmq_node
     ${Boost_LIBRARIES}
     )
 
-set (FLOWMQ_CLIENT app_mq_client.cpp)
+set (FLOWMQ_CLIENT client.cpp)
 add_executable(flowmq_client ${FLOWMQ_CLIENT})
 target_link_libraries(flowmq_client
     ${Protobuf_LIBRARY}
