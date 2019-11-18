@@ -1,50 +1,44 @@
-#pragma once 
+#pragma once
 
-#include <iostream>
-#include <functional>
-#include <boost/asio.hpp>
 #include <boost/array.hpp>
-
+#include <boost/asio.hpp>
 #include <flowmq/message.hpp>
 #include <flowmq/session.hpp>
+#include <functional>
+#include <iostream>
 
-namespace flowmq{
+namespace flowmq {
 
-class GenericClient 
-{
-    public:
+class GenericClient {
+ public:
+  using SessionPtr = std::shared_ptr<Session>;
+  using Handler = std::function<void(const Message&)>;
 
-        using SessionPtr = std::shared_ptr<Session>;
-        using Handler = std::function<void(const Message&)>;
-
-        GenericClient(boost::asio::io_context& io_context, 
+  GenericClient(boost::asio::io_context& io_context,
                 const tcp::resolver::results_type& endpoints);
 
-        void start();
+  void start();
 
-        void reset_endpoint(const tcp::resolver::results_type& endpoints);
+  void reset_endpoint(const tcp::resolver::results_type& endpoints);
 
-        void write_message(Message msg);
-        ~GenericClient();
+  void write_message(Message msg);
+  ~GenericClient();
 
-        void stop();
+  void stop();
 
-        bool running() const ;
+  bool running() const;
 
-        void register_handler(std::function<void(const Message& msg)> handler);
+  void register_handler(std::function<void(const Message& msg)> handler);
 
-    private:
-        void connect(
-                boost::asio::io_context& io_context, 
-                const tcp::resolver::results_type& endpoints
-                );
+ private:
+  void connect(boost::asio::io_context& io_context,
+               const tcp::resolver::results_type& endpoints);
 
-        bool running_;
-        SessionPtr session_;
-        Handler handler_;
-        boost::asio::io_context& io_context_;
-        tcp::resolver::results_type endpoints_;
-
+  bool running_;
+  SessionPtr session_;
+  Handler handler_;
+  boost::asio::io_context& io_context_;
+  tcp::resolver::results_type endpoints_;
 };
 
-} // namespace flowmq
+}  // namespace flowmq
