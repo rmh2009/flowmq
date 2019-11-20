@@ -38,8 +38,9 @@ void RunServer(const std::string& config_file, int cur_node) {
   std::vector<std::pair<int, tcp::resolver::results_type>> others;
   for (size_t i = 0; i < config.server_nodes.size(); ++i) {
     if (std::get<0>(config.server_nodes[i]) == config.current_node) {
-      this_endpoint =
-          tcp::endpoint(tcp::v4(), stoi(std::get<2>(config.server_nodes[i])));
+      this_endpoint = tcp::endpoint(
+          tcp::v4(), static_cast<unsigned short>(
+                         stoi(std::get<2>(config.server_nodes[i]))));
     } else {
       others.push_back(
           {i, resolver.resolve(std::get<1>(config.server_nodes[i]),
@@ -47,7 +48,8 @@ void RunServer(const std::string& config_file, int cur_node) {
     }
   }
   auto client_facing_endpoint = tcp::endpoint(
-      tcp::v4(), stoi(std::get<3>(config.server_nodes[cur_node_id])));
+      tcp::v4(), static_cast<unsigned short>(
+                     stoi(std::get<3>(config.server_nodes[cur_node_id]))));
 
   // construct network managers: cluster_manager and client_manager
   std::unique_ptr<ClusterManagerInterface> cluster_manager_p(

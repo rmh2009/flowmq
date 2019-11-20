@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.0)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wconversion -Wno-sign-conversion")
 project (Flowmq)
 
 # If Boost and Protobuf are installed in nonstandard 
@@ -30,7 +30,7 @@ SET(CUSTOM_INCLUDE_DIRS
     ${GTEST_INCLUDE_DIRS}
     )
 
-INCLUDE_DIRECTORIES(${CUSTOM_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(SYSTEM ${CUSTOM_INCLUDE_DIRS})
 
 enable_testing()
 

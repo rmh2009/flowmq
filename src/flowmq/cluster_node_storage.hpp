@@ -21,7 +21,7 @@ class ClusterNodeStorageInterface {
 
 class ClusterNodeStorage : public ClusterNodeStorageInterface {
  public:
-  ClusterNodeStorage(int partition_id, int node_id);
+  ClusterNodeStorage(PartitionIdType partition_id, int node_id);
 
   int load_log_entry_from_file(std::vector<LogEntry>* entries) override;
   int load_metadata_from_file(LogEntryMetaData* metadata) override;
@@ -48,7 +48,10 @@ class ClusterNodeStorage : public ClusterNodeStorageInterface {
 class ClusterNodeStorageMock : public ClusterNodeStorageInterface {
  public:
   ClusterNodeStorageMock(int partition_id, int node_id)
-      : partition_id_(partition_id), node_id_(node_id) {}
+      : partition_id_(partition_id), node_id_(node_id) {
+    LOG_INFO << "Setup mock partition storage: " << partition_id_ << ": "
+             << node_id_;
+  }
 
   int load_log_entry_from_file(std::vector<LogEntry>*) override { return 0; }
   int load_metadata_from_file(LogEntryMetaData*) override { return 0; }

@@ -62,8 +62,6 @@ class ClusterManager : public ClusterManagerInterface {
 
   void accept_new_connection();
 
-  bool running_;
-
   boost::asio::io_context& io_context_;
   tcp::acceptor acceptor_;
   std::map<int, SessionPtr> incoming_sessions_;

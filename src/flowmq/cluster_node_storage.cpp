@@ -10,7 +10,7 @@ const char* LOG_ENTRY_STORAGE_PREFIX = "storage_log_entry_";
 const char* METADATA_STORAGE_PREFIX = "storage_metadata_";
 }  // namespace
 
-ClusterNodeStorage::ClusterNodeStorage(int partition_id, int node_id)
+ClusterNodeStorage::ClusterNodeStorage(PartitionIdType partition_id, int node_id)
     : cancelled_(false),
       thread_(
           std::bind(&ClusterNodeStorage::consume_and_store_messages, this)) {

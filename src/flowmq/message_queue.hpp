@@ -1,10 +1,14 @@
 #pragma once
 
+#include <flowmq/basic_types.hpp>
+
 #include <iostream>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
+
+namespace flowmq {
 
 // Class that helps to manage the state of a message queue.
 // There are two types of states: persisted state and temporary state.
@@ -23,31 +27,27 @@
 // This class is NOT thread safe, it is assumed that operations are serialized
 // using some event loop, otherwise user of this class should manage the
 // synchronization mechanism.
-
 class MessageQueue {
  public:
-  typedef int MessageId_t;
-  typedef int ClientId_t;
+  int insert_message(MessageIdType message_id, const std::string& message);
+  int commit_message(MessageIdType message_id);
 
-  int insert_message(MessageId_t message_id, const std::string& message);
-  int commit_message(MessageId_t message_id);
-
-  const std::string& get_message(MessageId_t message_id);
+  const std::string& get_message(MessageIdType message_id);
 
   // these functions below manage the transient state
-  int get_all_undelivered_messages(std::vector<MessageId_t>* message_ids);
+  int get_all_undelivered_messages(std::vector<MessageIdType>* message_ids);
 
   // only leader will call this method
-  int deliver_message_to_client_id(MessageId_t message_id,
-                                   ClientId_t client_id);
+  int deliver_message_to_client_id(MessageIdType message_id,
+                                   ClientIdType client_id);
 
   // client disconnected, put all delivered (but uncommitted) messages of this
   // client back to the undelivered state
-  int handle_client_disconnected(ClientId_t client_id);
+  int handle_client_disconnected(ClientIdType client_id);
 
  private:
   // state for message queue
-  std::map<MessageId_t, std::string> message_store_;  // message id to message
+  std::map<MessageIdType, std::string> message_store_;  // message id to message
 
   // a message at anytime is only in one of the three states: undelivered(no
   // consumers), delivered(but not committed yet), and committed. delivered
@@ -55,11 +55,13 @@ class MessageQueue {
   // cluster node crashes it reload all messages into message_store_, and
   // committed message ids, all others are put into undelivered state.
 
-  std::set<MessageId_t> undelivered_messages_;
-  std::set<MessageId_t> committed_messages_;
-  std::map<int, std::set<MessageId_t>>
+  std::set<MessageIdType> undelivered_messages_;
+  std::set<MessageIdType> committed_messages_;
+  std::map<ClientIdType, std::set<MessageIdType>>
       consumer_id_delivered_messages_;  // consumer id to pending message ids
-  std::map<MessageId_t, int>
+  std::map<MessageIdType, ClientIdType>
       message_id_to_consumer_;  // map from message id to consumer
 };
+
+}  // namespace flowmq
 

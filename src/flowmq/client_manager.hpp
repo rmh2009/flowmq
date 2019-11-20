@@ -1,6 +1,6 @@
 #pragma once
 
-#include <flowmq/basic_types.h>
+#include <flowmq/basic_types.hpp>
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>

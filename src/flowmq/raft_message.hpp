@@ -1,5 +1,5 @@
 #pragma once
-#include <flowmq/basic_types.h>
+#include <flowmq/basic_types.hpp>
 #include <flowmq/flow_message.pb.h>
 
 #include <exception>
@@ -175,12 +175,11 @@ class RaftMessage {
   static RaftMessage deserialize(const std::string& str) {
     RaftMessage msg;
     msg.flow_message_.ParseFromString(str);
-
     return msg;
   }
 
   void serialize_to_message(Message* msg) const {
-    size_t msg_len = flow_message_.ByteSizeLong();
+    int msg_len = static_cast<int>(flow_message_.ByteSizeLong());
     msg->set_body_length(msg_len);
     flow_message_.SerializeToArray(msg->body(), msg_len);
   }
@@ -195,7 +194,7 @@ class RaftMessage {
       const ::flowmq::Message& message) {
     RaftMessage raft_msg;
     raft_msg.flow_message_.ParseFromArray(message.body(),
-                                          message.body_length());
+        message.body_length());
     return raft_msg;
   }
 

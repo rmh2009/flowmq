@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <flowmq/cluster_node.hpp>
 
 namespace flowmq {
@@ -25,7 +26,10 @@ ClusterNode::ClusterNode(
       last_applied_(0),
       cluster_node_storage_p_(std::move(cluster_node_storage_p)),
       message_queue_(),
-      cluster_master_(cluster_master) {
+      cluster_master_(cluster_master),
+      rd_(),
+      gen_(rd_()),
+      rand_dis_(INT64_MIN, INT64_MAX) {
   // initialize random seed
 
   LOG_INFO << "setting random seed according to pid " << getpid() << '\n';
@@ -59,7 +63,7 @@ ClusterNode::ClusterNode(
   if (0 != cluster_node_storage_p_->load_log_entry_from_file(&log_entries_)) {
     LOG_ERROR << "error loading log entries from storage\n";
   }
-  for (size_t i = 1; i < log_entries_.size(); ++i) {
+  for (int i = 1; i < static_cast<int>(log_entries_.size()); ++i) {
     commit_log_entry(i);  // update the queue state, this should not trigger
                           // delivery to client
   }
@@ -188,7 +192,7 @@ void ClusterNode::start_statistics_scheduler() {
 
     ss << "commit_index : " << commit_index_ << '\n';
 
-    std::vector<MessageQueue::MessageId_t> ids;
+    std::vector<MessageIdType> ids;
     message_queue_.get_all_undelivered_messages(&ids);
     ss << "number of undelivered_messages : " << ids.size() << '\n';
     ss << "____________________________________________________________________"
@@ -449,7 +453,7 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg) {
       }
       const ClientPutMessageType& req = raft_msg.get_put_message_request();
 
-      int random_id = std::rand();
+      MessageIdType random_id = rand_dis_(gen_);
       LogEntry entry;
       entry.set_index((int)log_entries_.size());
       entry.set_term(cur_term_);
@@ -600,7 +604,7 @@ void ClusterNode::commit_log_entry(int entry_index) {
     message_queue_.insert_message(log_entries_[entry_index].message_id(),
                                   log_entries_[entry_index].message());
   } else if (log_entries_[entry_index].operation() == LogEntry::COMMIT) {
-    int message_id = log_entries_[entry_index].message_id();
+    MessageIdType message_id = log_entries_[entry_index].message_id();
     message_queue_.commit_message(message_id);
   }
 }
@@ -622,7 +626,7 @@ void ClusterNode::trigger_message_delivery() {
   }
   LOG_DEBUG << "trying to deliver messages \n";
   if (!cluster_master_->client_manager()->has_consumers()) return;
-  std::vector<MessageQueue::MessageId_t> id_temp;
+  std::vector<MessageIdType> id_temp;
   message_queue_.get_all_undelivered_messages(&id_temp);
 
   for (auto message_id : id_temp) {

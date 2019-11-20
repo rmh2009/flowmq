@@ -1,7 +1,6 @@
 #pragma once
 
-#include <flowmq/basic_types.h>
-
+#include <flowmq/basic_types.hpp>
 #include <flowmq/client_manager.hpp>
 #include <flowmq/cluster_manager.hpp>
 #include <flowmq/cluster_node.hpp>
@@ -20,7 +19,7 @@ class ClusterMaster {
                 std::unique_ptr<ClientManagerInterface> client_manager_p,
                 const ServerConfiguration& server_config);
 
-  void add_cluster_node(int partition_id, int node_id,
+  void add_cluster_node(PartitionIdType partition_id, int node_id,
                         std::unique_ptr<ClusterNode> cluster_node);
 
   // handles all incoming messages from the cluster

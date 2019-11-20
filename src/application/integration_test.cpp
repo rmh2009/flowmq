@@ -1,6 +1,7 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <chrono>
+#include <flowmq/basic_types.hpp>
 #include <flowmq/generic_client.hpp>
 #include <flowmq/message.hpp>
 #include <flowmq/raft_message.hpp>
@@ -25,16 +26,18 @@ int main(int argc, char* argv[]) {
     tcp::resolver resolver(io_context);
     auto endpoints = resolver.resolve(argv[1], argv[2]);
     int partition_id = std::stoi(argv[3]);
-    std::vector<int> message_ids;
+    std::vector<flowmq::MessageIdType> message_ids;
 
     flowmq::SimpleClient client(partition_id, io_context, endpoints);
 
     std::thread t([&io_context]() { io_context.run(); });
 
-    client.register_handler([&message_ids](std::string msg, int message_id) {
-      LOG_INFO << "Got message " << msg;
-      message_ids.push_back(message_id);
-    });
+    client.register_handler(
+        [&message_ids](std::string msg, flowmq::MessageIdType message_id) {
+          LOG_INFO << "Got message " << msg;
+          std::cout << "Got message " << message_id << '\n';
+          message_ids.push_back(message_id);
+        });
     client.start();
     std::cout << "client started \n";
 
@@ -48,7 +51,7 @@ int main(int argc, char* argv[]) {
     message_ids.clear();
 
     // 1. start test
-    int test_count = 1000;
+    int test_count = 10;
     std::cout << "sending " << test_count << " messages to queue \n";
     for (int i = 0; i < test_count; ++i) {
       std::cout << "sent " << i << '\n';
@@ -56,13 +59,15 @@ int main(int argc, char* argv[]) {
     }
     sleep_some_time(10);
     if (message_ids.size() != (size_t)test_count) {
-      std::cout << "ERROR! did not receive all messages\n";
+      std::cout << "ERROR! did not receive all messages, messages received: "
+                << message_ids.size() << "\n";
       return 1;
     }
 
     // 2. commit one of them
+    std::cout << "Committing one message: " << message_ids[0] << '\n';
     client.commit_message(message_ids[0]);
-    sleep_some_time();
+    sleep_some_time(2);
     client.stop();
     std::cout << "client stopped \n";
     message_ids.clear();

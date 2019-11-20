@@ -20,7 +20,7 @@ ClusterMaster::ClusterMaster(
 }
 
 void ClusterMaster::add_cluster_node(
-    int partition_id, int node_id, std::unique_ptr<ClusterNode> cluster_node) {
+    PartitionIdType partition_id, int node_id, std::unique_ptr<ClusterNode> cluster_node) {
   LOG_INFO << "adding node with partition " << partition_id << " and node_id "
            << node_id << " to cluster master\n";
   nodes_[partition_id] = std::move(cluster_node);

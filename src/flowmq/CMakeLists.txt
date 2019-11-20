@@ -10,6 +10,7 @@ add_library(libflowmq
     configuration.cpp
     cluster_node_storage.cpp
     cluster_master.cpp
+    basic_types.cpp
     )
 target_include_directories(libflowmq PUBLIC ..)
 

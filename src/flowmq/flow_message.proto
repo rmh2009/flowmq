@@ -2,124 +2,122 @@ syntax = "proto2";
 
 package flowmq;
 
-message LogEntry{
-    enum OPERATION {
-        ADD = 0;
-        COMMIT = 1;
-    };
+message LogEntry {
+  enum OPERATION {
+    ADD = 0;
+    COMMIT = 1;
+  };
 
-    required int32 index = 1;
-    required int32 term = 2;
+  required int32 index = 1;
+  required int32 term = 2;
 
-    required int32 message_id = 3;
-    required int32 operation = 4; 
-    required string message = 5;
+  required int64 message_id = 3;
+  required int32 operation = 4;
+  required string message = 5;
 }
 
 message FlowMessage {
-    enum MessageType {
-        REQUEST_VOTE_REQUEST = 0; 
-        REQUEST_VOTE_RESPONSE = 1; 
-        APPEND_ENTRIES_REQUEST = 2; 
-        APPEND_ENTRIES_RESPONSE = 3;
+  enum MessageType {
+    REQUEST_VOTE_REQUEST = 0;
+    REQUEST_VOTE_RESPONSE = 1;
+    APPEND_ENTRIES_REQUEST = 2;
+    APPEND_ENTRIES_RESPONSE = 3;
 
-        CLIENT_PUT_MESSAGE = 10;
-        CLIENT_COMMIT_MESSAGE = 11;
-        SERVER_SEND_MESSAGE = 12;
-        CLIENT_OPEN_QUEUE = 13;
-        CONSUMER_DISCONNECTED = 14;
-        CLIENT_PUT_MESSAGE_RESPONSE = 15;
-        CLIENT_OPEN_QUEUE_RESPONSE = 16;
-        UNKNOWN = 99;
-    }
+    CLIENT_PUT_MESSAGE = 10;
+    CLIENT_COMMIT_MESSAGE = 11;
+    SERVER_SEND_MESSAGE = 12;
+    CLIENT_OPEN_QUEUE = 13;
+    CONSUMER_DISCONNECTED = 14;
+    CLIENT_PUT_MESSAGE_RESPONSE = 15;
+    CLIENT_OPEN_QUEUE_RESPONSE = 16;
+    UNKNOWN = 99;
+  }
 
-    enum Status { 
-        SUCCESS = 0;
-        ERROR = 1;
-    }
+  enum Status {
+    SUCCESS = 0;
+    ERROR = 1;
+  }
 
-    required MessageType type = 1;
-    optional int64 partition_id = 2;
+  required MessageType type = 1;
+  optional int64 partition_id = 2;
 
-    message RequestVoteRequest{
+  message RequestVoteRequest {
+    required int32 term = 1;
+    required int32 candidate_id = 2;
+    required int32 last_log_index = 3;
+    required int32 last_log_term = 4;
+  }
 
-        required int32 term = 1;
-        required int32 candidate_id = 2;
-        required int32 last_log_index = 3;
-        required int32 last_log_term = 4;
-    }
+  message RequestVoteResponse {
+    required int32 term = 1;
+    required int32 vote_result_term_granted = 2;
+  }
 
-    message RequestVoteResponse{
-        required int32 term = 1;
-        required int32 vote_result_term_granted = 2;
-    }
+  message AppendEntriesRequest {
+    required int32 term = 1;
+    required int32 leader_id = 2;
+    required int32 prev_log_index = 3;
+    required int32 prev_log_term = 4;
+    repeated LogEntry entries = 5;
+    required int32 leader_commit = 6;
+  }
 
-    message AppendEntriesRequest{
-        required int32 term = 1;
-        required int32 leader_id = 2;
-        required int32 prev_log_index = 3;
-        required int32 prev_log_term = 4;
-        repeated LogEntry entries = 5;
-        required int32 leader_commit = 6;
-    }
+  message AppendEntriesResponse {
+    required int32 term = 1;
+    required int32 follower_id = 2;
+    required int32 append_result_success = 3;
+    required int32 last_index_synced = 4;
+  }
 
-    message AppendEntriesResponse{
-        required int32 term = 1;
-        required int32 follower_id = 2;
-        required int32 append_result_success = 3;
-        required int32 last_index_synced = 4;
-    }
+  // message queue related operations
+  message ClientPutMessage {
+    required string message = 1;
+    optional int64 message_id = 2;
+  }
 
-    // message queue related operations
-    message ClientPutMessage{
-        required string message = 1;
-        optional int64 message_id = 2;
-    }
+  message ClientPutMessageResponse {
+    required int64 message_id = 1;
+    required Status status = 2;
+    required string error_message = 3;
+  }
 
-    message ClientPutMessageResponse{
-        required int64 message_id = 1;
-        required Status status = 2;
-        required string error_message = 3;
-    }
+  message ClientCommitMessage {
+    required int64 message_id = 1;
+  }
 
-    message ClientCommitMessage{
-        required int64 message_id = 1;
-    }
+  message ServerSendMessage {
+    required int64 message_id = 1;
+    required string message = 2;
+  }
 
-    message ServerSendMessage{
-        required int64 message_id = 1; 
-        required string message = 2;
-    }
+  message ClientOpenQueue {
+    required int32 open_mode = 1;
+    required string queue_name = 2;
+  }
 
-    message ClientOpenQueue{
-        required int32 open_mode = 1;
-        required string queue_name = 2;
-    }
+  message ClientOpenQueueResponse {
+    required Status status = 1;
+    required string error_message = 2;
+    optional string leader_ip = 3;
+    optional string leader_port = 4;
+  }
 
-    message ClientOpenQueueResponse{
-        required Status status = 1;
-        required string error_message = 2;
-        optional string leader_ip = 3;
-        optional string leader_port = 4;
-    }
+  // internal control messages
+  message ConsumerDisconnected {
+    required int32 client_id = 1;
+  }
 
+  optional RequestVoteRequest request_vote_request = 3;
+  optional RequestVoteResponse request_vote_response = 4;
+  optional AppendEntriesRequest append_entries_request = 5;
+  optional AppendEntriesResponse append_entries_response = 6;
 
-    // internal control messages
-    message ConsumerDisconnected{
-        required int32 client_id = 1;
-    }
-
-    optional RequestVoteRequest request_vote_request = 3; 
-    optional RequestVoteResponse request_vote_response = 4; 
-    optional AppendEntriesRequest append_entries_request = 5; 
-    optional AppendEntriesResponse append_entries_response = 6;
-
-    optional ClientPutMessage client_put_message = 7;
-    optional ClientCommitMessage client_commit_message = 8;
-    optional ServerSendMessage server_send_message = 9;
-    optional ClientOpenQueue client_open_queue = 10;
-    optional ConsumerDisconnected consumer_disconnected = 11;
-    optional ClientOpenQueueResponse client_open_queue_response = 12;
-    optional ClientPutMessageResponse client_put_message_response = 13;
+  optional ClientPutMessage client_put_message = 7;
+  optional ClientCommitMessage client_commit_message = 8;
+  optional ServerSendMessage server_send_message = 9;
+  optional ClientOpenQueue client_open_queue = 10;
+  optional ConsumerDisconnected consumer_disconnected = 11;
+  optional ClientOpenQueueResponse client_open_queue_response = 12;
+  optional ClientPutMessageResponse client_put_message_response = 13;
 }
 

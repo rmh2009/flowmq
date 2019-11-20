@@ -534,7 +534,7 @@ void AddDescriptorsImpl() {
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\022flow_message.proto\022\006flowmq\"\201\001\n\010LogEntr"
       "y\022\r\n\005index\030\001 \002(\005\022\014\n\004term\030\002 \002(\005\022\022\n\nmessag"
-      "e_id\030\003 \002(\005\022\021\n\toperation\030\004 \002(\005\022\017\n\007message"
+      "e_id\030\003 \002(\003\022\021\n\toperation\030\004 \002(\005\022\017\n\007message"
       "\030\005 \002(\t\" \n\tOPERATION\022\007\n\003ADD\020\000\022\n\n\006COMMIT\020\001"
       "\"\243\021\n\013FlowMessage\022-\n\004type\030\001 \002(\0162\037.flowmq."
       "FlowMessage.MessageType\022\024\n\014partition_id\030"
@@ -816,13 +816,13 @@ bool LogEntry::MergePartialFromCodedStream(
         break;
       }
 
-      // required int32 message_id = 3;
+      // required int64 message_id = 3;
       case 3: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
           set_has_message_id();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                   ::google::protobuf::int64, ::google::protobuf::internal::WireFormatLite::TYPE_INT64>(
                  input, &message_id_)));
         } else {
           goto handle_unusual;
@@ -897,9 +897,9 @@ void LogEntry::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->term(), output);
   }
 
-  // required int32 message_id = 3;
+  // required int64 message_id = 3;
   if (cached_has_bits & 0x00000008u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(3, this->message_id(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteInt64(3, this->message_id(), output);
   }
 
   // required int32 operation = 4;
@@ -942,9 +942,9 @@ void LogEntry::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->term(), target);
   }
 
-  // required int32 message_id = 3;
+  // required int64 message_id = 3;
   if (cached_has_bits & 0x00000008u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(3, this->message_id(), target);
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt64ToArray(3, this->message_id(), target);
   }
 
   // required int32 operation = 4;
@@ -997,9 +997,9 @@ size_t LogEntry::RequiredFieldsByteSizeFallback() const {
   }
 
   if (has_message_id()) {
-    // required int32 message_id = 3;
+    // required int64 message_id = 3;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->message_id());
   }
 
@@ -1037,9 +1037,9 @@ size_t LogEntry::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->term());
 
-    // required int32 message_id = 3;
+    // required int64 message_id = 3;
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
+      ::google::protobuf::internal::WireFormatLite::Int64Size(
         this->message_id());
 
     // required int32 operation = 4;

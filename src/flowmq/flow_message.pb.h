@@ -324,12 +324,12 @@ class LogEntry : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::google::protobuf::int32 term() const;
   void set_term(::google::protobuf::int32 value);
 
-  // required int32 message_id = 3;
+  // required int64 message_id = 3;
   bool has_message_id() const;
   void clear_message_id();
   static const int kMessageIdFieldNumber = 3;
-  ::google::protobuf::int32 message_id() const;
-  void set_message_id(::google::protobuf::int32 value);
+  ::google::protobuf::int64 message_id() const;
+  void set_message_id(::google::protobuf::int64 value);
 
   // required int32 operation = 4;
   bool has_operation() const;
@@ -360,7 +360,7 @@ class LogEntry : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::google::protobuf::internal::ArenaStringPtr message_;
   ::google::protobuf::int32 index_;
   ::google::protobuf::int32 term_;
-  ::google::protobuf::int32 message_id_;
+  ::google::protobuf::int64 message_id_;
   ::google::protobuf::int32 operation_;
   friend struct ::protobuf_flow_5fmessage_2eproto::TableStruct;
 };
@@ -2333,7 +2333,7 @@ inline void LogEntry::set_term(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:flowmq.LogEntry.term)
 }
 
-// required int32 message_id = 3;
+// required int64 message_id = 3;
 inline bool LogEntry::has_message_id() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
@@ -2344,14 +2344,14 @@ inline void LogEntry::clear_has_message_id() {
   _has_bits_[0] &= ~0x00000008u;
 }
 inline void LogEntry::clear_message_id() {
-  message_id_ = 0;
+  message_id_ = GOOGLE_LONGLONG(0);
   clear_has_message_id();
 }
-inline ::google::protobuf::int32 LogEntry::message_id() const {
+inline ::google::protobuf::int64 LogEntry::message_id() const {
   // @@protoc_insertion_point(field_get:flowmq.LogEntry.message_id)
   return message_id_;
 }
-inline void LogEntry::set_message_id(::google::protobuf::int32 value) {
+inline void LogEntry::set_message_id(::google::protobuf::int64 value) {
   set_has_message_id();
   message_id_ = value;
   // @@protoc_insertion_point(field_set:flowmq.LogEntry.message_id)

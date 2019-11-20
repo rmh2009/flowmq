@@ -3,6 +3,7 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <ctime>
+#include <flowmq/basic_types.hpp>
 #include <flowmq/client_manager.hpp>
 #include <flowmq/cluster_manager.hpp>
 #include <flowmq/cluster_master.hpp>
@@ -166,16 +167,21 @@ class ClusterNode {
 
   // Cluster Master Pointer (does not own it)
   ClusterMaster* cluster_master_;
+
+  // Random Id Generator.
+  std::random_device rd_;
+  std::mt19937 gen_;
+  std::uniform_int_distribution<int64_t> rand_dis_;
 };
 
 // Takes a container of entries, the API of C should be similar to std::vector.
 // This works for protobuf::RepeatedPtrField<> as well.
 template <class C>
 void ClusterNode::append_log_entries(int last_log_index, const C& new_entries) {
-  for (size_t i = 0; i < new_entries.size(); ++i) {
-    size_t index_in_log_entries = i + last_log_index + 1;
+  for (int i = 0; i < new_entries.size(); ++i) {
+    int index_in_log_entries = i + last_log_index + 1;
 
-    if (index_in_log_entries > log_entries_.size() - 1) {
+    if (index_in_log_entries > static_cast<int>(log_entries_.size()) - 1) {
       // new entry
       log_entries_.push_back(new_entries[i]);
     } else if (log_entries_[index_in_log_entries].term() ==

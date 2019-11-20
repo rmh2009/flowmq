@@ -9,7 +9,7 @@ ClientManager::ClientManager(
     const tcp::endpoint& endpoint  // this instance endpoint
     )
     : io_context_(io_context),
-      acceptor_(io_context, endpoint),
+      acceptor_(io_context_, endpoint),
       deliver_count_() {}
 
 void ClientManager::start() { accept_new_connection(); }

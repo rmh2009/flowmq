@@ -31,13 +31,14 @@ class Message {
 
   char* header() { return data_buffer_.data(); }
 
-  size_t body_length() const { return body_length_; }
+  int body_length() const { return body_length_; }
 
-  size_t header_length() const { return HEADER_LENGTH; }
+  int header_length() const { return HEADER_LENGTH; }
 
   void decode_length() { body_length_ = std::atoi(header()); }
 
-  void set_body_length(size_t length) {
+  void set_body_length(int length) {
+    assert(length >= 0);
     assert(length <= MAX_BODY_LENGTH);
     body_length_ = length;
     std::string header_length_str = std::to_string(body_length_);
@@ -50,7 +51,7 @@ class Message {
   Message(const Message& msg) = delete;
   Message& operator=(const Message& msg) = delete;
 
-  size_t body_length_;
+  int body_length_;
   std::vector<char> data_buffer_;
 };
 
