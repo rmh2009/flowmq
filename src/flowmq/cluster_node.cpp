@@ -124,8 +124,7 @@ void ClusterNode::start_send_hearbeat() {
 void ClusterNode::start_vote_scheduler() {
   LOG_INFO << "checking hearbeat from leader ... \n";
   // check repeatedly
-  vote_timer_.expires_from_now(
-      boost::posix_time::seconds(HEARTBEAT_CHECK_INTERVAL));
+  vote_timer_.expires_from_now(boost::posix_time::seconds(1));
   vote_timer_.async_wait([this](boost::system::error_code) {
     time_t now;
     std::time(&now);
@@ -148,7 +147,7 @@ void ClusterNode::start_vote_scheduler() {
       // set a random timer to send vote request so that all candidates will not
       // send this request at the same time.
       auto timer = std::make_shared<boost::asio::deadline_timer>(io_context_);
-      int delay = std::rand() % 1000;
+      int delay = std::rand() % 500;
       LOG_INFO << "random delay in start_vote_scheduler : " << delay
                << " miliseconds \n";
       timer->expires_from_now(boost::posix_time::milliseconds(delay));
@@ -172,7 +171,10 @@ void ClusterNode::start_vote_scheduler() {
       });
     }
 
-    start_vote_scheduler();
+    vote_timer_.expires_from_now(
+        boost::posix_time::seconds(HEARTBEAT_CHECK_INTERVAL));
+    vote_timer_.async_wait(
+        [this](boost::system::error_code) { start_vote_scheduler(); });
   });
 }
 
@@ -375,18 +377,24 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg) {
 
       // TODO, must handle this case:  if req.last_log_index and
       // req.last_log_term is older than current log entries, reject this vote
-      if (req.term() < cur_term_ ||
-          (req.term() == cur_term_ && voted_for_ != -1 &&
-           voted_for_ !=
-               req.candidate_id())) {  // we voted for somebody else this term!
-        if (voted_for_ != -1) {
-          LOG_ERROR << "ERROR: Already voted " << voted_for_ << " this term!\n";
-        } else {
-          LOG_ERROR
-              << "ERROR: Received request vote request from node that has a "
-                 "lower term than current! Ignoring this request!\n";
-        }
+      bool invalid_request = false;
+      if (req.term() < cur_term_) {
+        LOG_ERROR << "node " << node_id_
+                  << ": Received request vote request from node that has a "
+                     "lower term "
+                  << req.term() << " than current " << cur_term_
+                  << ". Ignoring this request!";
+        invalid_request = true;
+      }
+      if (req.term() == cur_term_ && voted_for_ != -1 &&
+          voted_for_ !=
+              req.candidate_id()) {  // we voted for somebody else this term!
+        LOG_INFO << "node " << node_id_ << ": Already voted " << voted_for_
+                 << " this term!\n";
+        invalid_request = true;
+      }
 
+      if (invalid_request) {
         RaftMessage msg;
         RequestVoteResponseType resp;
         resp.set_term(request_term);
@@ -421,26 +429,40 @@ void ClusterNode::local_message_handler(RaftMessage raft_msg) {
       break;
     }
     case RaftMessage::REQUEST_VOTE_RESPONSE: {
-      if (state_ != CANDIDATE) {
-        LOG_ERROR << "ERROR: received request vote response, but current state "
-                     "is not candidate! current state: "
-                  << state_ << "\n";
+      if (state_ == LEADER) {
+        // Already the leader, so ignore following responses.
+        return;
+      }
+      if (state_ == FOLLOWER) {
+        // This means some other node became the leader and converted this node
+        // to follower.
+        LOG_INFO << "node " << node_id_
+                 << ": received request vote response, but current state is "
+                    "already follower!";
         return;
       }
 
       const RequestVoteResponseType& resp = raft_msg.get_vote_response();
+      if (resp.vote_result_term_granted() == 0) {
+        // Unfortunate, we should patiently wait for the new leader to show up..
+        LOG_INFO << "node " << node_id_ << ": Vote request denied.";
+        return;
+      }
       if (resp.term() < cur_term_) {
-        LOG_ERROR << "ERROR: Received request vote response with a term lower "
-                     "than current! Ignoring this response!\n";
+        LOG_ERROR << "Received request vote response with a term "
+                  << resp.term()
+                  << " lower than current "
+                  << cur_term_ << ". Ignoring this response!";
         return;
       }
 
       if (resp.vote_result_term_granted() == 1) votes_collected_++;
       if (votes_collected_ > total_nodes_ / 2) {
         // Voted as the new LEADER!!
-        LOG_INFO << "node " << node_id_ << " : I am the new leader!\n";
         state_ = LEADER;
         cur_term_ = resp.term();
+        LOG_INFO << "node " << node_id_
+                 << ": I am the new leader! term: " << cur_term_;
       }
 
       break;
@@ -649,5 +671,7 @@ void ClusterNode::trigger_message_delivery() {
     message_queue_.deliver_message_to_client_id(message_id, consumer_id);
   }
 }
+
+ClusterNode::State ClusterNode::current_state() const { return state_; }
 
 }  // namespace flowmq

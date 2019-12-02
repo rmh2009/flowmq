@@ -70,4 +70,12 @@ std::pair<std::string, std::string> ClusterMaster::get_address_for_node(
   return {"", ""};
 }
 
+std::map<PartitionIdType, ClusterNode*> ClusterMaster::get_nodes() const {
+ std::map<PartitionIdType, ClusterNode*> nodes; 
+ for (const auto& node: nodes_) {
+   nodes.insert({node.first, node.second.get()});
+ }
+ return nodes;
+}
+
 }  // namespace flowmq

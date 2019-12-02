@@ -27,5 +27,14 @@ target_link_libraries(configuration_test
     ${GTEST_BOTH_LIBRARIES}
     libflowmq)
 
+add_executable(cluster_node_test
+    cluster_node_test.cpp)
+target_link_libraries(cluster_node_test 
+    ${Protobuf_LIBRARY}
+    ${Boost_LIBRARIES}
+    ${GTEST_BOTH_LIBRARIES}
+    libflowmq)
+
 add_test(NAME EntryStorageTest COMMAND log_entry_storage_test)
 add_test(NAME ConfigurationTest COMMAND configuration_test)
+add_test(NAME ClusterNodeTest COMMAND cluster_node_test)

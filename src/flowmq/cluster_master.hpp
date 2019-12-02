@@ -33,6 +33,9 @@ class ClusterMaster {
 
   std::pair<std::string, std::string> get_address_for_node(int node_id);
 
+  // Returns a map of partition and node for stats and debugging.
+  std::map<PartitionIdType, ClusterNode*> get_nodes() const;
+
  private:
   std::map<PartitionIdType, std::unique_ptr<ClusterNode>> nodes_;
   std::unique_ptr<ClusterManagerInterface> cluster_manager_p_;

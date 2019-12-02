@@ -39,7 +39,6 @@ class ClusterMaster;
 //
 // Uses MessageQueue and LogEntryStorage to help
 // manage and persist the state of the message queue.
-
 class ClusterMaster;
 
 // POD object for general node configurations
@@ -59,10 +58,8 @@ class ClusterNode {
 
   enum State { LEADER = 0, FOLLOWER = 1, CANDIDATE = 2 };
 
-  // New constructor that takes a pointer to the cluster master and
-  // a pointer to the node storage object.
-  //
-  // Will start the node upon construction.
+  // Constructor that takes a pointer to the cluster master and a pointer to
+  // the node storage object. Will start the node upon construction.
   ClusterNode(
       const ClusterNodeConfig& config, boost::asio::io_context& io_context,
       ClusterMaster* cluster_master,
@@ -73,16 +70,19 @@ class ClusterNode {
   ClusterNode& operator=(const ClusterNode&) = delete;
   ClusterNode(ClusterNode&&) = delete;
 
-  // handles all incoming messages from the cluster
-  // this is run in the io_context thread.
+  // Handles all incoming messages from the cluster this is run in the
+  // io_context thread.
   void message_handler(const Message& msg);
 
-  // put all pending messages delivered to this consumer back to pending state
+  // Puts all pending messages delivered to this consumer back to pending state
   void consumer_disconnected(int client_id);
 
+  // Returns the current state.
+  State current_state() const;
+
  private:
-  // handles deserialized message, this is run in the
-  // io_context of the current node_cluster instance.
+  // handles deserialized message, this is run in the io_context of the current
+  // node_cluster instance.
   void local_message_handler(RaftMessage msg);
 
   void add_log_entry(const LogEntry entry);
@@ -96,10 +96,10 @@ class ClusterNode {
   // statistics scheduler
   void start_statistics_scheduler();
 
-  // TODO there is an issue here ... this is triggered in many places,
-  // including the heartbeat check response, and any response from appending a
-  // new log. Each error append entry response will trigger this, so there could
-  // be multiple series of req/resp to sync with a follower ... There should be
+  // TODO there is an issue here ... this is triggered in many places, including
+  // the heartbeat check response, and any response from appending a new log.
+  // Each error append entry response will trigger this, so there could be
+  // multiple series of req/resp to sync with a follower ... There should be
   // only one, otherwise the process takes unnecessarily long time.
   void trigger_entry_update(int follower_id);
 

@@ -34,5 +34,5 @@ INCLUDE_DIRECTORIES(SYSTEM ${CUSTOM_INCLUDE_DIRS})
 
 enable_testing()
 
-#add_definitions(-DFLOWMQ_LOG_LEVEL_1)
+add_definitions(-DFLOWMQ_LOG_LEVEL_1)
 add_subdirectory(src)
